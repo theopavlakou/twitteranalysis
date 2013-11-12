@@ -14,10 +14,10 @@ from dictionaryOfWords import DictionaryOfWords
 from Tweet import Tweet
 
 # To test, uncomment the next two lines
-#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/testJsons', 'r')
-#commonWordsFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/commonWords', 'r')
-#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/London_100k_tweets_short', 'r')
-jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/Twitter_Data_1000.txt', 'r')
+#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/testJsons', 'r')
+#commonWordsFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/commonWords', 'r')
+jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/London_100k_tweets', 'r')
+#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/tweets_London_22Sep12_03Oct12', 'r')
 
 #commonWordsFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/CommonWordsPlain.txt', 'r')
 
@@ -73,7 +73,7 @@ print("--- Printing size of Tweets ---")
 # Print the number of tweets  
 print("    Size: " + str(len(tweetSet)))
 
-print("--- Loading most probable common words in the Tweets ---")
+print("--- Loading most common words in the Tweets ---")
 # Make a list of all the unique words in the tweets which will be the columns of the matrix. 
 # Should reduce the > 75,000 words we have by about a factor of 10
 #bagOfWords = BagOfWords(0.015)
@@ -83,24 +83,25 @@ for tweet in tweetSet:
   dictOfWords.addFromSet(tweet.listOfWords())
   #bagOfWords.addFromSetWithProbability(tweet.listOfWords())
 #listOfWords = bagOfWords.getListOfWords()
-listOfWords = dictOfWords.getMostPopularWords(2500)
+#listOfWords = dictOfWords.getMostPopularWords(2500)
+listOfWords = dictOfWords.getMostPopularWordsAndOccurrences(2500)
 
-print("--- Finished loading most probable common words in the Tweets ---")
+print("--- Finished loading most common words in the Tweets ---")
 
 print("--- Printing number of unique and relevant words ---")
 print("    Size: " + str(len(listOfWords)))
 print("--- Finished printing number of unique and relevant words ---")
 # Make a matrix of size (len(tweetSet)+1)x(len(setOfWords)+1). The first row will have the words and the first column will have the tweets (NOT the zeroth).
 print("--- Opening file to output result to ---")
-fileOut = open("M2", "w")
+fileOut = open("S", "w")
 
 # Make a file that has the words that are indexed by the columns of the matrix with their index to the left.
 print("--- Opening file to output index of words to ---")
 wordsFile = open("commonWordsIndex", "w")
 # Matlab starts indexing from 1
 i = 1 
-for word in listOfWords:
-  wordsFile.write(str(i) + " " + word+ "\n")
+for (word, occurrence) in listOfWords:
+  wordsFile.write(str(i) + " " + word + " " + str(occurrence) + "\n")
   i = i + 1
 print("--- Closing file to output index of words to ---")
 wordsFile.close()
@@ -125,7 +126,7 @@ for tweet in tweetSet:
   tweetWordList = tweet.listOfWords()
   # Check for each word in the list of unique words, which ones are in the tweet content and print a "1" if the particular word is and a "0" if not. 
   for i in range(len(listOfWords)):
-    if listOfWords[i] in tweetWordList:
+    if listOfWords[i][0] in tweetWordList:
       fileOut.write("1,")
     else:
       fileOut.write("0,")

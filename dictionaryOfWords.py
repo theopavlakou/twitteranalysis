@@ -33,3 +33,15 @@ class DictionaryOfWords:
       else:
         break
     return listToReturn
+
+  def getMostPopularWordsAndOccurrences(self, limit):
+    listOfTuples = self.getSortedListOfTuples()
+    listToReturn = []
+    x = 1
+    for (value, key) in listOfTuples:
+      if x <= limit:
+        listToReturn.append((key, value))
+        x += 1
+      else:
+        break
+    return listToReturn
