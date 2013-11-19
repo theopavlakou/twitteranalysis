@@ -4,14 +4,14 @@ class DictionaryOfWords:
     self.dict = {}
 
   def addToDictionary(self, word):
-    """ Add to dictionary with the occurence of the word """
+    """ Add to dictionary with the occurence of the word. """
     if word in self.dict:
       self.dict[word] += 1
     else:
       self.dict[word] = 1
 
   def addFromSet(self, wordSet):
-    """ Add words from a wordSet, each with probability given by the member variable, probability. """
+    """ Add words from a wordSet. """
     for word in wordSet:
       self.addToDictionary(word)
 

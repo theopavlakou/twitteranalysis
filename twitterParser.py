@@ -16,8 +16,8 @@ from Tweet import Tweet
 # To test, uncomment the next two lines
 #jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/testJsons', 'r')
 #commonWordsFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/commonWords', 'r')
-jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/London_100k_tweets', 'r')
-#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/tweets_London_22Sep12_03Oct12', 'r')
+#jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/London_100k_tweets', 'r')
+jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitteranalysis/tweets_London_22Sep12_03Oct12', 'r')
 
 #commonWordsFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project/TWITTER Research/Data (100k tweets from London)/twitterdataanalysis/CommonWordsPlain.txt', 'r')
 
@@ -38,7 +38,6 @@ jsonFile = open('/Users/theopavlakou/Documents/Imperial/Fourth_Year/MEng_Project
 #for word in listOfWords:
   #print(word)
 #print("--- Finished loading common words ---")
-
 
 print("--- Loading Tweets ---")
 tweetSet = []
@@ -81,10 +80,10 @@ dictOfWords = DictionaryOfWords()
 
 for tweet in tweetSet:
   dictOfWords.addFromSet(tweet.listOfWords())
-  #bagOfWords.addFromSetWithProbability(tweet.listOfWords())
+#bagOfWords.addFromSetWithProbability(tweet.listOfWords())
 #listOfWords = bagOfWords.getListOfWords()
 #listOfWords = dictOfWords.getMostPopularWords(2500)
-listOfWords = dictOfWords.getMostPopularWordsAndOccurrences(2500)
+listOfWords = dictOfWords.getMostPopularWordsAndOccurrences(3000)
 
 print("--- Finished loading most common words in the Tweets ---")
 
