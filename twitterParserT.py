@@ -98,20 +98,22 @@ wordsFile.close()
 #print("--- Closing file to output index of tweets to ---")
 #tweetsFile.close()
 
-# For each tweet, find the index of the words that correspond to the words in the tweet.
+# For each word, put a 1 for each column that has that word in the associated tweet.
 # Put 1's in the matrix where the word appears and 0's where the word doesn't appear.
 # Print to an output file as a .csv
 print("--- Printing matrix to file ---")
-for tweet in tweetSet:
-  # In the first column, always write the contents of the tweet
-  tweetWordList = tweet.listOfWords()
-  # Check for each word in the list of unique words, which ones are in the tweet content and print a "1" if the particular word is and a "0" if not. 
-  for i in range(len(listOfWords)):
-    if listOfWords[i][0] in tweetWordList:
-      fileOut.write("1,")
+# Each word is a row
+for (word, occurence) in listOfWords:
+  # Each tweet is a column
+  for tweet in tweetSet:
+    print(word + " " + tweet.content)
+    tweetWordDict = tweet.dictionaryOfWords()
+    if word in tweetWordDict:
+      fileOut.write("1, ")
     else:
-      fileOut.write("0,")
-  # Next row
+      fileOut.write("0, ")
+
+  
   fileOut.write("\n")
 print("--- Finished printing matrix to file ---")
 

@@ -154,10 +154,36 @@ We can therefore see that the higher the probability of $w$ appearing and theref
 In this case, a set of words is created as before, but the frequency of each word in the set is also counted and the words are sorted in descending order of occurrence. When this is done, the first $N$ words are taken as the Bag-of-Words. The assumption here is that words that appear very often will be in the principal components, which is not completely justified, but empirically seems to be the case. \textbf{EXPLAIN BETTER.} This makes the computation feasible whilst still not losing a significant amount of information. 
 
 \section{The Matrix $\mathbf{A}$}
-\subsection{The Initial Matrix $\mathbf{A}_{h}$}
-The matrix which the sparse principal components are extracted from may take many forms. Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ where $\mathbf{S} \in \mathbb{R}^{m \times n}$ is the data matrix with $m$ rows as the Tweets and $n$ columns representing each of the words in the Bag-of-Words. However, different methods may also be explored which change the weightings of the features.
-\subsubsection{Results}
 
+The matrix to be passed to the algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
+
+All testing is done using a subset of the Tweets, namely the first 1000 Tweets. This is roughly a day's worth of data. The algorithm is run on each of the matrices using the same parameters and 3 sparse PCAs are computed, each with 5 elements.
+\subsection{The Initial Matrix $\mathbf{A}$}
+The matrix which the sparse principal components are extracted from may take many forms. Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ where $\mathbf{S} \in \mathbb{R}^{m \times n}$ is the data matrix with $m$ rows as the Tweets and $n$ columns representing each of the words in the Bag-of-Words. However, different methods may also be explored which change the weightings of the features. 
+
+\subsubsection{Results}
+\begin{table}[H]
+\center
+\begin{tabular}{| c l | c l | c l |}
+\hline
+Index & Word & Index & Word & Index & Word\\
+\hline
+2 & love & 3 & london & 1 & like\\
+6 & know & 83 & hall & 9 & back\\
+4 & people & 77 & royal & 44 & feel\\
+1 & like & 9 & back & 13 & going\\
+7 & don't & 166 & albert & 15 & follow\\
+\hline
+Eigenvalue & 44.4 & Eigenvalue & 35.1 & Eigenvalue & 33.1\\
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
+
+As it can be seen, two of the three principal components in this case do not really convey much information as to any particular event that took place and are just words that may be used together quite often but not especially when a certain event takes place, however the middle one does seem to give some insight. It seems to indicate that during the time these Tweets were created there was an event at the Royal Albert Hall in London. 
+
+The eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. In this scenario, the second principal component seems to get the second highest eigenvalue, which should be noted for the next case. 
+  
 \subsection{The Hollow Matrix $\mathbf{A}_{h}$}
 As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as an undirected graph with each node being a word and each link being the number of times that word appears with the connecting word node in the same Tweet for all Tweets. This representation is meaningful, however the problem lies in the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix. In attempt to prevent this, the matrix $\mathbf{A}$ can be substituted for 
 $\mathbf{A}_h$ where for each of its elements, $a'_{i, j}$, it takes the value 
@@ -172,15 +198,149 @@ a_{i, j} & \text{if}\ i \neq j\\
 where $a_{i, j}$ are the elements in $\mathbf{A}$.
 
 \subsubsection{Results}
+\begin{table}[H]
+\center
+\begin{tabular}{| c l | c l | c l |}
+\hline
+Index & Word & Index & Word & Index & Word\\
+\hline
+6 & know & 13 & going & 3 & london\\
+7 & don't & 22 & some & 83 & hall\\
+1 & like & 14 & sleep & 77 & royal\\
+16 & about & 52 & **** & 166 & albert\\
+4 & people & 102 & house & 124 & greater\\
+\hline
+Eigenvalue & 13.5 & Eigenvalue & 9.6 & Eigenvalue & 16.6\\
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
 
+In this case, once again two of the three principal components are not very insightful but the third is again talking about the Royal Albert Hall in London. The interesting thing to not here is that the associated eigenvalue for the third principal component and the most useful is actually the highest. This, as suspected, means that this method gives significantly better results that the previous method.
 \subsection{The Normalised Matrix $\mathbf{A}_{n}$}
+Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic concept is to make it so that all the rows/columns sum to 1 so that it does not matter which words actually appear the most, but how often they appear with other words relative to their weighting.
+
 \subsubsection{Results}
 
+\begin{table}[H]
+\center
+\begin{tabular}{| c l | c l | c l |}
+\hline
+Index & Word & Index & Word & Index & Word\\
+\hline
+1782 & glisse & 2084 & cried & 1615 & iwalnut\\
+1484 & mafia & 1692 & hollyoakslater & 2339 & arre\\
+773 & volton & 873 & tonight's &2422 & abrazo\\
+1008 & sons & 2382 & alkolik & 1351 & olmaden\\
+2086 & conette & 900 & throuhout & 1711 & hermano\\
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the hollow matrix, $ \mathbf{A}_n$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. }
+\end{table}
 
-\subsection{The Normalised Hollow Matrix $\mathbf{A}_{n}$}
-\subsubsection{Results}
+Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word only appears once with another word, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
+
+
 \section{Testing on Example Data}
+The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
+Due to the file of the set of all Tweets in London size being too large ($> 2$ GB) to process in one go, the file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file, which can be processed on the machine being used. 
 
+\subsection{Results from Example Data}
+\begin{table}[H]
+\center
+\begin{tabular}{| c l |}
+\hline
+Index & Word \\
+\hline
+134 & terry\\
+133 & john\\
+79 & football\\
+334 & international\\
+157 & england\\
+921 & retires\\
+\hline
+\end{tabular}
+\caption{The dominant principal component for 23/09/2012 - 24/09/2012.}
+\label{john_terry}
+\end{table}
+
+\begin{table}[H]
+\center
+\begin{tabular}{| c l |}
+\hline
+Index & Word \\
+\hline
+24 & please\\
+258 & following\\
+842 & officers\\
+904 & murders\\
+798 & fallen\\
+204 & police\\
+\hline
+\end{tabular}
+\caption{The dominant principal component for 25/09/2012 - 26/09/2012.}
+\label{murder}
+\end{table}
+
+\begin{table}[H]
+\center
+\begin{tabular}{| c l |}
+\hline
+Index & Word \\
+\hline
+41 & europe\\
+17 & rydercup\\
+6 & come\\
+2 & well\\
+95 & rydercup2012\\
+26 & done\\
+\hline
+\end{tabular}
+\caption{The dominant principal component for 30/09/2012 - 01/09/2012.}
+\label{ryder_cup}
+\end{table}
+
+Clearly, Table \ref{john_terry} refers to the retirement of England's former captain, John Terry, from international football, which can be confirmed by the Daily Mail on the 23rd September 2012 and The Guardian on the 24th September 2012. Table \ref{murder}, on the other hand, is a result of a trending Tweet regarding a murder that took place on the 19th September 2012, where 2 police officers were killed. The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition. 
+
+These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components.
+
+\section{Scaling the Method}
+Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+
+\subsection{Desired $\mathbf{S}_{new}$}
+The desired $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
+
+
+\begin{equation*}
+0 \le ||\mathbf{S}_{new}^T\mathbf{S}_{new} - \mathbf{S}^T\mathbf{S}|| \le \epsilon 
+\end{equation*}
+
+for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm.
+
+\subsubsection{Frequent-Directions Method}
+This method is described in detail in \cite{edo}. 
+\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
+\subsubsection{Projection Method}
+In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
+
+\begin{equation*}
+\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
+\end{equation*}
+
+where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
+
+The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
+
+\begin{equation*}
+\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
+\end{equation*}
+
+\begin{equation*}
+\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
+\end{equation*}
+
+where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
+ 
 \clearpage
 \bibliography{bibliography}
 \bibliographystyle{plain}

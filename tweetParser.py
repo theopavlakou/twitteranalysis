@@ -4,7 +4,7 @@ class TweetParser:
 
   def __init__(self):
     """ Ideally this list of irrelevant strings will be taken from a file upon initialisation """
-    self.irrelevantStrings = ["the", "with", "just", "have", "this", "that","why", "what", "when", "you", "your", "wasn't", "what", "where", "who", "then"]
+    self.irrelevantStrings = {"back", "they", "there", "would", "think", "much", "will","really", "been", "more", "london","well","i'll", "come", "it's","time","today","from","last", "good","love","going", "home", "sleep", "house", "some", "know", "don't", "like", "about", "people", "the", "with", "just", "have", "this", "that","why", "what", "when", "you", "your", "wasn't", "what", "where", "who", "then", "can't", "morning", "tonight", "others", "know", "don't", "like", "about", "people", "some", "house", "fuck", "london", "greater", "[contract]", "[pic]"}
 
   def listOfCleanWords(self, string):
     """ Takes in a string of the content of a tweet and returns a list that has only relevant informative words in it """
@@ -41,10 +41,10 @@ class TweetParser:
     words = string.rsplit()
     cleanWords = {}
     for word in words:
-      # TODO
-      # Would be better to do with Regular Expressions later
+
       # Strip all the punctuation from the edges of the words and should all be lowercase
       wordStripped = word.strip("~`;?!*,.\"'-+=:#)(^%$£_").lower()
-      if len(wordStripped) > 3 and wordStripped not in self.irrelevantStrings:
+
+      if len(wordStripped) > 3 and wordStripped not in self.irrelevantStrings and self.isValidWord(wordStripped):
         cleanWords[wordStripped] = 1
     return cleanWords
