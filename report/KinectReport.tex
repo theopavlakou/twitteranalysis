@@ -69,15 +69,15 @@ escapeinside={\%*}{*)} % if you want to add a comment within your code
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
+
 \title{Analysing London Twitter Data using Sparse PCA}
 \author{
-Theo Pavlakou\\ \texttt{tp710}\\ CID 00651782\\
+Theo Pavlakou\\ tp710\\ CID 00651782\\
 }
 \date{\today}
 \maketitle
 \pagenumbering{gobble}
 \newpage
-
 
 \section*{\center Abstract}
 
@@ -85,30 +85,70 @@ Theo Pavlakou\\ \texttt{tp710}\\ CID 00651782\\
 \pagenumbering{arabic}
 
 \section{Introduction}
-Social media now shapes our lives in such a vast way. More than \textbf{(Find percentage and cite)} of people use social media, such as Facebook, Twitter and Instagram on a daily basis, and most use them more than \textbf{(Find number and cite)} times a day. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
+Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
 
-The purpose of this study is to examine how a certain implementation of a Sparse PCA algorithm, descibed in \cite{dimakis}, can help to infer results from social media. The data used is a batch of over 48,000 Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the word limit, which means that each Tweet is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later imporvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results for the data as a whole, windowing the data into months and then weeks is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. 
+The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the word limit, which means that each Tweet is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results for the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored.
 
 \textbf{NOT FINISHED}
 
 \section{Related Work}
+The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these however is quite different. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
+
+A lot of work has been done in the area of Sparse PCA as well. \cite{zou}, \cite{shen} and \cite{alex} (and many others) also comes up with an algorithm for Sparse PCA but once again focus a lot on the actual algorithm itself rather than the selection of the data that can be used for the algorithm. 
+
 \section{Principal Component Analysis (PCA)}
 \subsection{Description}
-Principal Component Analysis is a method that can be used to reduce the dimensionality of a data set by projecting it onto the principal subspace that is spanned by the eigenvectors with the largest eigenvalues of the covariance matrix. The reason that the largest eigenvalue eigenvectors are chosen is because these are the eigenvectors along which the largest variance occurs and therefore the most information can be retrieved from. The first principal component (i.e. the first eigenvector) of an $n\times n$ matrix, $A$ is:
+Principal Component Analysis is a method that can be used to reduce the dimensionality of a data set by projecting it onto the principal subspace that is spanned by the eigenvectors with the largest eigenvalues of the covariance matrix. The reason that the largest eigenvalue eigenvectors are chosen is because these are the eigenvectors along which the largest variance occurs and therefore the most information can be retrieved from. This can be seen in Figure \ref{pca}. Here we have a two dimensional data set, say $\mathbf{S} \in \mathbb{R}^{m \times 2}$, where $m$ is the number of data points, which has been plotted on the first of the three graphs. It can be seen, however, that the points are almost on the blue line, which means that, if the data can be projected onto this direction, the data can be approximated by only one component. When performing principal component analysis, the principal components that are found are:
+
+\begin{equation*}
+\mathbf{U} = 
+\begin{pmatrix}
+\mathbf{u}_1 && \mathbf{u}_2
+\end{pmatrix} = 
+\begin{pmatrix}
+0.6956 && 0.7184\\
+ 0.7184 && -0.6956\\
+
+\end{pmatrix}
+\end{equation*}
+
+We can then project the data onto the new principal components, as such:
+
+\begin{equation*}
+\mathbf{S}_p = \mathbf{S}\mathbf{U}
+\end{equation*}
+where $\mathbf{S}_p \in \mathbb{R}^{m \times 2}$ is the data projected onto the new principal components, namely $\mathbf{u}_1$ and $\mathbf{u}_2$. The plot of this new data can be seen in the second graph. 
+
+In the third graph we project the data only onto $\mathbf{u}_1$ i.e.
+\begin{equation*}
+\mathbf{S}_p = \mathbf{S}\mathbf{u}_1
+\end{equation*}
+
+As it can be seen, this graph only differs by the second graph by a small amount but only half the features have been used. This is an example of dimensionality reduction (or compression). In this case, the number of features has been reduced to half the number before, but a lot more than half the variation has been maintained. In the application of PCA explored here, the second stage is more important, as the variation direction is what is considered most and not the compression, but this has been added for completeness. Another great explanation of PCA can be found in \cite{randomprojections}.
+
+The first principal component (i.e. the first eigenvector of the $n\times n$ matrix, $\mathbf{A}$) is:
 \begin{equation}
-\underset{\|x\|^2 = 1}{\operatorname{argmax}}\left( x^TAx\right)
+\mathbf{u}_1 = \underset{\|\mathbf{x}\|^2 = 1}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-Where $A = S^TS$ and $S$ is the $m\times n$ data set consisting of $m$ data points, each evaluated on $n$ features. \textbf{Explain what $A = S^TS$ is possibly.}
+Where $\mathbf{A} = \mathbf{S}^T\mathbf{S}$ and $\mathbf{S}$ is the $m\times n$ data set consisting of $m$ data points, each evaluated on $n$ features. An intuition to what $\mathbf{A}$ represents is presented in the Appendix. Principal Component Analysis alongside Singular Value Decomposition is explained further in \cite{datascience} and \cite{bishop}. 
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{PCA_EXPLAINED.jpg}
+\caption{Images demonstrating what PCA is actually doing. The first image shows the plot of the features before performing the PCA. The second shows the features plotted on both the new principal components and the third shows the plot only plotted on the first principal compnent.}
+\label{pca}
+\end{figure}
+
+
 \subsection{Sparse PCA}
-\textbf{NOT EXPLAINED WELL - MUST EXPLAIN PROBLEM BETTER}
 
-Sparse PCA is a variant of PCA, which aims to solve the problems associated with performing PCA on datasets that are very sparse i.e. do not have many non-zero entries. For instance, take the dataset that is to be used in this study. There are over 48,000 data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $A$ of dimension $2000\times 2000$. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that has large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets.
-
-The maximum number of elements that could possibly be non-zero in each row is 140 (since there is a 140 word limit per Tweet) giving a total of 140 non-zero elements of 2000, a mere $7\%$ of the total entries and this is wildly overestimated. It can therefore be seen that the matrix will be very sparse. Therefore the equation to be solved resolves to:
+Sparse PCA is a variant of PCA, which gives rise to principal components that only have few non-zero entries. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
 \begin{equation}
-\underset{\|x\|_2^2 = 1, \|x\|_0^2 = k}{\operatorname{argmax}}\left( x^TAx\right)
+\mathbf{u}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0^2 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-where $\|x\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where the Sparse PCA algorithm comes in, which can be found in \cite{dimakis}.
+where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where the Sparse PCA algorithm comes in, which can be found in \cite{dimakis}.
+
 
 
 \section{The Bag-of-Words}
@@ -116,43 +156,44 @@ The choice of words to be chosen as the features must be carefully considered. F
 \subsection{Using Set of All Words in Tweets}
 This first method attempts to use all the words that appear in the Tweets with the filter described above applied. Unfortunately, this results a set of over 78,000 features, which is much to large to process, so this method is not to be used. 
 \subsection{Using Set of Three Thousand Most Common Words in the English Language}
-\subsubsection{Description}
 The next method is to use a set of the 3,000 most common words in the English language as a whole. A problem with this is that, this list typically includes a lot of the very uninformative words, examples of which are given above, and does not include words that are not very common as a whole but, when some sort of event occurs, become very common, especially on social media. Furthermore, it also does not include any names or slang that is used on the internet. To illustrate, if Muse were to have a concert some time in June, it would be expected that a lot of Tweets may have the word ``Muse'' in them and ``concert'' and words like ``wow'' or ``amazing'', all of which are not in the top 3,000 words in the english language. Therefore, these features would be completly missed out and therefore a very valid principal component would possibly be non-existent in the final results.
 
-\subsubsection{Results}
 \subsection{Adding Words in Tweets to the Bag-of-Words with a Certain Probability}
-\subsubsection{Description}
-Another approach is to say that a word is added to the Bag-of-Words with a probability $p$. The intuition behind this is that words that do appear very often most probably will end up in the set, if p is large enough, but of the words that do not appear very often there would be less, giving a much more relevant bag of words and a much smaller set also ($p$ times the size of the original).
-
-
-\textbf{CHECK THE MATHS HERE}
-
+Another approach is to say that a word is added to the Bag-of-Words with a probability $p$. The intuition behind this is that words that do appear very often most probably will end up in the set, if p is large enough, but of the words that do not appear very often there would be less, giving a much more relevant bag of words and a much smaller set also (approximately $p$ times the size of the original).
 
 We assume that all words are independent. Let $T_w$ be the event that we take the word $w$ and $A_{w, i}$ be the event that the word $w$ appears $i$ times and assume the probability of taking a word $w$, given that $w$ appears is $p$. 
 \begin{equation*}
-P\left( T_w | \mathbf{A_{w, i}}\right) =  \sum_{j=1}^i {i \choose j} p^j\left( 1 - p\right)^{i-j}
+P\left( T_w | A_{w, i}\right) =  \sum_{j=1}^i {i \choose j} p^j\left( 1 - p\right)^{i-j}
 \end{equation*}
 which is equivalent to 
 \begin{equation}
-1 - P(\bar{T_w} |  \mathbf{A_{w, i}}) = 1 - (1 - p)^i
+1 - P(T_w |  A_{w, i}) = 1 - (1 - p)^i
 \end{equation}
-and assume the probability of $w$ appearing is $q$, therefore the probability of $w$ appearing $i$ times is:
-\begin{equation}
-P\left(A_{w, i}\right) = q^i
-\end{equation}
-then the probability of taking the word $w$ is:
-\begin{equation*}
-P(T_w) = \sum_{i=1}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}})
-\end{equation*}
-\begin{equation}
-\sum_{i=0}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}}) =\sum_{i=1}^\infty \left(1 - (1 - p)^i\right) q^i
-\end{equation}
+%% Till here it has been checked and it is correct.
+%and assume the probability of $w$ appearing is $q$, therefore the probability of $w$ appearing $i$ times is:
+%\begin{equation}
+%P\left(A_{w, i}\right) = q^i
+%\end{equation}
+%then the probability of taking the word $w$ is:
+%\begin{equation*}
+%P(T_w) = \sum_{i=1}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}})
+%\end{equation*}
+%\begin{equation}
+%\sum_{i=0}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}}) =\sum_{i=1}^\infty \left(1 - (1 - p)^i\right) q^i
+%\end{equation}
 
-We can therefore see that the higher the probability of $w$ appearing and therefore appearing multiple times, the higher the probability of taking $w$. Since popular events will have words associated with them that appear quite often, it can be said that with the right choice of $p$ (approximately 0.1), more informative words will appear in the Bag-of-Words, whilst also reducing the size of the set. 
-\subsubsection{Results}
-\subsection{Taking $N$ Words of Highest Occurrence}
-In this case, a set of words is created as before, but the frequency of each word in the set is also counted and the words are sorted in descending order of occurrence. When this is done, the first $N$ words are taken as the Bag-of-Words. The assumption here is that words that appear very often will be in the principal components, which is not completely justified, but empirically seems to be the case. \textbf{EXPLAIN BETTER.} This makes the computation feasible whilst still not losing a significant amount of information. 
+We can therefore see that the higher the occurrence of the word $w$, the higher the probability of it being added to the Bag-of-Words. Since popular events will have words associated with them that appear quite often, it can be said that with the right choice of $p$ (approximately 0.1), more informative words will appear in the Bag-of-Words, whilst also reducing the size of the set. 
 
+This gives a final algorithm that is $O(N)$, where $N$ resembles the number of all the unique words in all the Tweets. 
+
+This method seems to work to some extent, however, if the set of all the words grows too large, the probability $p$ will have to become much smaller to maintain a constant size for the Bag-of-Words. In turn, this means that the relevant words would have to occur more for them to be in the final set. This may not be the case however if taken over longer periods of time in which words associated with events may have large spikes for a few hours or days but when taken over the whole period of time, actually contribute a small percentage of the whole set of words.
+\subsection{Taking $M$ Words of Highest Occurrence}
+
+In this case, a set of words is created as before, but the frequency of each word in the set is also counted and the words are sorted in descending order of occurrence. When this is done, the first $M$ words are taken as the Bag-of-Words. The assumption here is that words that appear very often will be in the principal components, which is not completely justified, but empirically has been the case. For example, having taken the top 3000 words, the principal components always have words in the top 1000 words, most of which are in the top 500. This makes the computation feasible whilst still not losing a significant amount of information.
+
+This is a $O(NlogN)$ algorithm, where $N$ resembles the number of all the unique words in all the Tweets. 
+
+This suffers from the same problem as the probabilistic method, however, it ensures that words that do occur very frequently will be in the Bag-of-Words, as opposed to relying on probability. This method will be used from now on in this paper.
 \section{The Matrix $\mathbf{A}$}
 
 The matrix to be passed to the algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
@@ -304,11 +345,19 @@ Clearly, Table \ref{john_terry} refers to the retirement of England's former cap
 
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components.
 
+\clearpage
 \section{Scaling the Method}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
-\subsection{Desired $\mathbf{S}_{new}$}
-The desired $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
+\subsection{Taking Advantage of the Sparsity of the Matrix}
+
+Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
+The maximum number of elements that could possibly be non-zero in each row is 140 (since there is a 140 word limit per Tweet) giving a total of 140 non-zero elements of 2000 per each row, a mere $7\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 word limit and that those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse. 
+
+This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $93\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
+
+\subsection{Reducing the Dimensionality of $\mathbf{S}$}
+The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
 
 
 \begin{equation*}
@@ -340,13 +389,17 @@ The problem with the direct implementation in practice is that, in order to get 
 \end{equation*}
 
 where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
+
+\textbf{Cite Random Projections and Applications to Dimensionality Reduction}
  
 \clearpage
 \bibliography{bibliography}
 \bibliographystyle{plain}
 \clearpage
 
-\section*{Appendix}
+\section*{Appendix}\label{appendixa}
+
+\appendix
 \pagenumbering{Roman}
 
 \section*{A. Useful Intuition for the Sparse PCA Algorithm}
