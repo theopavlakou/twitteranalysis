@@ -85,18 +85,29 @@ Theo Pavlakou\\ tp710\\ CID 00651782\\
 \pagenumbering{arabic}
 
 \section{Introduction}
-Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
+Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to find trends and infer useful results that can further be used to predict future trends. 
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding which features in a vector lead to the highest variation, which in turn means leading to the highest information gain. The problem with PCA can be hard to interpret since the size of the vector that is returned could be immense in length (e.g. 3000 components) with only a few being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed, evaluation of one such algorithm against a batch of Twitter data gathered from London in 2012 is then performed and then methods of improvement to the algorithm are also considered and methods to scale it. 
+
+%% Mention only if reference is found
+%Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
+
+\section{Project Specification}
 
 The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the word limit, which means that each Tweet is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results for the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored.
 
 \textbf{NOT FINISHED}
 
-\section{Related Work}
-The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these however is quite different. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
 
-A lot of work has been done in the area of Sparse PCA as well. \cite{zou}, \cite{shen} and \cite{alex} (and many others) also comes up with an algorithm for Sparse PCA but once again focus a lot on the actual algorithm itself rather than the selection of the data that can be used for the algorithm. 
 
 \section{Background}
+To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory behind some of these methods. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
+\textbf{NOT FINISHED}
+
+\subsection{Related Work}
+The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these however is quite different. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
+
+A lot of work has been done in the area of Sparse PCA as well. \cite{zou}, \cite{shen} and \cite{alex} (and many others) also come up with algorithms for Sparse PCA but, once again, focus a lot on the actual algorithm itself rather than the selection of the data that can be used for the algorithm. The reason the implementation in \cite{dimakis} has been used is due to the fact that it is faster for matrices with non-negative entries, by a factor of $2^{d-1}$, where $d$ is the number of principal components desired and also it has a feature elimination step which is used to make working on large data sets manageable. Furthermore, the data being used is Twitter data as the authors of \cite{dimakis} use also. 
+
 \subsection{Principal Component Analysis (PCA)}
 \subsubsection{Description}
 Principal Component Analysis is a method that can be used to reduce the dimensionality of a data set by projecting it onto the principal subspace that is spanned by the eigenvectors with the largest eigenvalues of the covariance matrix. The reason that the largest eigenvalue eigenvectors are chosen is because these are the eigenvectors along which the largest variance occurs and therefore the most information can be retrieved from. This can be seen in Figure \ref{pca}. Here we have a two dimensional data set, say $\mathbf{S} \in \mathbb{R}^{m \times 2}$, where $m$ is the number of data points, which has been plotted on the first of the three graphs. It can be seen, however, that the points are almost on the blue line, which means that, if the data can be projected onto this direction, the data can be approximated by only one component. When performing principal component analysis, the principal components that are found are:
@@ -149,12 +160,16 @@ Sparse PCA is a variant of PCA, which gives rise to principal components that on
 \end{equation}
 where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where the Sparse PCA algorithm comes in, which can be found in \cite{dimakis}.
 
-\section{Implementation Plan}
+\section{Work Completed and Implementation Plan}
+
+In the following section, the planned implementation is discussed and what has already been implemented is described also. 
 
 \subsection{The Bag-of-Words}
-The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of capital letters i.e. ``Road'' and ``road'' are to be considered equal.
+The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of capital letters i.e. ``Road'' and ``road'' are to be considered equal. 
+
 \subsubsection{Using Set of All Words in Tweets}
 This first method attempts to use all the words that appear in the Tweets with the filter described above applied. Unfortunately, this results a set of over 78,000 features, which is much to large to process, so this method is not to be used. 
+
 \subsubsection{Using Set of Three Thousand Most Common Words in the English Language}
 The next method is to use a set of the 3,000 most common words in the English language as a whole. A problem with this is that, this list typically includes a lot of the very uninformative words, examples of which are given above, and does not include words that are not very common as a whole but, when some sort of event occurs, become very common, especially on social media. Furthermore, it also does not include any names or slang that is used on the internet. To illustrate, if Muse were to have a concert some time in June, it would be expected that a lot of Tweets may have the word ``Muse'' in them and ``concert'' and words like ``wow'' or ``amazing'', all of which are not in the top 3,000 words in the english language. Therefore, these features would be completly missed out and therefore a very valid principal component would possibly be non-existent in the final results.
 
@@ -282,6 +297,55 @@ Index & Word & Index & Word & Index & Word\\
 
 Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word only appears once with another word, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
+\subsection{Scaling the Method}
+Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+
+\subsubsection{Taking Advantage of the Sparsity of the Matrix}
+
+Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
+The maximum number of elements that could possibly be non-zero in each row is 140 (since there is a 140 word limit per Tweet) giving a total of 140 non-zero elements of 2000 per each row, a mere $7\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 word limit and that those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse. 
+
+This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $93\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
+
+\subsubsection{Reducing the Dimensionality of $\mathbf{S}$}
+The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
+
+
+\begin{equation*}
+0 \le ||\mathbf{S}_{new}^T\mathbf{S}_{new} - \mathbf{S}^T\mathbf{S}|| \le \epsilon 
+\end{equation*}
+
+for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm.
+
+\subsubsection*{Frequent-Directions Method}
+This method is described in detail in \cite{edo}. 
+\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
+\subsubsection*{Random Projection Method}
+In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
+
+\begin{equation*}
+\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
+\end{equation*}
+
+where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
+
+The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
+
+\begin{equation*}
+\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
+\end{equation*}
+
+\begin{equation*}
+\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
+\end{equation*}
+
+where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
+
+More on random projections can be found in \cite{randomprojections}.
+ 
+\clearpage
+
+\section{Completed Evaluation and Evaluating Future Implementation}
 
 \section{Testing on Example Data}
 The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
@@ -346,53 +410,6 @@ Clearly, Table \ref{john_terry} refers to the retirement of England's former cap
 
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components.
 
-\clearpage
-\section{Scaling the Method}
-Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
-
-\subsection{Taking Advantage of the Sparsity of the Matrix}
-
-Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
-The maximum number of elements that could possibly be non-zero in each row is 140 (since there is a 140 word limit per Tweet) giving a total of 140 non-zero elements of 2000 per each row, a mere $7\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 word limit and that those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse. 
-
-This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $93\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
-
-\subsection{Reducing the Dimensionality of $\mathbf{S}$}
-The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
-
-
-\begin{equation*}
-0 \le ||\mathbf{S}_{new}^T\mathbf{S}_{new} - \mathbf{S}^T\mathbf{S}|| \le \epsilon 
-\end{equation*}
-
-for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm.
-
-\subsubsection{Frequent-Directions Method}
-This method is described in detail in \cite{edo}. 
-\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
-\subsubsection{Projection Method}
-In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
-
-\begin{equation*}
-\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
-\end{equation*}
-
-where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
-
-The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
-
-\begin{equation*}
-\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
-\end{equation*}
-
-\begin{equation*}
-\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
-\end{equation*}
-
-where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
-
-\textbf{Cite Random Projections and Applications to Dimensionality Reduction}
- 
 \clearpage
 \bibliography{bibliography}
 \bibliographystyle{plain}
