@@ -95,22 +95,33 @@ One such technique is known as Principal Component Analysis (PCA) and is concern
 
 The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the word limit, which means that each Tweet is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results for the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored.
 
-\textbf{NOT FINISHED}
-
+\textbf{Not done:}
+\begin{itemize}
+\item What will be done next?
+\end{itemize}
 
 
 \section{Background}
-To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory behind some of these methods. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
-\textbf{NOT FINISHED}
+To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory behind them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
+
+\textbf{Not done:}
+\begin{itemize}
+\item Explain SVD in this scenario and how it relates (see http://people.cs.pitt.edu/~milos/courses/cs3750-Fall2007/lectures/PCA.pdf)?
+\end{itemize}
 
 \subsection{Related Work}
 The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these however is quite different. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
 
 A lot of work has been done in the area of Sparse PCA as well. \cite{zou}, \cite{shen} and \cite{alex} (and many others) also come up with algorithms for Sparse PCA but, once again, focus a lot on the actual algorithm itself rather than the selection of the data that can be used for the algorithm. The reason the implementation in \cite{dimakis} has been used is due to the fact that it is faster for matrices with non-negative entries, by a factor of $2^{d-1}$, where $d$ is the number of principal components desired and also it has a feature elimination step which is used to make working on large data sets manageable. Furthermore, the data being used is Twitter data as the authors of \cite{dimakis} use also. 
 
+\textbf{Not done:}
+\begin{itemize}
+\item Explain what has been done in more detail, including some of the maths.
+\end{itemize}
+
 \subsection{Principal Component Analysis (PCA)}
 \subsubsection{Description}
-Principal Component Analysis is a method that can be used to reduce the dimensionality of a data set by projecting it onto the principal subspace that is spanned by the eigenvectors with the largest eigenvalues of the covariance matrix. The reason that the largest eigenvalue eigenvectors are chosen is because these are the eigenvectors along which the largest variance occurs and therefore the most information can be retrieved from. This can be seen in Figure \ref{pca}. Here we have a two dimensional data set, say $\mathbf{S} \in \mathbb{R}^{m \times 2}$, where $m$ is the number of data points, which has been plotted on the first of the three graphs. It can be seen, however, that the points are almost on the blue line, which means that, if the data can be projected onto this direction, the data can be approximated by only one component. When performing principal component analysis, the principal components that are found are:
+Principal Component Analysis is a method that can be used to reduce the dimensionality of a data set by projecting it onto the principal subspace that is spanned by the eigenvectors with the largest eigenvalues of the covariance matrix. The reason that the largest eigenvalue eigenvectors are chosen is because these are the eigenvectors along which the largest variance occurs and therefore the most information can be retrieved from (see Appendix for a more thorough proof of this). This can be seen in Figure \ref{pca}. Here we have a two dimensional data set, say $\mathbf{S} \in \mathbb{R}^{m \times 2}$, where $m$ is the number of data points, which has been plotted on the first of the three graphs. It can be seen, however, that the points vary from the blue line only slightly, which means that, if the data can be projected onto this direction, the data can be approximated by only one component. When performing principal component analysis, the principal components that are found are:
 
 \begin{equation*}
 \mathbf{U} = 
@@ -158,11 +169,81 @@ Sparse PCA is a variant of PCA, which gives rise to principal components that on
 \begin{equation}
 \mathbf{u}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0^2 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where the Sparse PCA algorithm comes in, which can be found in \cite{dimakis}.
+where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms comes in. The one being used in this paper can be found in \cite{dimakis}.
 
+\textbf{Not done:}
+\begin{itemize}
+\item Explain the algorithm used in \cite{dimakis}.
+\item Explain one or two other algorithms also.
+\end{itemize}
+
+\subsection{Similarity to Singular Value Decomposition (SVD)}
+\subsubsection{Description}
+SVD is a decomposition method that is very important in many areas due to the way it breaks down a matrix into 3 matrices, each with a very informative structure. The basic concept is as such:
+\begin{equation}
+\mathbf{S} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
+\end{equation}
+Where $\mathbf{S} \in \mathbb{R}^{m \times n}$,  $\mathbf{U} \in \mathbb{R}^{m \times r}$ and is a column orthonormal matrix, where $r$ is equal to the rank of the matrix,  $\mathbf{V} \in \mathbb{R}^{n \times r}$ is also a column orthonormal matrix, and  $\mathbf{\Sigma} \in \mathbb{R}^{r \times r}$ is a diagonal matrix where the elements are sorted in descending order.
+
+\subsubsection{Example Related to Project}
+In the scenario considered in this paper, the matrix $\mathbf{S}$ is a matrix with the rows representing the tweets and the columns representing the words (features). The matrix is made up of only ones and zeros, with $\mathbf{S}_{i,j} = 1$, if tweet $i$ contains word $j$ and zero otherwise. As a toy example, suppose we have the matrix:
+\begin{equation}
+\mathbf{S} = 
+\begin{pmatrix}
+1 & 1 & 1 & 0 & 0\\
+1 & 1 & 1 & 0 & 0\\
+1 & 1 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+\end{pmatrix}
+\end{equation}
+Where the columns represent the ordered bag of words, referenced from left to right \{football, cup, win, cyprus, eu\}, and there are two main topics trending on Twitter. One is about some football victory, and the other is about Cyprus joining the EU. This is a very artificial example as it assumes that the tweets would contain the exact same words, but a more general example will be given later. As it can be seen, this matrix is of rank 2, which is also the number of topics that are presented by the matrix. 
+
+Performing the SVD on the matrix, what is acquired is:
+
+\begin{equation*}
+\mathbf{S} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
+\end{equation*}
+
+\begin{equation}
+\mathbf{S} = \begin{pmatrix}
+-0.5774 & 0.0000\\
+-0.5774 & 0.0000\\
+-0.5774 & 0.0000\\
+0.0000 & -0.5000\\
+0.0000 & -0.5000\\
+0.0000 & -0.5000\\
+0.0000 & -0.5000\\
+\end{pmatrix}
+\begin{pmatrix}
+3.0000 & 0.0000\\
+0.0000 & 2.8284\\
+\end{pmatrix}
+\begin{pmatrix}
+-0.5774 & -0.5774 & -0.5774 & 0.0000 & 0.0000 \\
+0.0000 & 0.0000 & 0.0000 & -0.7071 & -0.7071\\
+\end{pmatrix}
+\end{equation}
+
+These three matrices all have a very significant meaning. It has already been stated that due to the obvious form of $\mathbf{S}$ it can be seen that there are only 2 topics or concepts. The $\mathbf{U}$ matrix can be viewed as the Tweet to concept correlation matrix i.e. how correlated the Tweets are to the corresponding topics. Similarly, the $\mathbf{V}^T$ matrix can be viewed  the concept to word correlation matrix i.e. how related the concept is to the particular word. For example, $\mathbf{U}_{2,1}$ would be how related the second Tweet is to the first concept and $\mathbf{T}_{2,3}$ would be how related the second topic is related to the third word, which in this case is zero, i.e. there is no similarity, because the second concept is about Cyprus joining the EU and the third word is win, which does not appear in any Tweet regarding Cyprus and the EU. The $\mathbf{\Sigma}$ matrix is then just the concept strengths.
+
+It can then be shown that $\mathbf{S}^T\mathbf{S}$ represents the correlation of the words in the tweets to each other, i.e. a covariance matrix (see Appendix). But 
+\begin{equation*}
+\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Sigma}\mathbf{U}^T  \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
+\end{equation*}
+\begin{equation}
+\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Sigma}^2\mathbf{V}^T
+\end{equation}
+which can be rewritten as:
+\begin{equation}
+\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T
+\end{equation}
+which essentially means that the columns of $\mathbf{V}$ are the eigenvectors of the matrix $\mathbf{S}^T\mathbf{S}$ and the diagonal values of $\mathbf{\Lambda}$ are the corresponding eigenvalues, which are the squares of the singular values found in $\mathbf{\Sigma}$.
+
+As it can be seen, there is a close relationship between SVD and PCA, which uses the eigenvectors of the covariance matrix. Therefore, to find the principal components of a matrix $\mathbf{S}$, the SVD can instead be found and the principal components would be the columns of $\mathbf{V}$ (or of $\mathbf{U}$ if we want to find the principal components of $\mathbf{S}\mathbf{S}^T$) and the variances are given by squaring the singular values.
 \section{Work Completed and Implementation Plan}
-
-In the following section, the planned implementation is discussed and what has already been implemented is described also. 
 
 \subsection{The Bag-of-Words}
 The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of capital letters i.e. ``Road'' and ``road'' are to be considered equal. 
@@ -202,6 +283,7 @@ We can therefore see that the higher the occurrence of the word $w$, the higher 
 This gives a final algorithm that is $O(N)$, where $N$ resembles the number of all the unique words in all the Tweets. 
 
 This method seems to work to some extent, however, if the set of all the words grows too large, the probability $p$ will have to become much smaller to maintain a constant size for the Bag-of-Words. In turn, this means that the relevant words would have to occur more for them to be in the final set. This may not be the case however if taken over longer periods of time in which words associated with events may have large spikes for a few hours or days but when taken over the whole period of time, actually contribute a small percentage of the whole set of words.
+
 \subsubsection{Taking $M$ Words of Highest Occurrence}
 
 In this case, a set of words is created as before, but the frequency of each word in the set is also counted and the words are sorted in descending order of occurrence. When this is done, the first $M$ words are taken as the Bag-of-Words. The assumption here is that words that appear very often will be in the principal components, which is not completely justified, but empirically has been the case. For example, having taken the top 3000 words, the principal components always have words in the top 1000 words, most of which are in the top 500. This makes the computation feasible whilst still not losing a significant amount of information.
@@ -209,6 +291,7 @@ In this case, a set of words is created as before, but the frequency of each wor
 This is a $O(NlogN)$ algorithm, where $N$ resembles the number of all the unique words in all the Tweets. 
 
 This suffers from the same problem as the probabilistic method, however, it ensures that words that do occur very frequently will be in the Bag-of-Words, as opposed to relying on probability. This method will be used from now on in this paper.
+
 \subsection{The Matrix $\mathbf{A}$}
 
 The matrix to be passed to the algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
@@ -347,11 +430,11 @@ More on random projections can be found in \cite{randomprojections}.
 
 \section{Completed Evaluation and Evaluating Future Implementation}
 
-\section{Testing on Example Data}
+\subsection{Testing on Example Data}
 The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
 Due to the file of the set of all Tweets in London size being too large ($> 2$ GB) to process in one go, the file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file, which can be processed on the machine being used. 
 
-\subsection{Results from Example Data}
+\subsubsection{Results from Example Data}
 \begin{table}[H]
 \center
 \begin{tabular}{| c l |}
@@ -420,7 +503,51 @@ These are the most interesting principal components that appear from running the
 \appendix
 \pagenumbering{Roman}
 
-\section*{A. Useful Intuition for the Sparse PCA Algorithm}
+\section*{A. PCA Explained (A variant to \ref{bishop})}
+
+Consider a set of observations $\{\mathbf{x}x_n\}$ for $n = 1, ..., N$ and each $\mathbf{x}_n \in \mathbb{R}^D$, to project the data onto just one dimension whilst keeping the maximum amount of variation possible (and therefore information), we can project the data onto one D-dimensional vector, $\mathbf{u}_1 \in \mathbb{R}^D$. The mean of the projected data is then $\mathbf{u}_1^T \mathbf{\overline{x}}$, where
+\begin{equation*}
+\mathbf{\overline{x}} = \frac{1}{N} \sum_{n = 1}^N \mathbf{x}_n 
+\end{equation*} 
+the sample mean of the observed data.
+
+The sample variance of the projected data can then be given by
+\begin{equation*}
+\frac{1}{N} \sum_{n = 1}^N \{\mathbf{u}_1^T\mathbf{x}_n -  \mathbf{u}_1^T\mathbf{\overline{x}}_n\}^2
+\end{equation*} 
+\begin{equation*}
+\mathbf{u}_1^T \left( \frac{1}{N} \sum_{n = 1}^N \left(\mathbf{x}_n - \mathbf{\overline{x}}_n\right)\left(\mathbf{x}_n - \mathbf{\overline{x}}_n\right)^T \right) \mathbf{u}_1
+\end{equation*} 
+
+Taking notice that 
+\begin{equation*}
+\frac{1}{N} \sum_{n = 1}^N \left(\mathbf{x}_n - \mathbf{\overline{x}}_n\right)\left(\mathbf{x}_n - \mathbf{\overline{x}}_n\right)^T 
+\end{equation*} 
+is just the covariance matrix of the data, call it $\mathbf{S}$, we can the say that:
+\begin{equation}
+\mathbf{u}_1^T \mathbf{S} \mathbf{u}_1
+\label{uSu}
+\end{equation} 
+
+Therefore, if we would like to maximise the variance of the projected data, we need to maximise \eqref{uSu}. This can obviously be maximised by letting $\|\mathbf{u}_1\| \to \infty$, without taking into account the actual direction of $\mathbf{u}_1$, however this is not what is desired. What is actually needed is the direction in which the data varies most and not the actual length of the vector itself. A constraint is therefore imposed such that $\|\mathbf{u}_1\| = 1$ and then a Lagrange multiplier is introduced, $\lambda_1$. The resulting equation is as such:
+
+
+\begin{equation*}
+\mathbf{u}_1^T \mathbf{S} \mathbf{u}_1 - \lambda_1 (1 - \mathbf{u}_1^T \mathbf{u_1})
+\label{lagrange_uSu}
+\end{equation*} 
+
+Which by setting the derivative with respect to $\mathbf{u}_1$ to zero, the following is attained:
+
+
+\begin{equation*}
+\mathbf{S} \mathbf{u}_1 = \lambda_1  \mathbf{u_1}
+\label{eig_uSu}
+\end{equation*} 
+
+Which means that $\mathbf{u}_1$ is maximised by finding the eigenvector with the largest eigenvalue $\lambda_1$. Similarly to find the $M$ principal components, the eigenvectors of the covariance matrix with the $M$ highest eigenvalues must be calculated.
+
+\section*{B. Useful Intuition for the Sparse PCA Algorithm}
 Consider a matrix, $S\in \mathbb{R}^{m\times n}$, where $m$ is the number of Tweets and $n$ is the number of features that the tweets are evaluated on, in this case the Bag-of-Words. Performing $S^TS = A$ where $A \in \mathbb{R}^{n\times n}$. 
 
 By example, imagine:
@@ -463,4 +590,6 @@ A =
 Since $a_{i, j} = 1$ when the word $j$ appears in Tweet $i$ and otherwise 0, the resulting matrix is basically a symmetric matrix with entry $(i, j)$ being composed of the number of times word $j$ occurs with word $i$ in the same Tweet over all the Tweets. The diagonal is  therefore the number of times the word $j$ appears over all the Tweets.
 
 This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $A$.  
+
+
 \end{document}
