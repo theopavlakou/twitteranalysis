@@ -178,6 +178,7 @@ where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zer
 \end{itemize}
 
 \subsection{Similarity to Singular Value Decomposition (SVD)}
+This work is largely an extension of \ref{lecture_svd}.
 \subsubsection{Description}
 SVD is a decomposition method that is very important in many areas due to the way it breaks down a matrix into 3 matrices, each with a very informative structure. The basic concept is as such:
 \begin{equation}
@@ -243,6 +244,83 @@ which can be rewritten as:
 which essentially means that the columns of $\mathbf{V}$ are the eigenvectors of the matrix $\mathbf{S}^T\mathbf{S}$ and the diagonal values of $\mathbf{\Lambda}$ are the corresponding eigenvalues, which are the squares of the singular values found in $\mathbf{\Sigma}$.
 
 As it can be seen, there is a close relationship between SVD and PCA, which uses the eigenvectors of the covariance matrix. Therefore, to find the principal components of a matrix $\mathbf{S}$, the SVD can instead be found and the principal components would be the columns of $\mathbf{V}$ (or of $\mathbf{U}$ if we want to find the principal components of $\mathbf{S}\mathbf{S}^T$) and the variances are given by squaring the singular values.
+
+\subsubsection{Further Example Related to Project}
+Suppose the matrix $\mathbf{S}$ instead looked like this:
+
+\begin{equation}
+\mathbf{S} = 
+\begin{pmatrix}
+1 & 1 & 1 & 0 & 0\\
+1 & 1 & 1 & 0 & 0\\
+1 & 1 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+1 & 0 & 0 & 1 & 0\\
+1 & 1 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 1 & 1\\
+1 & 0 & 0 & 1 & 1\\
+\end{pmatrix}
+\end{equation}
+with the same words representing the columns as in the previous example. It can be seen here that there are now 4 linearly independent columns and therefore this matrix is of rank 4. 
+
+The SVD then turns out to give:
+
+
+\begin{equation*}
+\mathbf{U}=
+\begin{pmatrix}
+-0.1216&0.4704&-0.1158&0.0223\\
+-0.1216&0.4704&-0.1158&0.0223\\
+-0.1216&0.4704&-0.1158&0.0223\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.2336&0.1097&0.7963&0.5471\\
+-0.1216&0.4704&-0.1158&0.0223\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3241&-0.1199&-0.1320&0.0778\\
+-0.3888&0.0453&0.4363&-0.8102\\
+\end{pmatrix}
+\end{equation*}
+\begin{equation*}
+\mathbf{\Sigma}=
+\begin{pmatrix}
+4.1377&0.0000&0.0000&0.0000\\
+0.0000&3.5113&0.0000&0.0000\\
+0.0000&0.0000&1.1637&0.0000\\
+0.0000&0.0000&0.0000&0.4426\\
+\end{pmatrix}
+\end{equation*}
+\begin{equation*}
+\mathbf{V}=
+\begin{pmatrix}
+-0.2679&0.5801&0.6613&-0.3930\\
+-0.1175&0.5359&-0.3980&0.2014\\
+-0.1175&0.5359&-0.3980&0.2014\\
+-0.6987&-0.1949&0.2654&0.6352\\
+-0.6422&-0.2261&-0.4189&-0.6008\\
+\end{pmatrix}
+\end{equation*}
+As it can be seen here, it is significantly more difficult to actually be able to distinguish which words contribute significantly to each principal component due to the added noise that rows 8 and 13 give rise to. This, once again, highlights how important sparse principal components are since here the data is only $\in \mathbb{R}^{13 \times 5}$ and it is difficult to interpret, whereas in a real life scenario this is much larger in magnitude, and in the scenario considered in this paper this grows to be in the tens of thousands Tweets and thousands of words.
+
+What is very useful to see, however, is that the singular values do decrease quite rapidly after the second one. These represent the square roots of the eigenvalues of the covariance matrix, so by squaring them the graph in Figure \ref{spectrum} is obtained.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Spectrum_Eigenvalues.jpg}
+\caption{The spectrum of the eigenvalues of $\mathbf{S}^T\mathbf{S}$}
+\label{spectrum}
+\end{figure}
+
+This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously going to be the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
+\clearpage
 \section{Work Completed and Implementation Plan}
 
 \subsection{The Bag-of-Words}
