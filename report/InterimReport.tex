@@ -173,7 +173,6 @@ where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zer
 
 \textbf{Not done:}
 \begin{itemize}
-\item Explain the algorithm used in \cite{dimakis}.
 \item Explain one or two other algorithms also.
 \end{itemize}
 
@@ -322,6 +321,70 @@ What is very useful to see, however, is that the singular values do decrease qui
 \end{figure}
 
 This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously going to be the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
+
+\subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
+This is the algorithm that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. 
+
+\subsubsection{Intuitive Explanation of the Algorithm}
+The assumption is made that a rank $d$ approximation of the covariance matrix at hand is arbitrarily close to the original based on the Forbenius norm. That is:
+
+\begin{equation*}
+\|\mathbf{A} - \mathbf{A}_d\|_F < \epsilon
+\end{equation*}
+where $\epsilon$ can be determined. This can then be expressed as:
+\begin{equation*}
+\mathbf{A}_d = \sum_{i=1}^d \lambda_i \mathbf{v}_i \mathbf{v}_i^T
+\end{equation*}
+
+The basic idea behind this algorithm is that the sparse approximation to the first principal component can be found by calculating the eigenvector $\mathbf{x}_*$ with the largest eigenvalue for all the possible $k\times k$ submatrices of $\mathbf{A}$. This leads to finding $n \choose k$ possible sparse eigenvectors, however. This would be quite wasteful however since it would lead to needing to find $O\left( n^k\right)$ eigenvectors, where $k$ is the sparsity of the eigenvector, i.e. how many elements of the vector are non-zero. In \cite{dimakis}, it can be shown that only $O\left(n^d\right)$ candidates need to be examined though and since $d < k$ typically, this means that the time complexity is reduced significantly. This reduction is the result of the Spannogram algorithm described in \cite{dimakis} and the resulting time complexity turns out to be $O \left( n^{d+1}\log(n) + n^d k^2 + dn^2\right)$. Depending on the structure of the matrix $\mathbf{A}$, either one of the terms could prevail.
+
+\subsubsection{The Spannogram Algorithm}
+
+What this algorithm aims to do is eliminate any candidates for the eigenvectors that would be redundant to calculate. The way this can be demonstrated is by taking a Rank-1 matrix, i.e.
+
+\begin{equation*}
+\mathbf{A}_1 = \lambda_1 \mathbf{v}_1 \mathbf{v}_1^T
+\end{equation*}
+
+and solving the equation
+
+\begin{equation*}
+\max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}} \mathbf{x}^T\mathbf{A}_1\mathbf{x}
+\end{equation*}
+
+where $\mathbb{S}_k$ is the set of all $k$-sparse vectors in $\mathbb{R}^n$. The solution turns out to be:
+
+\begin{equation*}
+\lambda_1\max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}} \left(\mathbf{v}_1^T \mathbf{x}\right)^2 = \max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}} \lambda_1\left( \sum_{i = 1}^n v_1i xi\right)^2
+\end{equation*}
+
+Therefore, it can easily be seen that just by keeping the $k$ entries with the largest magnitude and making all other entries equal to 0 in x would satisfy the equation above. Therefore, the solution is trivial. 
+
+For the case where $d > 1$, what the algorithm essentially does is transform the problem into many Rank-1 case problems and solve them to find the best solution.
+
+The eigenvectors of $\mathbf{A}_d$, which can be represented as:
+\begin{equation*}
+\mathbf{V}_d = [\sqrt{\lambda_1}\mathbf{v}_1, \cdots, \sqrt{\lambda_d}\mathbf{v}_d]
+\end{equation*}
+
+\begin{equation*}
+\max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}}  \mathbf{x}^T\mathbf{A}_d\mathbf{x} = \max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}} \|\mathbf{V}_d^T\mathbf{x}^T\|_2^2
+\end{equation*}
+
+
+It then defines a vector, $\mathbf{c} \in \mathbb{R}^d$ such that $\|\mathbf{c}\|_2=1$, which is a function of some vector $\mathbf{\phi}$ and the elements in it are sinusoids taking as arguments the elements in $\mathbf{\phi}$, where each $\phi_i \in (\frac{-\pi}{2}, \frac{\pi}{2}]$.
+
+The equation is then transformed into a Rank-1 instance by creating the vector $\mathbf{v}_c = \mathbf{V}_d \mathbf{c}$ to give 
+
+\begin{equation}
+\max_{\|\mathbf{c}\|_2 =1} \max_{\substack{\mathbf{x} \in\mathbb{S}_k, \\ \|\mathbf{x}\|_2 = 1, \\ \|\mathbf{x}\|_0 = k}}\left(\mathbf{v}_c^T \mathbf{x}\right)^2 
+\label{spannogram}
+\end{equation}
+
+Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equation \ref{spannogram}. The important thing to note is that, there is no actual need to calculate the actual value of the $\mathbf{v}_c$ for each $\phi$ to find the candidate indices for the $k$-sparse eigenvectors only the relative magnitudes between the different entries in  $\mathbf{v}_c$ must be taken into account. The relative magnitudes will only change at intersection points between the sinusoids, and therefore, only about these points must a candidate eigenvector indices actually be tested. This brings down the computation to $O \left(n^d\right)$ instead of $O \left(n^k\right)$. A more thorough description and justification of the algorithm can be found in \cite{dimakis}.
+
+\subsubsection{Other Benefits}
+Other reasons this algorithm has been chosen is because it also has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only positive entries, which it does in our case, the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. (Details can be found in \cite{dimakis})
 \clearpage
 \section{Work Completed and Implementation Plan}
 
@@ -463,10 +526,10 @@ Clearly this gives results that are absolutely irrelevant. The reason for this i
 \subsection{Scaling the Method}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
-\subsubsection{Taking Advantage of the Sparsity of the Matrix}
+\subsubsection{Taking Advantage of the Sparsity of the $\mathbf{S}$ Matrix}
 
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
-The maximum number of elements that could possibly be non-zero in each row is 140 (since there is a 140 word limit per Tweet) giving a total of 140 non-zero elements of 2000 per each row, a mere $7\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 word limit and that those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse. 
+The maximum number of elements that could possibly be non-zero in each row is 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
 
 This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $93\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
 
