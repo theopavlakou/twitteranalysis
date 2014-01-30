@@ -314,13 +314,15 @@ Sparse PCA algorithms are aim to deliver similar results to PCA, but which gives
 \end{equation}
 where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms comes in. The one being used in this paper can be found in \cite{dimakis}.
 
-\subsubsection{SCoTLASS}
-In \cite{scotlass}, the authors aim to force sparsity by solving the equation
+\subsubsection{Methods to perform Sparse PCA}
+Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
+ 
+The first attempt, and an attempt that is still widely used regardless of its many limitations is the Thresholding method, which simply performs regular PCA and then forces the entries that are small in magnitude, to zero. This can be misleading and an arbitrary selection of the threshold must be made, which may not actually be valid. In \cite{scotlass}, the authors aim to force sparsity by solving the equation
 \begin{equation*}
 \operatorname{argmax}_{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}\mathbf{x}^T\mathbf{A}\mathbf{x}
 \end{equation*}
  
-for some $t$ where $1<t<\sqrt{n}$. This is done by applying a Lagrange multiplier.
+for some $t$ where $1<t<\sqrt{n}$. This is done by applying a Lagrange multiplier. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which turns out to introduce sparsity.
 \textbf{NOT DONE}
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
@@ -524,8 +526,8 @@ Index & Word & Index & Word & Index & Word\\
 
 Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word only appears once with another word, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
-\subsection{Scaling the Method}
-Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance, \textbf{Reference www.statisticbrain.com} there are on average 58 million tweets per day worldwide, 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+\subsection{Scalability}
+Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
 \subsubsection{Taking Advantage of the Sparsity of the $\mathbf{S}$ Matrix}
 
@@ -542,43 +544,130 @@ The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the numbe
 0 \le ||\mathbf{S}_{new}^T\mathbf{S}_{new} - \mathbf{S}^T\mathbf{S}|| \le \epsilon 
 \end{equation*}
 
-for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm.
+for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm. 
 
-\subsubsection*{Frequent-Directions Method}
-This method is described in detail in \cite{edo}. 
-\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
-\subsubsection*{Random Projection Method}
-In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
+Methods of this form will be considered further, if needed, but will not be the focus at this point in time.
 
-\begin{equation*}
-\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
-\end{equation*}
+%\subsubsection*{Frequent-Directions Method}
+%This method is described in detail in \cite{edo}. 
+%\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
+%\subsubsection*{Random Projection Method}
+%In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
 
-where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
+%\begin{equation*}
+%\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
+%\end{equation*}
 
-The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
+%where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
 
-\begin{equation*}
-\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
-\end{equation*}
+%The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
 
-\begin{equation*}
-\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
-\end{equation*}
+%\begin{equation*}
+%\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
+%\end{equation*}
 
-where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
+%\begin{equation*}
+%\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
+%\end{equation*}
 
-More on random projections can be found in \cite{randomprojections}.
+%where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
+
+%More on random projections can be found in \cite{randomprojections}.
  
 \clearpage
 
 \section{Completed Evaluation and Evaluating Future Implementation}
+\subsection{Testing the Sparse PCA Algorirthm on Artificial Data}
+Various metrics could be defined as to what good approximations to the principal components using PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. The way this is tested is by creating an artificial covariance matrix with 3 known sparse principal components, in the following way:
 
-\subsection{Testing on Example Data}
+Firstly, 3 sparse vectors with unit norm are defined, in this case the following are chosen:
+
+\begin{equation*}
+\mathbf{U}= \begin{pmatrix}
+0.7618&0.0000&0.0000\\
+0.0000&0.5424&0.0000\\
+0.0000&0.5941&0.0000\\
+0.0000&0.0000&0.4348\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0693&0.0000&0.0000\\
+0.0000&0.0000&0.4682\\
+0.3809&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.5941&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.5194&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.7692\\
+0.0000&0.0000&0.0000\\
+\end{pmatrix}
+\end{equation*}
+where each column is one principal component. Eigenvalues are given to the eigenvectors arbitrarily, in this case the values given are $\mathbf{\lambda}_1 = 15$, $\mathbf{\lambda}_2 = 5$ and $\mathbf{\lambda}_3 = 0.2$, which are made into a diagonal matrix, $\mathbf{\Lambda}$. The covariance matrix, is then created, as such:
+
+\begin{equation*}
+\mathbf{A} = \mathbf{U}\mathbf{\Lambda}\mathbf{U}^T
+\end{equation*}
+
+Then the Sparse PCA algorithm is used on this covariance matrix to find the approximated principal components. This is done with a rank 3 approximation of the matrix, which is a parameter that needs to be specified for the algorithm.\footnote{The matrix is a rank 3 matrix so there is no approximation in this case}
+
+
+The following results are obtained 
+
+\begin{equation*}
+\mathbf{U}_3= \begin{pmatrix}
+0.7636&0.0000&0.0000\\
+0.0000&0.5424&0.0000\\
+0.0000&0.5941&0.0000\\
+0.0000&0.0000&0.4921\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.3818&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.5941&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.5207&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.8706\\
+0.0000&0.0000&0.0000\\
+\end{pmatrix} \text{   and   }
+\Lambda_3 = \begin{pmatrix}
+14.9281 & 0.0000&0.0000\\
+0.0000 & 5.000& 0.0000\\
+0.0000&0.0000&0.1562\\
+\end{pmatrix}
+\end{equation*}
+
+Where the subscript is used for the rank of the approximation. As it can be seen, in the case of the rank 3 approximation, the first two eigenvectors are almost identical, with the exception of the missing 10th term in the first principal component returned by the algorithm, but this has to do with the fact that it is roughly 10 times smaller in magnitude than the other 3 entries and so is suppressed. The third eigenvector, on the other hand, is significantly different, since the 11th term is missing, which is almost equal in magnitude relative to the other entries, however, this difference is largely due to the vast difference in absolute value between the eigenvalue associated with this compared with the rest. Finding the average ratio between the respective eigenvalues is equivalent to finding the average percentage of variation maintained in the data. This gives:
+\begin{equation*}
+\frac{1}{3}\sum_{i=1}^3 \frac{\lambda_i}{\lambda_{3, i}} = 0.9254
+\end{equation*}
+i.e. roughly $92.5\%$ of the variance has been retained by the algorithm, which is very high.
+\clearpage
+ 
+\subsection{Testing the Sparse PCA Algorirthm on Twitter Data}
 The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
-Due to the file of the set of all Tweets in London size being too large ($> 2$ GB) to process in one go, the file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file, which can be processed on the machine being used. 
+The file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
 
-\subsubsection{Results from Example Data}
 \begin{table}[H]
 \center
 \begin{tabular}{| c l |}
@@ -647,7 +736,7 @@ These are the most interesting principal components that appear from running the
 \appendix
 \pagenumbering{Roman}
 
-\section*{A. PCA Explained (A variant to \ref{bishop})}
+\section*{A. PCA Explained (A variant of \cite{bishop})}
 
 Consider a set of observations $\{\mathbf{x}x_n\}$ for $n = 1, ..., N$ and each $\mathbf{x}_n \in \mathbb{R}^D$, to project the data onto just one dimension whilst keeping the maximum amount of variation possible (and therefore information), we can project the data onto one D-dimensional vector, $\mathbf{u}_1 \in \mathbb{R}^D$. The mean of the projected data is then $\mathbf{u}_1^T \mathbf{\overline{x}}$, where
 \begin{equation*}
@@ -690,8 +779,8 @@ Which by setting the derivative with respect to $\mathbf{u}_1$ to zero, the foll
 \end{equation*} 
 
 Which means that $\mathbf{u}_1$ is maximised by finding the eigenvector with the largest eigenvalue $\lambda_1$. Similarly to find the $M$ principal components, the eigenvectors of the covariance matrix with the $M$ highest eigenvalues must be calculated.
-
-\section*{B. Useful Intuition for the Sparse PCA Algorithm}
+\clearpage
+\section*{B. Useful Intuition for the Covariance Matrix $\mathbf{A}$}
 Consider a matrix, $S\in \mathbb{R}^{m\times n}$, where $m$ is the number of Tweets and $n$ is the number of features that the tweets are evaluated on, in this case the Bag-of-Words. Performing $S^TS = A$ where $A \in \mathbb{R}^{n\times n}$. 
 
 By example, imagine:
