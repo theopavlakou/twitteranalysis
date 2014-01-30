@@ -93,12 +93,7 @@ One such technique is known as Principal Component Analysis (PCA) and is concern
 
 \section{Project Specification}
 
-The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the word limit, which means that each Tweet is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results for the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored.
-
-\textbf{Not done:}
-\begin{itemize}
-\item What will be done next?
-\end{itemize}
+The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from data, focusing on that of social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the character limit imposed on each Tweet, which means that each message is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results from the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored and further improvements to the algorithm are researched.
 
 \section{Notation}
 
@@ -106,10 +101,10 @@ Throughout the remaining sections, the following mathematical notations will be 
 \section{Background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory behind them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
-\textbf{Not done:}
-\begin{itemize}
-\item Explain SVD in this scenario and how it relates (see http://people.cs.pitt.edu/~milos/courses/cs3750-Fall2007/lectures/PCA.pdf)?
-\end{itemize}
+%\textbf{Not done:}
+%\begin{itemize}
+%\item Explain SVD in this scenario and how it relates (see http://people.cs.pitt.edu/~milos/courses/cs3750-Fall2007/lectures/PCA.pdf)?
+%\end{itemize}
 
 
 
@@ -322,7 +317,7 @@ The first attempt, and an attempt that is still widely used regardless of its ma
 \operatorname{argmax}_{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}\mathbf{x}^T\mathbf{A}\mathbf{x}
 \end{equation*}
  
-for some $t$ where $1<t<\sqrt{n}$. This is done by applying a Lagrange multiplier. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which turns out to introduce sparsity.
+for some $t$ where $1<t<\sqrt{n}$. This is done by applying a Lagrange multiplier. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method, which can be found in \cite{truncpower}. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but greedily keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration. 
 \textbf{NOT DONE}
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
