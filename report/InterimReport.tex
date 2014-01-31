@@ -85,8 +85,8 @@ Theo Pavlakou\\ tp710\\ CID 00651782\\
 \pagenumbering{arabic}
 
 \section{Introduction}
-Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to find trends and infer useful results that can further be used to predict future trends. 
-One such technique is known as Principal Component Analysis (PCA) and is concerned with finding which features in a vector lead to the highest variation, which in turn means leading to the highest information gain. The problem with PCA can be hard to interpret since the size of the vector that is returned could be immense in length (e.g. 3000 components) with only a few being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed, evaluation of one such algorithm against a batch of Twitter data gathered from London in 2012 is then performed and then methods of improvement to the algorithm are also considered and methods to scale it. 
+Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding which features in a set of features lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length (e.g. 3000 components) with only a few being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed, evaluation of one such algorithm against a batch of Twitter data gathered from London in 2012 is then performed and then methods of improvement to the algorithm are also considered as well as methods to scale it. 
 
 %% Mention only if reference is found
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
@@ -97,9 +97,9 @@ The purpose of this study is to examine how a certain implementation of Sparse P
 
 \section{Notation}
 
-Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in  \mathbb{R}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ words, with $S_{ij} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ will be reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{R}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ and this corresponds to the covariance matrix of $\mathbf{S}$. $\mathbf{v}_i$ will be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$.
+Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in  \mathbb{R}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $S_{ij} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ will be reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{R}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ and this corresponds to the covariance matrix of $\mathbf{S}$. $\mathbf{u}_i$ will be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$.
 \section{Background}
-To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory behind them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
+To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
 %\textbf{Not done:}
 %\begin{itemize}
@@ -136,13 +136,13 @@ In the third graph we project the data only onto $\mathbf{u}_1$ i.e.
 \mathbf{S}_p = \mathbf{S}\mathbf{u}_1
 \end{equation*}
 
-As it can be seen, this graph only differs by the second graph by a small amount but only half the features have been used. This is an example of dimensionality reduction (or compression). In this case, the number of features has been reduced to half the number before, but a lot more than half the variation has been maintained. In the application of PCA explored here, the second stage is more important, as the variation direction is what is considered most and not the compression, but this has been added for completeness. Another great explanation of PCA can be found in \cite{randomprojections}.
+As it can be seen, this graph only differs by the second graph by a small amount but only half the features have been used. This is an example of dimensionality reduction (or compression). In this case, the number of features has been reduced to half the number before, but a lot more than half the variation has been maintained. In the application of PCA explored here, the second stage is more important, as the variation direction is what is considered most and not the compression, but this has been added for completeness.
 
 The first principal component (i.e. the first eigenvector of the $n\times n$ matrix, $\mathbf{A}$) is:
 \begin{equation}
 \mathbf{u}_1 = \underset{\|\mathbf{x}\|^2 = 1}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-Where $\mathbf{A} = \mathbf{S}^T\mathbf{S}$ and $\mathbf{S}$ is the $m\times n$ data set consisting of $m$ data points, each evaluated on $n$ features. An intuition to what $\mathbf{A}$ represents is presented in the Appendix. Principal Component Analysis alongside Singular Value Decomposition is explained further in \cite{datascience} and \cite{bishop}. 
+An intuition to what $\mathbf{A}$ represents is presented in the Appendix. Principal Component Analysis alongside Singular Value Decomposition is explained further in \cite{datascience} and \cite{bishop}. 
 
 \begin{figure}[H]
 \centering
@@ -152,11 +152,10 @@ Where $\mathbf{A} = \mathbf{S}^T\mathbf{S}$ and $\mathbf{S}$ is the $m\times n$ 
 \end{figure}
 
 \subsection{Similarity to Singular Value Decomposition (SVD)}
-This work is largely an extension of \ref{lecture_svd}.
+This work is largely an extension of \cite{lecture_svd}.
 
-\textbf{Should this be in the Appendix?}
 \subsubsection{Description}
-SVD is a decomposition method that is very important in many areas due to the way it breaks down a matrix into 3 matrices, each with a very informative structure. The basic concept is as such:
+SVD is a decomposition method that is very important in many areas due to the way it factorises a matrix into 3 matrices, each with a very informative structure. The basic concept is as such:
 \begin{equation}
 \mathbf{S} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
 \end{equation}
@@ -204,7 +203,7 @@ Performing the SVD on the matrix, what is acquired is:
 \end{pmatrix}
 \end{equation}
 
-These three matrices all have a very significant meaning. It has already been stated that due to the obvious form of $\mathbf{S}$ it can be seen that there are only 2 topics or concepts. The $\mathbf{U}$ matrix can be viewed as the Tweet to concept correlation matrix i.e. how correlated the Tweets are to the corresponding topics. Similarly, the $\mathbf{V}^T$ matrix can be viewed  the concept to word correlation matrix i.e. how related the concept is to the particular word. For example, $\mathbf{U}_{2,1}$ would be how related the second Tweet is to the first concept and $\mathbf{T}_{2,3}$ would be how related the second topic is related to the third word, which in this case is zero, i.e. there is no similarity, because the second concept is about Cyprus joining the EU and the third word is win, which does not appear in any Tweet regarding Cyprus and the EU. The $\mathbf{\Sigma}$ matrix is then just the concept strengths.
+These three matrices all have a very significant meaning. It has already been stated that due to the obvious form of $\mathbf{S}$ it can be seen that there are only 2 topics or concepts. The $\mathbf{U}$ matrix can be viewed as the Tweet to concept correlation matrix i.e. how correlated the Tweets are to the corresponding topics. Similarly, the $\mathbf{V}^T$ matrix can be viewed  the concept to word correlation matrix i.e. how related the concept is to the particular word. For example, $\mathbf{U}_{2,1}$ would be how related the second Tweet is to the first concept and $\mathbf{V}^T_{2,3}$ would be how related the second topic is related to the third word, which in this case is zero, i.e. there is no similarity, because the second concept is about Cyprus joining the EU and the third word is win, which does not appear in any Tweet regarding Cyprus and the EU. The $\mathbf{\Sigma}$ matrix is then just the concept strengths.
 
 It can then be shown that $\mathbf{S}^T\mathbf{S}$ represents the correlation of the words in the tweets to each other, i.e. a covariance matrix (see Appendix). But 
 \begin{equation*}
@@ -284,7 +283,7 @@ The SVD then turns out to give:
 -0.6422&-0.2261&-0.4189&-0.6008\\
 \end{pmatrix}
 \end{equation*}
-As it can be seen here, it is significantly more difficult to actually be able to distinguish which words contribute significantly to each principal component due to the added noise that rows 8 and 13 give rise to. This, once again, highlights how important sparse principal components are since here the data is only $\in \mathbb{R}^{13 \times 5}$ and it is difficult to interpret, whereas in a real life scenario this is much larger in magnitude, and in the scenario considered in this paper this grows to be in the tens of thousands Tweets and thousands of words.
+As it can be seen here, it is significantly more difficult to actually be able to distinguish which words contribute significantly to each principal component due to the added noise that rows 8 and 13 give rise to. This example highlights how important sparse principal components are since here the data is only $\in \mathbb{R}^{13 \times 5}$ and it is already quite difficult to interpret and in a real life scenario these numbers are typically much larger in magnitude, for example, in the scenario considered in this paper this grows to be in the tens of thousands Tweets and thousands of words.
 
 What is very useful to see, however, is that the singular values do decrease quite rapidly after the second one. These represent the square roots of the eigenvalues of the covariance matrix, so by squaring them the graph in Figure \ref{spectrum} is obtained.
 
@@ -295,19 +294,21 @@ What is very useful to see, however, is that the singular values do decrease qui
 \label{spectrum}
 \end{figure}
 
-This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously going to be the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
+This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
 
 
 \subsection{Related Work}
 The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these however is quite different. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
 
+Furthermore, as mentioned previously, sparse PCA-like algorithms are also an active area of research and as such, much work has been done, some specific examples of which will be explored in this project.
+
 \subsubsection{Sparse PCA}
 
-Sparse PCA algorithms are aim to deliver similar results to PCA, but which gives rise to principal components that only have few non-zero entries. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
+Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
 \begin{equation}
 \mathbf{u}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0^2 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms comes in. The one being used in this paper can be found in \cite{dimakis}.
+where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms comes in. 
 
 \subsubsection{Methods to perform Sparse PCA}
 Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
@@ -317,11 +318,12 @@ The first attempt, and an attempt that is still widely used regardless of its ma
 \operatorname{argmax}_{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}\mathbf{x}^T\mathbf{A}\mathbf{x}
 \end{equation*}
  
-for some $t$ where $1<t<\sqrt{n}$. This is done by applying a Lagrange multiplier. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method, which can be found in \cite{truncpower}. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but greedily keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration. 
-\textbf{NOT DONE}
+for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method, which can be found in \cite{truncpower}. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but greedily keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally do not guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
+
+A few more methods must be considered, but have still not been until this point in time. 
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
-This is the algorithm that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. 
+This is the algorithm that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. It will be referred to from now on as the Spannogram Sparse PCA algorithm.
 
 \subsubsection{Intuitive Explanation of the Algorithm}
 The assumption is made that a rank $d$ approximation of the covariance matrix at hand is arbitrarily close to the original based on the Forbenius norm. That is:
@@ -404,7 +406,7 @@ P\left( T_w | A_{w, i}\right) =  \sum_{j=1}^i {i \choose j} p^j\left( 1 - p\righ
 \end{equation*}
 which is equivalent to 
 \begin{equation}
-1 - P(T_w |  A_{w, i}) = 1 - (1 - p)^i
+P\left( T_w | A_{w, i}\right)  = 1 - P(\bar{T}_w |  A_{w, i}) = 1 - (1 - p)^i
 \end{equation}
 %% Till here it has been checked and it is correct.
 %and assume the probability of $w$ appearing is $q$, therefore the probability of $w$ appearing $i$ times is:
@@ -419,7 +421,7 @@ which is equivalent to
 %\sum_{i=0}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}}) =\sum_{i=1}^\infty \left(1 - (1 - p)^i\right) q^i
 %\end{equation}
 
-We can therefore see that the higher the occurrence of the word $w$, the higher the probability of it being added to the Bag-of-Words. Since popular events will have words associated with them that appear quite often, it can be said that with the right choice of $p$ (approximately 0.1), more informative words will appear in the Bag-of-Words, whilst also reducing the size of the set. 
+We can therefore see that the higher the occurrence of the word $w$, the higher the probability of it being added to the Bag-of-Words. Since popular events will have words associated with them that appear quite often, it can be said that with the right choice of $p$, more informative words will appear in the Bag-of-Words, whilst also reducing the size of the set. 
 
 This gives a final algorithm that is $O(N)$, where $N$ resembles the number of all the unique words in all the Tweets. 
 
@@ -572,7 +574,7 @@ Methods of this form will be considered further, if needed, but will not be the 
 \clearpage
 
 \section{Completed Evaluation and Evaluating Future Implementation}
-\subsection{Testing the Sparse PCA Algorirthm on Artificial Data}
+\subsection{Testing the Sparse PCA Algorithms on Artificial Data}
 Various metrics could be defined as to what good approximations to the principal components using PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. The way this is tested is by creating an artificial covariance matrix with 3 known sparse principal components, in the following way:
 
 Firstly, 3 sparse vectors with unit norm are defined, in this case the following are chosen:
@@ -618,7 +620,7 @@ Then the Sparse PCA algorithm is used on this covariance matrix to find the appr
 The following results are obtained 
 
 \begin{equation*}
-\mathbf{U}_3= \begin{pmatrix}
+\mathbf{U}_s= \begin{pmatrix}
 0.7636&0.0000&0.0000\\
 0.0000&0.5424&0.0000\\
 0.0000&0.5941&0.0000\\
@@ -645,21 +647,59 @@ The following results are obtained
 0.0000&0.0000&0.8706\\
 0.0000&0.0000&0.0000\\
 \end{pmatrix} \text{   and   }
-\Lambda_3 = \begin{pmatrix}
+\Lambda_s = \begin{pmatrix}
 14.9281 & 0.0000&0.0000\\
 0.0000 & 5.000& 0.0000\\
 0.0000&0.0000&0.1562\\
 \end{pmatrix}
 \end{equation*}
 
-Where the subscript is used for the rank of the approximation. As it can be seen, in the case of the rank 3 approximation, the first two eigenvectors are almost identical, with the exception of the missing 10th term in the first principal component returned by the algorithm, but this has to do with the fact that it is roughly 10 times smaller in magnitude than the other 3 entries and so is suppressed. The third eigenvector, on the other hand, is significantly different, since the 11th term is missing, which is almost equal in magnitude relative to the other entries, however, this difference is largely due to the vast difference in absolute value between the eigenvalue associated with this compared with the rest. Finding the average ratio between the respective eigenvalues is equivalent to finding the average percentage of variation maintained in the data. This gives:
+As it can be seen, in the case of the rank 3 approximation, the first two eigenvectors are almost identical, with the exception of the missing 10th term in the first principal component returned by the algorithm, but this has to do with the fact that it is roughly 10 times smaller in magnitude than the other 3 entries and so is suppressed. The third eigenvector, on the other hand, is significantly different, since the 11th term is missing, which is almost equal in magnitude relative to the other entries, however, this difference is largely due to the vast difference in absolute value between the eigenvalue associated with this compared with the rest. Finding the average ratio between the respective eigenvalues is equivalent to finding the average percentage of variation maintained in the data. This gives:
 \begin{equation*}
-\frac{1}{3}\sum_{i=1}^3 \frac{\lambda_i}{\lambda_{3, i}} = 0.9254
+\frac{1}{3}\sum_{i=1}^3 \frac{\lambda_{s, i}}{\lambda_i} = 0.9254
 \end{equation*}
-i.e. roughly $92.5\%$ of the variance has been retained by the algorithm, which is very high.
-\clearpage
- 
-\subsection{Testing the Sparse PCA Algorirthm on Twitter Data}
+i.e. roughly $92.5\%$ of the variance has been retained by the algorithm, which is very high. 
+
+In comparison, the Truncated Power Method \cite{truncpower} gives the following results
+
+\begin{equation*}
+\mathbf{U}_t= \begin{pmatrix}
+0.7618&0.0000&0.0000\\
+0.0000&0.6743&0.3854\\
+0.0000&0.7385&0.4222\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0693&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.3809&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.8205\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.5194&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.0000\\
+0.0000&0.0000&0.8706\\
+0.0000&0.0000&0.0000\\
+\end{pmatrix} \text{   and   }
+\Lambda_t = \begin{pmatrix}
+15.0000 & 0.0000&0.0000\\
+0.0000 & 3.2355& 0.0000\\
+0.0000&0.0000&4.4866\\
+\end{pmatrix}
+\end{equation*}
+
+At first this looks like it is much better as it completely preserves the first principal component. But taking a closer look, the second principal component is far from ideal and the eigenvalue associated with it is only 3.2355 as opposed to 5 for the algorithm used in this paper. And the third principal component is even worse. Though it looks as if the variance accounted for it is higher than the case for the algorithm in \cite{dimakis}, and even higher than the true eigenvalue, this is purely because the Truncated Power Method does not ensure that the eigenvectors it produces will actually be orthogonal, therefore, in this case it can be seen that the second and third eigenvectors are positively correlated and therefore the same measure for variance can not be used as before. It follows that the algorithm in \cite{dimakis} is superior, and therefore shall be the one used for the rest of this project as orthogonality as well as sparsity are desired characteristics to ensure that the information stored is not redundant. 
+\clearpage 
+\subsection{Testing the Sparse PCA Algorithm on Twitter Data}
 The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
 The file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
 
