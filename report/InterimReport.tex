@@ -31,53 +31,73 @@
 \usepackage{courier}
 \usepackage{float}
 \restylefloat{table}
-
-%%%%%%%%%%%%%%%%%%% Code %%%%%%%%%%%%%%%%%%%%%
-\usepackage{color}
-\usepackage[table]{xcolor} %adding background color to your tables
-\usepackage{listings}% Allows you to present C++ syntax as it looks
-\usepackage{listings} %enables inputing code set the settings below
-\definecolor{dkgreen}{rgb}{0,0.45,0}
-\definecolor{gray}{rgb}{0.2,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-%\definecolor{purple}{RGB}}{204, 45, 109}
-\lstset{ %
-language=C, % choose the language of the code
-commentstyle=\color{dkgreen},
-basicstyle=\footnotesize\ttfamily, % the size of the fonts that are used for the code
-numbers=left, % where to put the line-numbers
-numberstyle=\footnotesize, % the size of the fonts that are used for the line-numbers
-stepnumber=1, % the step between two line-numbers. If it is 1 each line will be numbered
-numbersep=5pt, % how far the line-numbers are from the code
-backgroundcolor=\color{white}, % choose the background color. You must add \usepackage{color}
-showspaces=false, % show spaces adding particular underscores
-showstringspaces=false, % underline spaces within strings
-showtabs=false, % show tabs within strings adding particular underscores
-frame=single, % adds a frame around the code
-tabsize=2, % sets default tabsize to 2 spaces
-captionpos=b, % sets the caption-position to bottom
-breaklines=true, % sets automatic line breaking
-breakatwhitespace=false, % sets if automatic breaks should only happen at whitespace
-keywordstyle=\color{purple}, % keyword style
-numberstyle=\tiny\color{gray}, % the style that is used for the line-numbers
-rulecolor=\color{black}, % if not set, the frame-color may be changed on
-stringstyle=\color{blue}, % string literal style
-escapeinside={\%*}{*)} % if you want to add a comment within your code
-}
-\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
-\DefineVerbatimEnvironment{example}{Verbatim}{fontsize=\small}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[english]{babel}
 
 \begin{document}
 
-\title{Analysing London Twitter Data using Sparse PCA}
-\author{
-Theo Pavlakou\\ tp710\\ CID 00651782\\
-}
-\date{\today}
-\maketitle
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Imperial College London}\\[1.5cm] % Name of your university/college
+\textsc{\Large Department of Electrical \& Electronic Engineering}\\[0.5cm] % Major heading such as course name
+\textsc{\large MEng Project Interim Report}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Analysing Twitter Data Using Sparse PCA}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Theo Pavlakou \textsc{Smith} % Your name
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Dr. Moez Draief \textsc{Smith} % Supervisor's Name
+\end{flushright}
+\end{minipage}\\[4cm]
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+%\Large \emph{Author:}\\
+%John \textsc{Smith}\\[3cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
 \pagenumbering{gobble}
+
+
+
+
 \newpage
+
+
+
 
 \section*{\center Abstract}
 
@@ -408,18 +428,6 @@ which is equivalent to
 \begin{equation}
 P\left( T_w | A_{w, i}\right)  = 1 - P(\bar{T}_w |  A_{w, i}) = 1 - (1 - p)^i
 \end{equation}
-%% Till here it has been checked and it is correct.
-%and assume the probability of $w$ appearing is $q$, therefore the probability of $w$ appearing $i$ times is:
-%\begin{equation}
-%P\left(A_{w, i}\right) = q^i
-%\end{equation}
-%then the probability of taking the word $w$ is:
-%\begin{equation*}
-%P(T_w) = \sum_{i=1}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}})
-%\end{equation*}
-%\begin{equation}
-%\sum_{i=0}^\infty P\left(T_w| \mathbf{A_{w, i}} \right) P( \mathbf{A_{w, i}}) =\sum_{i=1}^\infty \left(1 - (1 - p)^i\right) q^i
-%\end{equation}
 
 We can therefore see that the higher the occurrence of the word $w$, the higher the probability of it being added to the Bag-of-Words. Since popular events will have words associated with them that appear quite often, it can be said that with the right choice of $p$, more informative words will appear in the Bag-of-Words, whilst also reducing the size of the set. 
 
