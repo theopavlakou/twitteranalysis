@@ -340,7 +340,7 @@ The first attempt, and an attempt that is still widely used regardless of its ma
  
 for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method, which can be found in \cite{truncpower}. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but greedily keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally do not guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
 
-A few more methods must be considered, but have still not been until this point in time. 
+A few more methods must be considered, including \cite{shen}, \cite{zou}, \cite{daspremont} but have still not been until this point in time. 
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
 This is the algorithm that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. It will be referred to from now on as the Spannogram Sparse PCA algorithm.
