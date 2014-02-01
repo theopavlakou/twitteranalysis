@@ -336,7 +336,8 @@ Plenty of methods have been designed to get sparse principal components or princ
  
 The first attempt, and an algorithm that is still widely used regardless of its many limitations is the Thresholding method, which simply performs regular PCA and then forces the entries that are small in magnitude, to zero. This can be misleading and an arbitrary selection of the threshold must be made, which may not actually be valid. In \cite{scotlass}, the authors aim to force sparsity by solving the equation
 \begin{equation*}
-\operatorname{argmax}_{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}\mathbf{x}^T\mathbf{A}\mathbf{x}
+\underset{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}
+{\operatorname{argmax}}\mathbf{x}^T\mathbf{A}\mathbf{x}
 \end{equation*}
  
 for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is implemented in this project and used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally do not guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
@@ -406,8 +407,8 @@ Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equ
 
 \subsubsection{Other Benefits}
 Other reasons this algorithm has been chosen is because the authors of \cite{dimakis} claim it has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only positive entries, which it does in our case, the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. Another great feature it has is that the principal components found are also orthogonal to each other meaning that less redundancy has to be stored, which is based on the projection deflation method described in \cite{Mackey_deflationmethods}. 
-%\clearpage
-\section{Implementation Completed}
+\clearpage
+\section{Completed Implementation}
 
 \subsection{The Bag-of-Words}
 The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of case i.e. ``Road'' and ``road'' are to be considered equal. 
@@ -668,7 +669,6 @@ It can be seen here that the TPower Algorithm seems to always outperform the Spa
 
 These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
 
-\clearpage 
 \subsection{Testing the Sparse PCA Algorithm on Twitter Data}
 \label{testing_twitter}
 The file used to test the Spannogram PCA algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. It has been partitioned into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
@@ -730,14 +730,14 @@ Index & Word \\
 Clearly, Table \ref{john_terry} refers to the retirement of England's former captain, John Terry, from international football, which can be confirmed by the Daily Mail on the 23rd September 2012 and The Guardian on the 24th September 2012. Table \ref{murder}, on the other hand, is a result of a trending Tweet regarding a murder that took place on the 19th September 2012, where 2 police officers were killed. The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. 
 
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time period.
-
+\clearpage
 \section{Further Implementation and Evaluation}
-From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done, evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} 
-and any others, and finding which ones would be best to use for the problem at hand. It may be the case that the Spannogram PCA algorithm performs worst with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
+From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont}, \cite{asteris} 
+and any others, and finding which ones would be best to use for the specific scenario. It may be the case that the Spannogram PCA algorithm performs worse with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
 
-A greater variety of algorithms will first be evaluated, as done in section \ref{testing} and a performance score will be given to them. Then the same algorithms will be evaluated on the Twitter data, as in section \ref{testing_twitter} and the results will be compared to see whether some algorithms perform best on some types of data but worse on others. After this, an algorithm will be chosen and will be examined further so as to find any improvements that could be made to it, or a couple of algorithms could be merged to keep the benefits of both. Consideration will also be given to the data at hand to see if the structure could be exploited further, as the authors of \cite{dimakis} attempt to do. Upon completion of this, the new algorithm will also be evaluated similarly to before.
+The algorithms will be evaluated, as done in section \ref{testing}, and a performance score will be given to them. Then the same algorithms will be evaluated on the Twitter data, as in section \ref{testing_twitter} and the results will be compared to see whether algorithm performances depend on the data structure. The results of this research will lead to an algorithm being chosen and this algorithm will be examined further so as to find any improvements that could be made to it, or a couple of algorithms could be merged to keep the benefits of both. Consideration will also be given to the data at hand to see if the structure could be exploited further, as the authors of \cite{dimakis} attempt to do. Upon completion of this, the new algorithm will also be evaluated similarly to before, to determine whether the alterations have had a positive effect.
 
-If along the way any other difficulties arise, due to scalability issues or data structure, these will first be tackled and the changes will also be evaluated. 
+If along the way any other difficulties arise, due to scalability issues or the data structure, these will first be tackled and the changes will also be evaluated. 
 
 \clearpage
 \bibliography{bibliography}
