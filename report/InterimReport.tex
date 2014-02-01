@@ -113,7 +113,7 @@ One such technique is known as Principal Component Analysis (PCA) and is concern
 
 \section{Project Specification}
 
-The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from data, focusing on that of social media. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the character limit imposed on each Tweet, which means that each message is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results from the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored and further improvements to the algorithm are researched.
+The purpose of this study is to examine how a certain implementation of Sparse PCA, described in \cite{dimakis}, can help to infer results from data, focusing on that of social media. The algorithm's performance is also compared with other algorithms that have been discovered. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the character limit imposed on each Tweet, which means that each message is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results from the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the algorithm's performance and the scalability of the algorithm are also explored and further improvements to the algorithm are researched.
 
 \section{Notation}
 
@@ -340,7 +340,7 @@ The first attempt, and an attempt that is still widely used regardless of its ma
  
 for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. Another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower}. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but greedily keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally do not guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
 
-A few more methods must be considered, including \cite{shen}, \cite{zou}, \cite{daspremont} but have still not been until this point in time. 
+A few more methods must be considered, including \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} but have still not been until this point in time. 
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm\cite{dimakis}}
 This is the algorithm that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. It will be referred to from now on as the Spannogram Sparse PCA algorithm.
@@ -583,16 +583,11 @@ Methods of this form will be considered further, if needed, but will not be the 
 
 \section{Completed Evaluation and Evaluating Future Implementation}
 \subsection{Testing the Sparse PCA Algorithms on Artificial Data}
-Various metrics could be defined as to what good approximations to the principal components using PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. 
+Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. 
 
-The way this is tested in this paper, is by creating an artificial $n \times n$ covariance matrix with 3 known sparse principal components with varying eigenvalues, as described in \cite{truncpower}. Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{R}^{m \times n}$. The sample covariance matrix is then calculated by:
+The way this is tested in this project, is by creating an artificial $n \times n$ covariance matrix with 3 known sparse principal components with dominant eigenvalues, as described in \cite{truncpower}. 
 
-\begin{equation*}
-\mathbf{A} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T
-\end{equation*}
-where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
-
-Firstly, 3 sparse vectors with unit norm are defined, in this case the following are chosen:
+The 3 eigenvectors alongside their eigenvalues, are chosen to be:
 
 \begin{equation*}
 [\mathbf{u}_1]_i = \begin{cases}
@@ -613,103 +608,69 @@ Firstly, 3 sparse vectors with unit norm are defined, in this case the following
        \frac{1}{\sqrt{5}} & \text{, for } 10<i\le 15  \\
        0 & \text{, else }
 	  \end{cases}  
-	  \text{              , } \lambda_2 = 5  
+	  \text{              , } \lambda_3 = 5  
 \end{equation*}
        
-where each column is one principal component. Eigenvalues are given to the eigenvectors arbitrarily, in this case the values given are $\mathbf{\lambda}_1 = 15$, $\mathbf{\lambda}_2 = 5$ and $\mathbf{\lambda}_3 = 0.2$, which are made into a diagonal matrix, $\mathbf{\Lambda}$. The covariance matrix, is then created, as such:
+these are then put into columns along with two other eigenvectors orthogonal to each other and in the null space of $[\mathbf{u}_1 \mathbf{u}_2 \mathbf{u}_3]$ with random entries, which have associated eigenvalues of smaller magnitude than these three, to create an orthonormal set. This gives $\mathbf{U}$ and the eigenvalues are stacked into a diagonal matrix to give $\mathbf{\Lambda}$. The covariance matrix, is then created, as such:
 
 \begin{equation*}
 \mathbf{A} = \mathbf{U}\mathbf{\Lambda}\mathbf{U}^T
 \end{equation*}
 
-Then the Sparse PCA algorithm is used on this covariance matrix to find the approximated principal components. This is done with a rank 3 approximation of the matrix, which is a parameter that needs to be specified for the algorithm.\footnote{The matrix is a rank 3 matrix so there is no approximation in this case}
 
-
-The following results are obtained 
+Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{R}^{m \times n}$. The sample covariance matrix is then calculated by:
 
 \begin{equation*}
-\mathbf{U}_s= \begin{pmatrix}
-0.7636&0.0000&0.0000\\
-0.0000&0.5424&0.0000\\
-0.0000&0.5941&0.0000\\
-0.0000&0.0000&0.4921\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.3818&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.5941&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.5207&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.8706\\
-0.0000&0.0000&0.0000\\
-\end{pmatrix} \text{   and   }
-\Lambda_s = \begin{pmatrix}
-14.9281 & 0.0000&0.0000\\
-0.0000 & 5.000& 0.0000\\
-0.0000&0.0000&0.1562\\
-\end{pmatrix}
+\mathbf{A} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T
 \end{equation*}
+where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
 
-As it can be seen, in the case of the rank 3 approximation, the first two eigenvectors are almost identical, with the exception of the missing 10th term in the first principal component returned by the algorithm, but this has to do with the fact that it is roughly 10 times smaller in magnitude than the other 3 entries and so is suppressed. The third eigenvector, on the other hand, is significantly different, since the 11th term is missing, which is almost equal in magnitude relative to the other entries, however, this difference is largely due to the vast difference in absolute value between the eigenvalue associated with this compared with the rest. Finding the average ratio between the respective eigenvalues is equivalent to finding the average percentage of variation maintained in the data. This gives:
-\begin{equation*}
-\frac{1}{3}\sum_{i=1}^3 \frac{\lambda_{s, i}}{\lambda_i} = 0.9254
-\end{equation*}
-i.e. roughly $92.5\%$ of the variance has been retained by the algorithm, which is very high. 
+Then the Sparse PCA algorithms are used on this covariance matrix to find the approximated principal components. This is done for $m=50$ data points and then for $m=10$ data points and is iterated 10 times for each, averaging the outcome for each. 
 
-In comparison, the TPower Method \cite{truncpower} gives the following results
+The measurement for variance captured is the same as in \cite{dimakis}, namely:
 
 \begin{equation*}
-\mathbf{U}_t= \begin{pmatrix}
-0.7618&0.0000&0.0000\\
-0.0000&0.6743&0.3854\\
-0.0000&0.7385&0.4222\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0693&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.3809&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.8205\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.5194&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.0000\\
-0.0000&0.0000&0.8706\\
-0.0000&0.0000&0.0000\\\
-\end{pmatrix} \text{   and   }
-\Lambda_t = \begin{pmatrix}
-15.0000 & 0.0000&0.0000\\
-0.0000 & 3.2355& 0.0000\\
-0.0000&0.0000&4.4866\\
-\end{pmatrix}
+v = \frac{\sum_{i=1}^3\lambda^{(c)}_i}{\sum_{i=1}^3\lambda^{(a)}_i}
 \end{equation*}
+where the superscript $c$ denotes the calculated value, using one of the sparse PCA algorithms, and $a$ is for the actual value.
 
-At first this looks like it is much better as it completely preserves the first principal component. But taking a closer look, the second principal component is far from ideal and the eigenvalue associated with it is only 3.2355 as opposed to 5 for the algorithm used in this paper. And the third principal component is even worse. Though it looks as if the variance accounted for it is higher than the case for the algorithm in \cite{dimakis}, and even higher than the true eigenvalue, this is purely because the TPower Method does not ensure that the eigenvectors it produces will actually be orthogonal, therefore, in this case it can be seen that the second and third eigenvectors are positively correlated and therefore the same measure for variance can not be used as before. It follows that the algorithm in \cite{dimakis} is superior, and therefore shall be the one used for the rest of this project as orthogonality as well as sparsity are desired characteristics to ensure that the information stored is not redundant. 
+\begin{table}[H]
+\center
+\begin{tabular}{|l|r|r|}
+\hline
+Algorithm & Variance Captured/\% & Average Computation Time/s\\
+\hline
+Spannogram-R3 & 87.70 & 10.2333\\
+TPower & 99.72 & 0.0036\\
+\hline
+
+\end{tabular}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=50$}
+\label{performance_50}
+\end{table}
+
+\begin{table}[H]
+\center
+\begin{tabular}{|l|r|r|}
+\hline
+Algorithm & Variance Captured/\% & Average Computation Time/s\\
+\hline
+Spannogram-R3 & 75.63 & 10.0356\\
+TPower & 85.09 & 0.0038\\
+\hline
+
+\end{tabular}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=10$}
+\label{performance_10}
+\end{table}
+
+It can be seen here that the TPower Algorithm seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for each. As shown in Table \ref{performance_50}, the TPower algorithm maintains almost $100$\% of the variance whereas the Spannogram PCA algorithm captures $12$\% less. This is further shown in Table \ref{performance_10}, where the number of data points is even less and again there is a gap of roughly $10$\% between the two, TPower being best. Added to this, the average computation time for the Spannogram PCA algorithm is more than $5000$ times slower than that of the TPower method. It should be noted that both algorithms used the deflation method described in \cite{Mackey_deflationmethods} to ensure that, upon calculation of each principal component, the covariance matrix can be projected onto a subspace which eliminates the influence of the previously calculated principal component.
+
+These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
+
 \clearpage 
 \subsection{Testing the Sparse PCA Algorithm on Twitter Data}
-The file used to test the algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. 
-The file has been cut into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
+The file used to test the Spannogram PCA algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. It has been partitioned into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
 
 \begin{table}[H]
 \center
@@ -765,9 +726,9 @@ Index & Word \\
 \label{ryder_cup}
 \end{table}
 
-Clearly, Table \ref{john_terry} refers to the retirement of England's former captain, John Terry, from international football, which can be confirmed by the Daily Mail on the 23rd September 2012 and The Guardian on the 24th September 2012. Table \ref{murder}, on the other hand, is a result of a trending Tweet regarding a murder that took place on the 19th September 2012, where 2 police officers were killed. The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition. 
+Clearly, Table \ref{john_terry} refers to the retirement of England's former captain, John Terry, from international football, which can be confirmed by the Daily Mail on the 23rd September 2012 and The Guardian on the 24th September 2012. Table \ref{murder}, on the other hand, is a result of a trending Tweet regarding a murder that took place on the 19th September 2012, where 2 police officers were killed. The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. 
 
-These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components.
+These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time period.
 
 \clearpage
 \bibliography{bibliography}
