@@ -32,7 +32,7 @@
 \usepackage{float}
 \restylefloat{table}
 \usepackage[english]{babel}
-\DeclareMathOperator{\Tr}{Tr}
+\usepackage{algorithm2e}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,6 +46,10 @@
 \newcommand{\xvec}{\mathbf{x}}
 \newcommand{\vvec}{\mathbf{v}}
 \newcommand{\tp}{^T}
+\DeclareMathOperator{\Tr}{Tr}
+\newcommand{\new}{_\text{new}}
+\newcommand{\old}{_\text{old}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -702,14 +706,14 @@ The algorithms used are the Spannogram algorithm in \cite{dimakis} with a rank 3
 \hline
 Algorithm &  CPEV Max & CPEV Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 &  0.3333 & 9.7843&\\
-TPower &  0.8185 &  0.0107&\\
-GPower-$l_1$ &0.8346 & 0.0000& \\
-GPower-$l_0$ &0.8346 & 0.0168& \\
+Spannogram-R3 & 0.8636  & 0.1420&9.8973\\
+TPower &  0.9992 &  0.7100&0.0106\\
+GPower-$l_1$ &0.9992 & 0.6417& 0.0301\\
+GPower-$l_0$ &0.9992 & 0.6370& 0.0148\\
 \hline
 
 \end{tabular}
-\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=5000$ taking the SNR = 5 as the reference}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=5000$.}
 \label{performance_5000}
 \end{table}
 
@@ -719,23 +723,32 @@ GPower-$l_0$ &0.8346 & 0.0168& \\
 \hline
 Algorithm &  CPEV Max & CPEV Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 &  0.3333 & 9.7843&\\
-TPower &  0.8185 &  0.0107&\\
-GPower-$l_1$ &0.8346 & 0.0000& \\
-GPower-$l_0$ &0.8346 & 0.0168 &\\
+Spannogram-R3 &  0.9067 & 0.4699&9.8415 \\
+TPower &  0.9992 &  0.7180&0.0137\\
+GPower-$l_1$ &0.9992 & 0.8641& 0.0034 \\
+GPower-$l_0$ &0.9992 & 0.7468 &0.0013\\
 \hline
 
 \end{tabular}
-\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=10$  taking the SNR = 5 as the reference}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=10$.}
 \label{performance_10}
 \end{table}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{CPEV.eps}
-\caption{How the different algorithms perform as the SNR varies for fixed sparsity.}
-\label{cpev}
+\caption{How the different algorithms perform as the SNR varies for fixed sparsity with $m = 5000$.}
+\label{cpev_5000}
 \end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{CPEV_10.eps}
+\caption{How the different algorithms perform as the SNR varies for fixed sparsity with $m = 10$.}
+\label{cpev_10}
+\end{figure}
+
+\textbf{***Explain Results***}
 
 It can be seen here that the TPower and GPower algorithms seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. As is evident in Table \ref{performance_5000}, the TPower algorithm maintains over $80$\% of the variance whereas the Spannogram PCA algorithm captures $12$\% less. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. Added to this, the average computation time for the Spannogram PCA algorithm is more than $5000$ times slower than that of the TPower method. It should be noted that both algorithms used the deflation method described in \cite{Mackey_deflationmethods} to ensure that, upon calculation of each principal component the covariance matrix can be projected onto a subspace which is not influenced by it.
 
@@ -745,6 +758,8 @@ These results highlight the fact that more work must be done evaluating some of 
 In this case, a covariance matrix is created but which does not have obvious sparse principal components i.e. doing an eigenvector decomposition would not give sparse eigenvectors. This case may be more similar to the Twitter Data case, in which the principal component vectors may not actually be sparse but principal component-like vectors are sparse and variance can be captured by these. 
 
 \textbf{NOT DONE}
+
+\subsubsection{Complexities of the Different Algorithms}
 
 \subsection{Testing the Sparse PCA Algorithms on Twitter Data}
 \label{testing_twitter}
@@ -879,7 +894,45 @@ The algorithms will be evaluated, as done in section \ref{testing}, and a perfor
 
 If along the way any other difficulties arise, due to scalability issues or the data structure, these will first be tackled and the changes will also be evaluated. 
 
+\subsection{Big Data Streaming Applications}
+In this section, methods to ensure computational feasibility are considered, and an algorithm is created to make this possible under high volume data applications in which the rate of data is very large while the number of variables considered is comparatively low i.e. $m >> n$. As already mentioned previously, there are roughly 40k Tweets on average per day in London, which corresponds to quite a small volume which can be processed all in one go, but suppose that the world were to instead be considered, which would give a rate of about 58 million Tweets per day, then clearly a method would need to be considered to be able to process all that data in a streaming fashion. 
+
+Needless to say, this would only work if there were an actual trending topic in the whole of the population. 
+
+The algorithm can be described as follows.
+
+\RestyleAlgo{boxruled}
+\LinesNumbered
+\begin{algorithm}[H]
+\KwData{The Stream of Tweets}
+\KwResult{The Sparse Principal Components for each batch of Tweets}
+\While{Streaming} {
+// Calculate the new covariance matrix $\covmat = \smat\tp \smat$\\
+$\smat_\text{new} \leftarrow $ New Batch of $K$ Tweets;\\
+// Pop the old data off the queue, $\mathbf{Q}$\\
+$\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
+// Shift the queue of data\\
+$ \mathbf{Q}(1:W-K) \leftarrow \mathbf{Q}(K+1:W) $\\
+// Put the new data at the end of the queue\\
+$ \mathbf{Q}(W-K+1:W) \leftarrow \smat_\text{new}$\\
+// Calculate the new covariance matrix using the old covariance matrix,\\
+// the old data and the new data\\
+$\covmat_\text{new} \leftarrow \covmat_\text{old} - \sum_{j = 1}^K \left[\smat_\text{old}\right]_{i,:}\tp\left[\smat_\text{old}\right]_{i,:} + \sum_{j = 1}^K \left[\smat_\text{new}\right]_{i,:}\tp\left[\smat_\text{new}\right]_{i,:}$\\ 
+// Check whether old PCs are valid or whether new ones must be calculated\\
+\If{OldPCsValid($\covmat_\text{new}$, $\mathbf{V}_\text{old}$, $\mathbf{\Lambda}_\text{old}$)} 
+{$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}] = [\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}]$}
+\Else {
+	$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$ = ComputeSparsePCA($\covmat_\text{new}$);
+}
+ListOfSparsePCs.Append($\mathbf{V}_\text{new}$)\\
+ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
+$[\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}] = [\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$
+}
+\end{algorithm}
+
+The OldPCsValid function checks whether the old Sparse Principal Components are still valid by checking what the percentage of variance explained by them is and how this has has changed since the previous iteration, if this has changed significantly from the last batch or it falls beneath a certain (heuristic) threshold, then new Sparse PCs are computed using the algorithm of choice. 
 \clearpage
+
 \bibliography{bibliography}
 \bibliographystyle{plain}
 \clearpage
