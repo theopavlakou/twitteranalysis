@@ -556,11 +556,12 @@ Clearly this gives results that are absolutely irrelevant. The reason for this i
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
 \subsubsection{Taking Advantage of the Sparsity of the $\mathbf{S}$ Matrix}
+\label{sparsity_matrix}
 
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
 The maximum number of elements that could possibly be non-zero in each row is 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
 
-This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $93\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
+This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
 
 \subsubsection{Reducing the Dimensionality of $\mathbf{S}$}
 The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
@@ -605,6 +606,7 @@ Methods of this form will be considered further, if needed, but will not be the 
 \section{Evaluation of Algorithms}
 \subsection{Measuring Performance of Sparse PCA Algorithms}
 
+\subsubsection{Cumulative Percentage of Explained Variance (CPEV)}
 Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal component, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the following formula, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section:
 
 \begin{equation*}
@@ -635,13 +637,23 @@ which is the calculated singular value decomposition of the projected data matri
 In general, to find the proportion of variance captured by the $k$ principal component, the equation used is:
 
 \begin{equation}
-\frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)}
+v_\text{cepv} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)}
 \end{equation}
 
 and has a value between 0 and 1. This quantity is referred to as the cumulative percentage of explained variance (CPEV) in \cite{shen} and shall be referred to as such here also. 
 
 
+\subsubsection{Sparsity}
+Another obvious measure of performance, is the sparsity level which is attained by the algorithm. If a desired sparsity is stated, then the algorithm should be able to attain close to that and if it doesn't, the performance should decrease. 
 
+\subsubsection{Objective Function for Performance}
+The objective function for the performance for each algorithm is therefore given as a result of these measurements. It is chosen arbitrarily but with good reasoning. The formula is given by:
+
+\begin{equation}
+P = v_\text{cepv} - \gamma \left(k - \hat{k}\right)^2
+\label{obj_function}
+\end{equation}
+where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ is the actual sparsity returned. $\gamma$ is a tuning parameter and is the penalty multiplier for the difference in the desired sparsity versus the actual sparsity. 
 
 
 
@@ -757,25 +769,28 @@ These results highlight the fact that more work must be done evaluating some of 
 
 
 \subsubsection{Testing with Binary Data Matrix $\smat$}
+\begin{comment}
+ results can be found in testing_sparse_PCA_binary_matrix_different_levels_sparsity_results.mat
+\end{comment}
 Though the Spannogram algorithm seems to perform the worst in the scenario above, where the covariance matrix has actual sparse eigenvectors, in \cite{dimakis} the authors do not use it on this type of matrix, and for the specific example that is being considered in this paper initially (Twitter data), the data matrix, $\smat$, is a binary matrix, each entry taking only the values in the set $\{ 0, 1\}$. Furthermore, the matrix $\covmat$ is not equal to a conventional covariance matrix (refer to section \ref{covmat}). This test revolves around trying to emulate this scenario. 
 
-The data matrix, $\smat$, is created by adding a one to each entry independent of any other entry with some probability $p_\text{1}$, which is chosen to be $0.05$, which is quite artificial since it very likely that many features will come in packages, since this is essentially what is being searched for. Nevertheless, this is done and then the covariance matrix, $\covmat$, is created as in section \ref{covmat}. The algorithms are then used on this to find the sparse principal components and the CPEV is calculated, as previously. The results can be seen in Table \ref{performance_bin_data_5000}. In this case, though all algorithms have quite a low performance, the Spannogram algorithm actually performs the best. 
+The data matrix, $\smat$, is created by adding a one to each entry independent of any other entry with some probability $p_\text{1}$, which is chosen to be $0.05$, which is quite artificial since it very likely that many features will come in packages, since this is essentially what is being searched for. Nevertheless, this is done and then the covariance matrix, $\covmat$, is created as in section \ref{covmat}. The algorithms are then used on this to find the sparse principal components and the performance score is calculated, as previously. The results can be seen in Figure \ref{perf_score_binary_matrix} and Table \ref{performance_bin_data_5000}. In this case, though all algorithms have quite a low performance, the Spannogram algorithm actually performs the best. 
 
 
 \begin{table}[H]
 \center
-\begin{tabular}{|l|r|r|}
+\begin{tabular}{|l|r|}
 \hline
-Algorithm &  CPEV&  Average Computation Time/s\\
+Algorithm &  Average Computation Time/s\\
 \hline
-Spannogram-R3 & 0.0975 &10.4454\\
-TPower &  0.0000 & $\infty$\\
-GPower-$l_1$ &0.0839 &  0.0263\\
-GPower-$l_0$ & 0.0836 & 0.0105\\
+Spannogram-R3 &10.6410\\
+TPower &   0.0068\\
+GPower-$l_1$  &    0.0151\\
+GPower-$l_0$  &   0.0055\\
 \hline
 
 \end{tabular}
-\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=5000$ for a binary data matrix $\smat$.}
+\caption{Table showing the average computation time of different algorithms for computing sparse principal components of the matrix $\mathbf{A}$ with $m=5000$ for a binary data matrix $\smat$.}
 \label{performance_bin_data_5000}
 \end{table}
 
@@ -783,13 +798,67 @@ As a further test, the data matrix is created slightly differently. Instead of h
 
 Then different sparsity levels are created by increasing the value of the  $p_\text{1}$, whilst keeping $p_\text{corr}$ constant. The sparsity levels (given as a percentage of how many non-zero elements $\smat$ has) are expected to be slightly higher than $p_\text{1}$ due to the fact that $p_\text{corr}$ will be used occasionally also. 
 
-The measure of performance in this case is primarily measured by which of the algorithms actually returns a sparse principal component with the most correlated features. The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these.
+The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have identical results under these circumstances. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower$_{l1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{perf_score_binary_matrix.eps}
+\caption{How the different algorithms perform as the average sparsity varies with $m = 5000$.}
+\label{perf_score_binary_matrix}
+\end{figure}
 
-\subsubsection{Testing with Non-Sparse Principal Components}
-In this case, a covariance matrix is created but which does not have obvious sparse principal components i.e. doing an eigenvector decomposition would not give sparse eigenvectors. This case may be more similar to the Twitter Data case, in which the principal component vectors may not actually be sparse but principal component-like vectors are sparse and variance can be captured by these. 
+\textbf{TODO}
+\begin{itemize}
+\item Explain that TPower and Spannogram seem to be the same in performance.
+\item Explain that it is difficult to tune GPower with the right value for the $\rho$ parameter so will be discontinued as it keeps giving non-sparse vectors.
+\item Explain how the actual eigenvector differs from the sparse eigenvector. 
+\end{itemize}
 
-\textbf{NOT DONE}
+\begin{equation*}
+\mathbf{\mathbf{v}_1}=
+\begin{pmatrix}
+0.1564\\
+0.1718\\
+0.1567\\
+0.1545\\
+0.1554\\
+0.1577\\
+0.1556\\
+0.1576\\
+0.1557\\
+0.1571\\
+0.1559\\
+0.1585\\
+0.1563\\
+0.1566\\
+0.1569\\
+0.1561\\
+0.1565\\
+0.1563\\
+0.1552\\
+0.1562\\
+0.1566\\
+0.1570\\
+0.1552\\
+0.1568\\
+0.1565\\
+0.1586\\
+0.1554\\
+0.1563\\
+0.1583\\
+0.1568\\
+0.1716\\
+0.1586\\
+0.1579\\
+0.1576\\
+0.1572\\
+0.1559\\
+0.1568\\
+0.1568\\
+0.1695\\
+0.1698\\
+\end{pmatrix}
+\end{equation*}
 
 \subsubsection{Complexities of the Different Algorithms}
 
@@ -922,12 +991,15 @@ It can be concluded that the Spannogram PCA algorithm performs best when the mat
 
 
 \section{Further Implementation and Evaluation}
+\begin{comment}
 From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont}, \cite{asteris} 
 and any others, and finding which ones would be best to use for the specific scenario. It may be the case that the Spannogram PCA algorithm performs worse with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
 
 The algorithms will be evaluated, as done in section \ref{testing}, and a performance score will be given to them. Then the same algorithms will be evaluated on the Twitter data, as in section \ref{testing_twitter} and the results will be compared to see whether algorithm performances depend on the data structure. The results of this research will lead to an algorithm being chosen and this algorithm will be examined further so as to find any improvements that could be made to it, or a couple of algorithms could be merged to keep the benefits of both. Consideration will also be given to the data at hand to see if the structure could be exploited further, as the authors of \cite{dimakis} attempt to do. Upon completion of this, the new algorithm will also be evaluated similarly to before, to determine whether the alterations have had a positive effect.
 
 If along the way any other difficulties arise, due to scalability issues or the data structure, these will first be tackled and the changes will also be evaluated. 
+
+\end{comment}
 
 \subsection{Big Data Streaming Applications}
 In this section, methods to ensure computational feasibility are considered, and an algorithm is created to make this possible under high volume data applications in which the rate of data is very large while the number of variables considered is comparatively low i.e. $m >> n$. As already mentioned previously, there are roughly 40k Tweets on average per day in London, which corresponds to quite a small volume which can be processed all in one go, but suppose that the world were to instead be considered, which would give a rate of about 58 million Tweets per day, then clearly a method would need to be considered to be able to process all that data in a streaming fashion. 
