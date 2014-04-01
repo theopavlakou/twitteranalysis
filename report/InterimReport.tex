@@ -465,6 +465,7 @@ This is a $O(NlogN)$ algorithm, where $N$ resembles the number of all the unique
 This suffers from the same problem as the probabilistic method, however, it ensures that words that do occur very frequently will be in the Bag-of-Words, as opposed to relying on probability. This method will be used from now on in this paper.
 
 \subsection{The Matrix $\mathbf{A}$}
+\label{covmat}
 
 The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
 
@@ -601,7 +602,7 @@ Methods of this form will be considered further, if needed, but will not be the 
  
 \clearpage
 
-\section{Completed Evaluation}
+\section{Evaluation of Algorithms}
 \subsection{Measuring Performance of Sparse PCA Algorithms}
 
 Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal component, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the following formula, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section:
@@ -754,6 +755,37 @@ It can be seen here that the TPower and GPower algorithms seems to always outper
 
 These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
 
+
+\subsubsection{Testing with Binary Data Matrix $\smat$}
+Though the Spannogram algorithm seems to perform the worst in the scenario above, where the covariance matrix has actual sparse eigenvectors, in \cite{dimakis} the authors do not use it on this type of matrix, and for the specific example that is being considered in this paper initially (Twitter data), the data matrix, $\smat$, is a binary matrix, each entry taking only the values in the set $\{ 0, 1\}$. Furthermore, the matrix $\covmat$ is not equal to a conventional covariance matrix (refer to section \ref{covmat}). This test revolves around trying to emulate this scenario. 
+
+The data matrix, $\smat$, is created by adding a one to each entry independent of any other entry with some probability $p_\text{1}$, which is chosen to be $0.05$, which is quite artificial since it very likely that many features will come in packages, since this is essentially what is being searched for. Nevertheless, this is done and then the covariance matrix, $\covmat$, is created as in section \ref{covmat}. The algorithms are then used on this to find the sparse principal components and the CPEV is calculated, as previously. The results can be seen in Table \ref{performance_bin_data_5000}. In this case, though all algorithms have quite a low performance, the Spannogram algorithm actually performs the best. 
+
+
+\begin{table}[H]
+\center
+\begin{tabular}{|l|r|r|}
+\hline
+Algorithm &  CPEV&  Average Computation Time/s\\
+\hline
+Spannogram-R3 & 0.0975 &10.4454\\
+TPower &  0.0000 & $\infty$\\
+GPower-$l_1$ &0.0839 &  0.0263\\
+GPower-$l_0$ & 0.0836 & 0.0105\\
+\hline
+
+\end{tabular}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=5000$ for a binary data matrix $\smat$.}
+\label{performance_bin_data_5000}
+\end{table}
+
+As a further test, the data matrix is created slightly differently. Instead of having all feature's probabilities independent of one another, this time some features are given as correlated. If one of the features in the correlated set is one, then the probability, $p_\text{corr}$, of the rest being one increases drastically, in this case this probability is set to $0.85$. This should give results slightly more relevant to the the scenario of interest since words which are related in some way should appear more frequently together than words that aren't. 
+
+Then different sparsity levels are created by increasing the value of the  $p_\text{1}$, whilst keeping $p_\text{corr}$ constant. The sparsity levels (given as a percentage of how many non-zero elements $\smat$ has) are expected to be slightly higher than $p_\text{1}$ due to the fact that $p_\text{corr}$ will be used occasionally also. 
+
+The measure of performance in this case is primarily measured by which of the algorithms actually returns a sparse principal component with the most correlated features. The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these.
+
+
 \subsubsection{Testing with Non-Sparse Principal Components}
 In this case, a covariance matrix is created but which does not have obvious sparse principal components i.e. doing an eigenvector decomposition would not give sparse eigenvectors. This case may be more similar to the Twitter Data case, in which the principal component vectors may not actually be sparse but principal component-like vectors are sparse and variance can be captured by these. 
 
@@ -882,6 +914,9 @@ As shown in Table \ref{explained_var_table} and Figure \ref{explained_var_graph}
 These results are completely contrary to the results found in section \ref{testing}. This is largely believed to be accounted for by the structure of the $\mathbf{S}$ matrix in each case. In \cite{truncpower}, it is suggested that if the matrix $\mathbf{A}$ has sparse or approximately sparse eigenvectors then the TPower algorithm can approximate these, which has as its underlying assumption that the true eigenvectors are themselves almost sparse. The Spannogram algorithm does not make this assumption at all. Instead it finds PCs which may not represent the true PCs in any way whatsoever. For instance, getting the true leading eigenvector of $\mathbf{A}$, it turns out to be that 44 of the 3000 words are at least $50\%$ the magnitude of the highest magnitude element in the leading eigenvector. Which may be approximately sparse considering that this is a small fraction of 3000 but it is still much larger than just 4 to 8 words. In this context, the vector is not sparse at all. This is a crude measurement for ``approximately'' sparse but it is merely for illustration purposes. 
 
 It can be concluded that the Spannogram PCA algorithm performs best when the matrix $\mathbf{A}$ does not actually have sparse PCs in the conventional sense but still has sparse components that can model the variance in the data fairly well. 
+
+\subsection{Conclusion}
+
 \clearpage
 
 
@@ -911,7 +946,7 @@ The algorithm can be described as follows.
 $\smat_\text{new} \leftarrow $ New Batch of $K$ Tweets;\\
 // Pop the old data off the queue, $\mathbf{Q}$\\
 $\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
-// Shift the queue of data\\
+// Shift the queue of data. W is the sliding window size.\\
 $ \mathbf{Q}(1:W-K) \leftarrow \mathbf{Q}(K+1:W) $\\
 // Put the new data at the end of the queue\\
 $ \mathbf{Q}(W-K+1:W) \leftarrow \smat_\text{new}$\\
@@ -931,6 +966,12 @@ $[\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}] = [\mathbf{V}_\text{new}, 
 \end{algorithm}
 
 The OldPCsValid function checks whether the old Sparse Principal Components are still valid by checking what the percentage of variance explained by them is and how this has has changed since the previous iteration, if this has changed significantly from the last batch or it falls beneath a certain (heuristic) threshold, then new Sparse PCs are computed using the algorithm of choice. 
+
+Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster. 
+
+\subsection{Financial Application: Hedging}
+
+\subsection{Bayesian Networks: Pearl's Algorithm}
 \clearpage
 
 \bibliography{bibliography}
