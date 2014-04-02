@@ -51,6 +51,7 @@
 \newcommand{\old}{_\text{old}}
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -361,7 +362,9 @@ The first attempt, and an algorithm that is still widely used regardless of its 
  
 for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{shen}. This method uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis and but imposes a penalty on the size of the entries in the principal components. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is implemented in this project and used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
 
+\begin{comment}
 A few more methods must be considered, including \cite{zou}, \cite{daspremont} and \cite{asteris} but have still not been until this point in time. 
+\end{comment}
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
 This is the algorithm\cite{dimakis} that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section, but this may change as the project progresses, if other algorithms prove to be better according to measures that will be defined later. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
@@ -600,7 +603,12 @@ Methods of this form will be considered further, if needed, but will not be the 
 %where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
 
 %More on random projections can be found in \cite{randomprojections}.
- 
+
+\subsubsection{On the Dimensionality of the Problem}
+The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) data, which has become very popular also with the increase of analysis in genetics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper may be valid for these types of matrices only. 
+
+%% TODO
+\textbf{Not Complete}
 \clearpage
 
 \section{Evaluation of Algorithms}
@@ -663,6 +671,13 @@ where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ i
 
 \subsection{Testing the Sparse PCA Algorithms on Artificial Data}\label{testing}
 \subsubsection{Testing with Sparse Principal Components}
+\begin{comment}
+Results are in
+testing_SPCA_toy_data_2_5000.mat
+and 
+testing_SPCA_toy_data_2_10.mat
+\end{comment}
+
 The first way the algorithms are tested in this project, is by creating an artificial $n \times n$ covariance matrix with 3 known sparse principal components with their respective eigenvalues, as described in \cite{truncpower} and \cite{shen}. 
 
 The 3 eigenvectors alongside their eigenvalues, are chosen to be:
@@ -703,13 +718,13 @@ Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribut
 \end{equation*}
 where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
 
-Then the Sparse PCA algorithms are used on this covariance matrix to find the approximated principal components. This is repeated 10 times varying the signal to noise ratio (SNR), which is calculated as:
+Then the Sparse PCA algorithms are used on this covariance matrix to find the approximated principal components. This is repeated 15 times varying the signal to noise ratio (SNR), which is calculated as:
 
 \begin{equation*}
 \text{SNR} = \frac{\sum_{i = 1}^3\lambda_i^{(a)}}{\sum_{i = 4}^5\lambda_i^{(a)}2^{(j-1)}}
 \end{equation*}
 
-where $\lambda_i^{(a)}$ denotes the actual eigenvalue of the $i$th eigenvector, the first three being the sparse ones and the last two being the noise components, and $j$ denotes the iteration number (starting from 1). As it can be seen the SNR will decrease with each iteration number, as the eigenvalues of the noise eigenvectors increase by a factor of two upon each iteration. This is done for $m=5000$ data points and then for $m=10$ data points and is iterated 10 times for each, averaging the outcome. 
+where $\lambda_i^{(a)}$ denotes the actual eigenvalue of the $i$th eigenvector, the first three being the sparse ones and the last two being the noise components, and $j$ denotes the iteration number (starting from 1). Note that this can be calculated in this way because the principal components are orthogonal. As it can be seen the SNR will decrease with each iteration number, as the eigenvalues of the noise eigenvectors increase by a factor of two upon each iteration. This is done for $m=5000$ data points and then for $m=10$ data points and is iterated 5 times for each, averaging the outcome. 
 
 The algorithms used are the Spannogram algorithm in \cite{dimakis} with a rank 3 approximation, which is referred to as Spannogram-R3; the TPower method in \cite{truncpower} and the Generalised Power Method method described in \cite{GPower} with the $l_1$ and the $l_0$ penalties, referred to as GPower-$l_1$ and GPower-$l_0$ respectively.
 
@@ -717,12 +732,12 @@ The algorithms used are the Spannogram algorithm in \cite{dimakis} with a rank 3
 \center
 \begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  CPEV Max & CPEV Min & Average Computation Time/s\\
+Algorithm &  Performance Score Max &  Performance Score Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 & 0.8636  & 0.1420&9.8973\\
-TPower &  0.9992 &  0.7100&0.0106\\
-GPower-$l_1$ &0.9992 & 0.6417& 0.0301\\
-GPower-$l_0$ &0.9992 & 0.6370& 0.0148\\
+Spannogram-R3 &0.9085 &    0.1710 &   9.9238\\
+TPower &    0.9992 &   0.6460&    0.0187 \\
+ GPower-$l_1$&   0.9992  &  0.5949&    0.0274\\
+ GPower-$l_0$  & 0.9992&         0.0000   & 0.0147\\
 \hline
 
 \end{tabular}
@@ -734,12 +749,12 @@ GPower-$l_0$ &0.9992 & 0.6370& 0.0148\\
 \center
 \begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  CPEV Max & CPEV Min & Average Computation Time/s\\
+Algorithm &  Performance Score Max &  Performance Score Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 &  0.9067 & 0.4699&9.8415 \\
-TPower &  0.9992 &  0.7180&0.0137\\
-GPower-$l_1$ &0.9992 & 0.8641& 0.0034 \\
-GPower-$l_0$ &0.9992 & 0.7468 &0.0013\\
+Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
+ TPower  &    0.9990  &  0.7308  &  0.0233\\
+   GPower-$l_1$&      0.5096       &  0.0000   & 0.0058\\
+    GPower-$l_0$&   0.9967    &0.3946 &   0.0020\\
 \hline
 
 \end{tabular}
@@ -749,14 +764,14 @@ GPower-$l_0$ &0.9992 & 0.7468 &0.0013\\
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{CPEV.eps}
+\includegraphics[scale=0.3]{performance_score_vs_snr_5000.eps}
 \caption{How the different algorithms perform as the SNR varies for fixed sparsity with $m = 5000$.}
 \label{cpev_5000}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{CPEV_10.eps}
+\includegraphics[scale=0.3]{performance_score_vs_snr_10.eps}
 \caption{How the different algorithms perform as the SNR varies for fixed sparsity with $m = 10$.}
 \label{cpev_10}
 \end{figure}
@@ -765,7 +780,9 @@ GPower-$l_0$ &0.9992 & 0.7468 &0.0013\\
 
 It can be seen here that the TPower and GPower algorithms seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. As is evident in Table \ref{performance_5000}, the TPower algorithm maintains over $80$\% of the variance whereas the Spannogram PCA algorithm captures $12$\% less. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. Added to this, the average computation time for the Spannogram PCA algorithm is more than $5000$ times slower than that of the TPower method. It should be noted that both algorithms used the deflation method described in \cite{Mackey_deflationmethods} to ensure that, upon calculation of each principal component the covariance matrix can be projected onto a subspace which is not influenced by it.
 
+\begin{comment}
 These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
+\end{comment}
 
 
 \subsubsection{Testing with Binary Data Matrix $\smat$}
@@ -779,18 +796,19 @@ The data matrix, $\smat$, is created by adding a one to each entry independent o
 
 \begin{table}[H]
 \center
-\begin{tabular}{|l|r|}
+\begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  Average Computation Time/s\\
+Algorithm &  Performance Score Max &   Performance Score Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 &10.6410\\
-TPower &   0.0068\\
-GPower-$l_1$  &    0.0151\\
-GPower-$l_0$  &   0.0055\\
+Spannogram-R3 & 0.1204  &  0.1065  & 10.1656\\
+TPower &    0.1204   & 0.1065   & 0.0076\\
+ GPower-$l_1$   &0.1203        & 0.0000   & 0.0233\\
+ GPower-$l_0$   & 0.0416&         0.0000 &    0.0064\\
+
 \hline
 
 \end{tabular}
-\caption{Table showing the average computation time of different algorithms for computing sparse principal components of the matrix $\mathbf{A}$ with $m=5000$ for a binary data matrix $\smat$.}
+\caption{Table showing the average performance of different algorithms for computing sparse principal components of the matrix $\mathbf{A}$ with $m=5000$ for a binary data matrix $\smat$.}
 \label{performance_bin_data_5000}
 \end{table}
 
@@ -800,19 +818,15 @@ Then different sparsity levels are created by increasing the value of the  $p_\t
 
 The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have identical results under these circumstances. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower$_{l1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
 
+
+
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{perf_score_binary_matrix.eps}
+\includegraphics[scale=0.3]{performance_vs_sparsity.eps}
 \caption{How the different algorithms perform as the average sparsity varies with $m = 5000$.}
 \label{perf_score_binary_matrix}
 \end{figure}
 
-\textbf{TODO}
-\begin{itemize}
-\item Explain that TPower and Spannogram seem to be the same in performance.
-\item Explain that it is difficult to tune GPower with the right value for the $\rho$ parameter so will be discontinued as it keeps giving non-sparse vectors.
-\item Explain how the actual eigenvector differs from the sparse eigenvector. 
-\end{itemize}
 
 \begin{equation*}
 \mathbf{\mathbf{v}_1}=
@@ -859,6 +873,10 @@ The features to be correlated are arbitrarily chosen to be feature numbers $1, 2
 0.1698\\
 \end{pmatrix}
 \end{equation*}
+Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is not sparse at all, which is the difference with the previous section in which the algorithms were trying to retrieve the actual sparse eigenvectors. This is why the Spannogram performed so badly in comparison to the other algorithms. 
+
+%% TODO
+\textbf{EXPLAIN FURTHER}
 
 \subsubsection{Complexities of the Different Algorithms}
 
@@ -1044,6 +1062,7 @@ Computation time is saved in two ways. Firstly, the covariance matrix doesn't ne
 \subsection{Financial Application: Hedging}
 
 \subsection{Bayesian Networks: Pearl's Algorithm}
+\subsection{Classification Brazilian Text Example}
 \clearpage
 
 \bibliography{bibliography}
