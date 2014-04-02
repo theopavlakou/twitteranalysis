@@ -45,6 +45,7 @@
 \newcommand{\covmat}{\mathbf{A}}
 \newcommand{\xvec}{\mathbf{x}}
 \newcommand{\vvec}{\mathbf{v}}
+\newcommand{\vmat}{\mathbf{V}}
 \newcommand{\tp}{^T}
 \DeclareMathOperator{\Tr}{Tr}
 \newcommand{\new}{_\text{new}}
@@ -469,6 +470,8 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 \subsection{The Matrix $\mathbf{A}$}
 \label{covmat}
+\textbf{MUST REDO WITH $\smat_{xad}$}
+
 
 The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
 
@@ -500,6 +503,11 @@ As it can be seen, two of the three principal components in this case do not rea
 The eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. In this scenario, the second principal component seems to get the second highest eigenvalue, which should be noted for the next case. 
   
 \subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
+\textbf{NOT COMPLETE}
+
+
+%% TODO
+%% Illustrate difference using hollow and non-hollow with S_xad! VERY BIG DIFFERENCE.
 As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as an undirected graph with each node being a word and each link being the number of times that word appears with the connecting word node in the same Tweet for all Tweets. This representation is meaningful, however the problem lies in the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix. In attempt to prevent this, the matrix $\mathbf{A}$ can be substituted for 
 $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}']_{i, j}$, it takes the value 
 
@@ -555,6 +563,15 @@ Index & Word & Index & Word & Index & Word\\
 
 Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
+\subsubsection{The Laplacian Matrix $\mathbf{A}_{l}$}
+
+Since the matrix $\covmat = \smat\tp\smat$ can be viewed as an undirected graph, it is natural to consider its Laplacian also. The Laplacian, $\mathbf{L}$, of a graph is given by the following equation:
+
+\begin{equation}
+\mathbf{L} = \mathbf{D} - \mathbf{B}
+\end{equation}
+
+where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element on the diagonal is the number of times an edge terminates on the the word index by the index of the diagonal. $\mathbf{B}$ is the adjacency matrix and element $[\mathbf{B}]_{i, j}$ is 1 if $i = j$ and 0 otherwise.
 \subsection{Scalability}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
@@ -614,11 +631,11 @@ The scenario which is being considered mostly in this paper deals with the case 
 \section{Evaluation of Algorithms}
 \subsection{Measuring Performance of Sparse PCA Algorithms}
 
-\subsubsection{Cumulative Percentage of Explained Variance (CPEV)}
+\subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}
 Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal component, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the following formula, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section:
 
 \begin{equation*}
-v = \frac{\sum_{i=1}^3\lambda^{(c)}_i}{\sum_{i=1}^3\lambda^{(a)}_i}
+v = \frac{\sum_{i}\lambda^{(c)}_i}{\sum_{i}\lambda^{(a)}_i}
 \end{equation*}
 where the superscript $c$ denotes the calculated value, using one of the sparse PCA algorithms, and $a$ is for the actual value.
 
@@ -645,20 +662,47 @@ which is the calculated singular value decomposition of the projected data matri
 In general, to find the proportion of variance captured by the $k$ principal component, the equation used is:
 
 \begin{equation}
-v_\text{cepv} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)}
+v_\text{cpev} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)}
+\label{cpev_eq}
 \end{equation}
 
 and has a value between 0 and 1. This quantity is referred to as the cumulative percentage of explained variance (CPEV) in \cite{shen} and shall be referred to as such here also. 
 
+\subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Binary Data}
 
+In this case, \eqref{cpev_eq} will not work, since $\smat$ is not a mean centered data matrix. What will be done in this case is instead the variance captured, $v_c$, will first be calculated, as such:
+
+\RestyleAlgo{boxruled}
+\LinesNumbered
+\begin{algorithm}[H]
+\KwData{$\covmat$, $\vmat$}
+\KwResult{$v_c$}
+$v_c \leftarrow 0$\\
+\For{$\vvec_i \in \vmat$}{
+// Add variance captured by $\vvec_i$\\
+$v_c \leftarrow v_c+ \vvec_i\tp\covmat\vvec_i$;\\
+// Projection Deflation\\
+$\covmat \leftarrow \left(\mathbf{I}-\vvec_i\vvec_i\tp\right)\covmat\left(\mathbf{I}-\vvec_i\vvec_i\tp\right)$;\\
+}
+\end{algorithm}
+
+Then to get the total variance captured, $v_c$ is divided by the total variance, given by the sum of the actual eigenvectors of $\covmat$.
+
+\begin{equation*}
+v_\text{cpev} = \frac{v_c}{\sum_{i=1}^3\lambda^{(a)}_i}
+\end{equation*}
+
+This gives a variance measure that can also be used for the binary matrix case. Upon each iteration the variance for the current eigenvector is calculated and $\covmat$ is then deflated, using the Projection Deflation method once again found in \cite{Mackey_deflationmethods}. The variance is then accumulated to give the total variance captured. The $\covmat$ in the algorithm is that which is equal to $\smat\tp\smat$ not the one which is used to get the eigenvectors (discussed in section \ref{covmat}).
+
+Note that this gives the same result as the previous method for continuous data. 
 \subsubsection{Sparsity}
-Another obvious measure of performance, is the sparsity level which is attained by the algorithm. If a desired sparsity is stated, then the algorithm should be able to attain close to that and if it doesn't, the performance should decrease. 
+Another obvious measure of performance, is the sparsity level which is attained by the algorithm. If a desired sparsity is stated, then the algorithm should be able to attain close to that and if it doesn't, the performance score should decrease. 
 
 \subsubsection{Objective Function for Performance}
 The objective function for the performance for each algorithm is therefore given as a result of these measurements. It is chosen arbitrarily but with good reasoning. The formula is given by:
 
 \begin{equation}
-P = v_\text{cepv} - \gamma \left(k - \hat{k}\right)^2
+P = v_\text{cpev} - \gamma \left(k - \hat{k}\right)^2
 \label{obj_function}
 \end{equation}
 where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ is the actual sparsity returned. $\gamma$ is a tuning parameter and is the penalty multiplier for the difference in the desired sparsity versus the actual sparsity. 
@@ -800,11 +844,10 @@ The data matrix, $\smat$, is created by adding a one to each entry independent o
 \hline
 Algorithm &  Performance Score Max &   Performance Score Min & Average Computation Time/s\\
 \hline
-Spannogram-R3 & 0.1204  &  0.1065  & 10.1656\\
-TPower &    0.1204   & 0.1065   & 0.0076\\
- GPower-$l_1$   &0.1203        & 0.0000   & 0.0233\\
- GPower-$l_0$   & 0.0416&         0.0000 &    0.0064\\
-
+  Spannogram-R3&   0.4297&    0.1441&    		9.9996\\
+ TPower&   0.4297   & 0.1431   & 		0.0048\\
+GPower-$l_1$   & 0.3992  &  0.0000  &  		0.0155\\
+   GPower-$l_0$ &  0.1603  &  0.0000 & 		 0.0058\\
 \hline
 
 \end{tabular}
@@ -816,13 +859,13 @@ As a further test, the data matrix is created slightly differently. Instead of h
 
 Then different sparsity levels are created by increasing the value of the  $p_\text{1}$, whilst keeping $p_\text{corr}$ constant. The sparsity levels (given as a percentage of how many non-zero elements $\smat$ has) are expected to be slightly higher than $p_\text{1}$ due to the fact that $p_\text{corr}$ will be used occasionally also. 
 
-The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have identical results under these circumstances. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower$_{l1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
+The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have almost identical results under these circumstances, with the Spannogram algorithm performing slightly better. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower$_{l1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
 
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{performance_vs_sparsity.eps}
+\includegraphics[scale=0.3]{performance_vs_sparsity_5000.eps}
 \caption{How the different algorithms perform as the average sparsity varies with $m = 5000$.}
 \label{perf_score_binary_matrix}
 \end{figure}
