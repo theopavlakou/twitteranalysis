@@ -545,35 +545,14 @@ In this case, the second sparse PC once again does not represent any significant
 What is useful to note is that in the case of the first PC 7 or the 8 words a rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
 \subsubsection{The Normalised Matrix $\mathbf{A}_{n}$}
-Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic concept is to make it so that all the rows/columns sum to 1 so that it does not matter which words actually appear the most, but how often they appear with other words relative to their weighting.
+Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic intuition behind this is to make it such that all the rows/columns sum to 1 so that it does not matter which pairs of words actually appear the most, but how often they appear with other words relative to their weighting.
 
 \subsubsection*{Results}
-\begin{table}[H]
-\center
-\begin{tabular}{| c l | c l | c l |}
-\hline
-Index & Word & Index & Word\\
-\hline
-2 & - & 1 & - \\
-1 & - & 3 & - \\
-4 & - & 9 & - \\
-3 & - & 17 & -\\
-6 & - & 8 & -\\
-10 & - & 6 & -\\ 
-7 & - & 4 & -\\
-9 & - & 11 & -\\
-\hline
-Eigenvalue & -  & Eigenvalue & - \\
-\hline
-\end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
-\end{table}
-
-Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
+In this case the algorithm did not even terminate for this data, but for other data it has given irrelevant results. The reason for this is because, in this case the words that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
 \subsubsection{The Weighted Laplacian Matrix $\mathbf{A}_{l}$}
 
-The weighted Laplacian is similar to to its unweighted counterpart but each edge is instead given a weight. This is much closer to the application being considered in this paper, as the weights are the number of occurrences of the corresponding words. $\mathbf{A}_{l}$, of a graph is given by the following equation:
+The Laplacian of a graph is a very useful representation of it and is very useful in applications involving Spectral Graph Theory and Partial Differential Equations. $\mathbf{A}_{l}$, of a graph is given by the following equation:
 
 \begin{equation}
 \mathbf{A}_{l} = \mathbf{D} - \mathbf{B}
@@ -603,9 +582,11 @@ Eigenvalue & 607.6730  & Eigenvalue & 592.4499 \\
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
+In this case, once again, both principal components do not seem to convey any useful information and it appears that most included words are just high frequency words in general. This may have to do with the fact that the diagonal has not been removed, as in the case of $\covmat_h$, which means that a similar effect is taking place as in the matrix $\covmat$.
+
 \subsubsection{The Weighted Laplacian of the Hollow Matrix $\mathbf{A}_{lh}$}
 
-In this case, the Laplacian matrix is created of using the hollow matrix, $\covmat_h$ described above. This is to, once again, remove any relationship of the words with themselves. 
+To try to improve the results of the Laplacian, this time the matrix is created using the graph represented by the hollow matrix, $\covmat_h$ described above.
 
 \subsubsection*{Results}
 \begin{table}[H]
@@ -628,6 +609,12 @@ Eigenvalue & $1.1843\times 10^3$  & Eigenvalue & $1.1355 \times 10^3$   \\
 \end{tabular}
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
+
+The results however seem to indicate that this scenario also does not give anything useful. This is again due to the fact that the diagonal will be non-zero and will have the highest absolute value of any of the other entries in the same row, in fact it will be their sum with the opposite sign.  
+
+\subsubsection*{Conclusion}
+%% TODO: Build on this section more
+The hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
 
 \subsection{Scalability}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
