@@ -624,7 +624,7 @@ The hollow matrix, $\covmat_h$, gives the best results by far when comparing the
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
-\subsubsection{Taking Advantage of the Sparsity of the $\mathbf{S}$ Matrix}
+\subsubsection{Taking Advantage of the Sparsity of $\mathbf{S}$}
 \label{sparsity_matrix}
 
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
@@ -755,7 +755,7 @@ The objective function for the performance for each algorithm is therefore given
 P = v_\text{cpev} - \gamma \left(k - \hat{k}\right)^2
 \label{obj_function}
 \end{equation}
-where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ is the actual sparsity returned. $\gamma$ is a tuning parameter and is the penalty multiplier for the difference in the desired sparsity versus the actual sparsity. 
+where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ is the actual sparsity returned. $\gamma$ is the penalty multiplier for the difference in the desired sparsity versus the actual sparsity.
 
 
 
@@ -764,7 +764,7 @@ where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ i
 
 
 \subsection{Testing the Sparse PCA Algorithms on Artificial Data}\label{testing}
-\subsubsection{Testing with Sparse Principal Components}
+\subsubsection{Testing with Sparse Principal Components for Continuous Data}
 \begin{comment}
 Results are in
 testing_SPCA_toy_data_2_5000.mat
@@ -1034,7 +1034,7 @@ Clearly, Table \ref{john_terry} refers to the retirement of England's former cap
 
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time periods.
 
-\subsection{Illustration using TPower and Spannogram PCA}
+\subsection{Comparing TPower and Spannogram PCA}
 To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparsities are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
 The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $S$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. 
@@ -1059,7 +1059,7 @@ Index & Word \\
 \label{murder_8}
 \end{table}
 
-The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $S$ is recovered and that the performance score for both be monotonically increasing with $k$.
+The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $S$ is recovered and that the performance score for both be monotonically increasing with $k$. Furthermore, any principal component extracted must have a higher eigenvalue (and therefore higher CPEV) than any of the subsequent principal components extracted. 
 \begin{comment}
 \begin{table}[H]
 \center
@@ -1102,7 +1102,7 @@ It can be concluded that the Spannogram PCA algorithm performs best when the mat
 
 
 
-\section{Further Implementation and Evaluation}
+\section{Implementation of Application}
 \begin{comment}
 From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont}, \cite{asteris} 
 and any others, and finding which ones would be best to use for the specific scenario. It may be the case that the Spannogram PCA algorithm performs worse with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
@@ -1113,10 +1113,13 @@ If along the way any other difficulties arise, due to scalability issues or the 
 
 \end{comment}
 
-\subsection{Big Data Streaming Applications}
+\subsection{Big Data Streaming Application}
 In this section, methods to ensure computational feasibility are considered, and an algorithm is created to make this possible under high volume data applications in which the rate of data is very large while the number of variables considered is comparatively low i.e. $m >> n$. As already mentioned previously, there are roughly 40k Tweets on average per day in London, which corresponds to quite a small volume which can be processed all in one go, but suppose that the world were to instead be considered, which would give a rate of about 58 million Tweets per day, then clearly a method would need to be considered to be able to process all that data in a streaming fashion. 
 
 Needless to say, this would only work if there were an actual trending topic in the whole of the population. 
+
+\subsubsection{Algorithm}
+%TODO Must add to the algorithm that the PC words must be added to the bag of words. 
 
 The algorithm can be described as follows.
 
@@ -1152,6 +1155,22 @@ $[\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}] = [\mathbf{V}_\text{new}, 
 The OldPCsValid function checks whether the old Sparse Principal Components are still valid by checking what the percentage of variance explained by them is and how this has has changed since the previous iteration, if this has changed significantly from the last batch or it falls beneath a certain (heuristic) threshold, then new Sparse PCs are computed using the algorithm of choice. 
 
 Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster. 
+\subsubsection{Parameter Choices}
+%TODO
+\begin{comment}
+Mention the following:
+- How to choose the size, k, of the batches.
+- How to choose the threshold for the CPEV. 
+- How to choose the size of the window size, W. 
+\end{comment}
+
+\subsubsection{Complexity}
+%TODO
+
+\subsubsection{Limitations}
+%TODO
+
+\clearpage
 
 \subsection{Financial Application: Hedging}
 \subsection{Bayesian Networks: Pearl's Algorithm}
@@ -1159,8 +1178,12 @@ Computation time is saved in two ways. Firstly, the covariance matrix doesn't ne
 
 \clearpage
 \section{Conclusion}
+%TODO
 \subsection{Optimal Choice of Parameters}
+%TODO
 \subsection{Further Work}
+%TODO
+
 
 \clearpage
 
