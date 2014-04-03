@@ -475,7 +475,8 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
 
-All testing is done using a subset of the Tweets, namely the first 1000 Tweets. This is roughly a day's worth of data. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 3 5-sparse PCAs are computed.
+All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
+
 \subsubsection{The Initial Matrix $\mathbf{A}$}
 The matrix which the sparse principal components are extracted from may take many forms. Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ where $\mathbf{S} \in \mathbb{R}^{m \times n}$ is the data matrix with $m$ rows as the Tweets and $n$ columns representing each of the words in the Bag-of-Words. However, different methods may also be explored which change the weightings of the features. 
 
@@ -484,27 +485,29 @@ The matrix which the sparse principal components are extracted from may take man
 \center
 \begin{tabular}{| c l | c l | c l |}
 \hline
-Index & Word & Index & Word & Index & Word\\
+Index & Word & Index & Word\\
 \hline
-2 & love & 3 & london & 1 & like\\
-6 & know & 83 & hall & 9 & back\\
-4 & people & 77 & royal & 44 & feel\\
-1 & like & 9 & back & 13 & going\\
-7 & don't & 166 & albert & 15 & follow\\
+2 & - & 1 & - \\
+1 & - & 3 & - \\
+4 & - & 9 & - \\
+3 & - & 17 & -\\
+6 & - & 8 & -\\
+10 & - & 6 & -\\ 
+7 & - & 4 & -\\
+9 & - & 11 & -\\
 \hline
-Eigenvalue & 44.4 & Eigenvalue & 35.1 & Eigenvalue & 33.1\\
+Eigenvalue & 818.8883  & Eigenvalue & 557.2168\\
 \hline
 \end{tabular}
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
-
+\begin{comment}
 As it can be seen, two of the three principal components in this case do not really convey much information as to any particular event that took place and are just words that may be used together quite often but not especially when a certain event takes place, however the middle one does seem to give some insight. It seems to indicate that during the time these Tweets were created there was an event at the Royal Albert Hall in London. 
 
 The eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. In this scenario, the second principal component seems to get the second highest eigenvalue, which should be noted for the next case. 
+\end{comment}
   
 \subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
-\textbf{NOT COMPLETE}
-
 
 %% TODO
 %% Illustrate difference using hollow and non-hollow with S_xad! VERY BIG DIFFERENCE.
@@ -524,18 +527,21 @@ $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}']_{i, j}$, it takes 
 \center
 \begin{tabular}{| c l | c l | c l |}
 \hline
-Index & Word & Index & Word & Index & Word\\
+Index & Word & Index & Word\\
 \hline
-6 & know & 13 & going & 3 & london\\
-7 & don't & 22 & some & 83 & hall\\
-1 & like & 14 & sleep & 77 & royal\\
-16 & about & 52 & **** & 166 & albert\\
-4 & people & 102 & house & 124 & greater\\
+12 & - & 23 & - \\
+827 & - & 60 & - \\
+889 & - & 13 & - \\
+240 & - & 5 & -\\
+783 & - & 40 & -\\
+756 & - & 8 & -\\ 
+190 & - & 4 & -\\
+787 & - & 3 & -\\
 \hline
-Eigenvalue & 13.5 & Eigenvalue & 9.6 & Eigenvalue & 16.6\\
+Eigenvalue & 239.2562  & Eigenvalue & 166.0273 \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 In this case, once again two of the three principal components are not very insightful but the third is again talking about the Royal Albert Hall in London. The interesting thing to not here is that the associated eigenvalue for the third principal component and the most useful is actually the highest. This, as suspected, means that this method gives significantly better results that the previous method.
@@ -544,21 +550,25 @@ In this case, once again two of the three principal components are not very insi
 Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic concept is to make it so that all the rows/columns sum to 1 so that it does not matter which words actually appear the most, but how often they appear with other words relative to their weighting.
 
 \subsubsection*{Results}
-
 \begin{table}[H]
 \center
 \begin{tabular}{| c l | c l | c l |}
 \hline
-Index & Word & Index & Word & Index & Word\\
+Index & Word & Index & Word\\
 \hline
-1782 & glisse & 2084 & cried & 1615 & iwalnut\\
-1484 & mafia & 1692 & hollyoakslater & 2339 & arre\\
-773 & volton & 873 & tonight's &2422 & abrazo\\
-1008 & sons & 2382 & alkolik & 1351 & olmaden\\
-2086 & conette & 900 & throuhout & 1711 & hermano\\
+2 & - & 1 & - \\
+1 & - & 3 & - \\
+4 & - & 9 & - \\
+3 & - & 17 & -\\
+6 & - & 8 & -\\
+10 & - & 6 & -\\ 
+7 & - & 4 & -\\
+9 & - & 11 & -\\
+\hline
+Eigenvalue & -  & Eigenvalue & - \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the hollow matrix, $ \mathbf{A}_n$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. }
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
@@ -571,7 +581,33 @@ Since the matrix $\covmat = \smat\tp\smat$ can be viewed as an undirected graph,
 \mathbf{L} = \mathbf{D} - \mathbf{B}
 \end{equation}
 
-where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element on the diagonal is the number of times an edge terminates on the the word index by the index of the diagonal. $\mathbf{B}$ is the adjacency matrix and element $[\mathbf{B}]_{i, j}$ is 1 if $i = j$ and 0 otherwise.
+where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element on the diagonal is the number of times an edge terminates on the the word index by the index of the diagonal. $\mathbf{B}$ is the adjacency matrix and element $[\mathbf{B}]_{i, j}$ is 1 if $i = j$ and 0 otherwise. More about the Laplacian is explained in \cite{laplacian}. 
+
+\subsubsection*{Results}
+%% TODO
+\textbf{ADD RESULTS}
+\subsubsection*{Results}
+\begin{table}[H]
+\center
+\begin{tabular}{| c l | c l | c l |}
+\hline
+Index & Word & Index & Word\\
+\hline
+2 & - & 1 & - \\
+1 & - & 3 & - \\
+4 & - & 9 & - \\
+3 & - & 17 & -\\
+6 & - & 8 & -\\
+10 & - & 6 & -\\ 
+7 & - & 4 & -\\
+9 & - & 11 & -\\
+\hline
+Eigenvalue & -  & Eigenvalue & - \\
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
+
 \subsection{Scalability}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
@@ -1117,9 +1153,9 @@ Computation time is saved in two ways. Firstly, the covariance matrix doesn't ne
 \appendix
 \pagenumbering{Roman}
 
-\section*{A. PCA Explained (A variant of \cite{bishop})}
+\section*{A. PCA Formulation Explained (A variant of \cite{bishop})}
 
-Consider a set of observations $\{\mathbf{x}x_n\}$ for $n = 1, ..., N$ and each $\mathbf{x}_n \in \mathbb{R}^D$, to project the data onto just one dimension whilst keeping the maximum amount of variation possible (and therefore information), we can project the data onto one D-dimensional vector, $\mathbf{u}_1 \in \mathbb{R}^D$. The mean of the projected data is then $\mathbf{u}_1^T \mathbf{\overline{x}}$, where
+Consider a set of observations $\{\mathbf{x}_n\}$ for $n = 1, ..., N$ and each $\mathbf{x}_n \in \mathbb{R}^D$, to project the data onto just one dimension whilst keeping the maximum amount of variation possible (and therefore information), we can project the data onto one D-dimensional vector, $\mathbf{u}_1 \in \mathbb{R}^D$. The mean of the projected data is then $\mathbf{u}_1^T \mathbf{\overline{x}}$, where
 \begin{equation*}
 \mathbf{\overline{x}} = \frac{1}{N} \sum_{n = 1}^N \mathbf{x}_n 
 \end{equation*} 
