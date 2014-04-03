@@ -470,15 +470,13 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 \subsection{The Matrix $\mathbf{A}$}
 \label{covmat}
-\textbf{MUST REDO WITH $\smat_{xad}$}
 
+The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words appear to have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
 
-The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
-
-All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
+All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
 
 \subsubsection{The Initial Matrix $\mathbf{A}$}
-The matrix which the sparse principal components are extracted from may take many forms. Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ where $\mathbf{S} \in \mathbb{R}^{m \times n}$ is the data matrix with $m$ rows as the Tweets and $n$ columns representing each of the words in the Bag-of-Words. However, different methods may also be explored which change the weightings of the features. 
+Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ where $\mathbf{S} \in \mathbb{R}^{m \times n}$ is the data matrix with $m$ rows as the Tweets and $n$ columns representing each of the words in the Bag-of-Words. However, different methods may also be explored which change the weightings of the features. As can be seen in the Appendix, the element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered. Any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
 
 \subsubsection*{Results}
 \begin{table}[H]
@@ -487,35 +485,33 @@ The matrix which the sparse principal components are extracted from may take man
 \hline
 Index & Word & Index & Word\\
 \hline
-2 & - & 1 & - \\
-1 & - & 3 & - \\
-4 & - & 9 & - \\
-3 & - & 17 & -\\
-6 & - & 8 & -\\
-10 & - & 6 & -\\ 
-7 & - & 4 & -\\
-9 & - & 11 & -\\
+2 & need & 1 & haha \\
+1 & haha & 3 & want \\
+4 & work & 9 &only\\
+3 & want & 17 & i've\\
+6 & them & 8 & thanks\\
+10 & still& 6 & them\\ 
+7 & yeah & 4 & work\\
+9 & only & 11 & night\\
 \hline
 Eigenvalue & 818.8883  & Eigenvalue & 557.2168\\
 \hline
 \end{tabular}
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
-\begin{comment}
-As it can be seen, two of the three principal components in this case do not really convey much information as to any particular event that took place and are just words that may be used together quite often but not especially when a certain event takes place, however the middle one does seem to give some insight. It seems to indicate that during the time these Tweets were created there was an event at the Royal Albert Hall in London. 
 
-The eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. In this scenario, the second principal component seems to get the second highest eigenvalue, which should be noted for the next case. 
-\end{comment}
+As it can be seen in the above table, the words of the sparse principal components do not really convey much information as to any particular event that took place and looking at their index, which is their rank according to the total number of times the particular word appears in the set of Tweets, they are all in the top 20 words. So essentially, the algorithm seems to be picking up these words purely because they occur very frequently. The least frequent word, ``i've'' appears 455 times, which will be useful to note when comparing with the results of variants of $\covmat$.
+
+Something that is useful to note is that the eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. It should be noted, however, that these eigenvalues are only useful to compare principal components which have been extracted using the same type of $\covmat$ for a specific set of Tweets.
+
   
 \subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
 
-%% TODO
-%% Illustrate difference using hollow and non-hollow with S_xad! VERY BIG DIFFERENCE.
-As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as an undirected graph with each node being a word and each link being the number of times that word appears with the connecting word node in the same Tweet for all Tweets. This representation is meaningful, however the problem lies in the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix. In attempt to prevent this, the matrix $\mathbf{A}$ can be substituted for 
-$\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}']_{i, j}$, it takes the value 
+As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex for all the Tweets. This representation is meaningful, however the problem lies in the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
+$\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}_h]_{i, j}$, it takes the value 
 
 \begin{equation}
-[\mathbf{A}']_{i, j}= 
+[\mathbf{A}_h]_{i, j}= 
 \begin{cases}
 [\mathbf{A}]_{i, j} & \text{if}\ i \neq j\\
 0 & \text{if}\ i = j
@@ -529,14 +525,14 @@ $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}']_{i, j}$, it takes 
 \hline
 Index & Word & Index & Word\\
 \hline
-12 & - & 23 & - \\
-827 & - & 60 & - \\
-889 & - & 13 & - \\
-240 & - & 5 & -\\
-783 & - & 40 & -\\
-756 & - & 8 & -\\ 
-190 & - & 4 & -\\
-787 & - & 3 & -\\
+12 & please & 23 & happy \\
+827 & officers & 60 & birthday \\
+889 & murders & 13 & make \\
+240 & following & 5 & follow\\
+783 & fallen & 40 & hope\\
+756 & recent & 8 & thanks\\ 
+190 & police & 4 & work\\
+787 & colleagues & 3 & want\\
 \hline
 Eigenvalue & 239.2562  & Eigenvalue & 166.0273 \\
 \hline
@@ -544,7 +540,9 @@ Eigenvalue & 239.2562  & Eigenvalue & 166.0273 \\
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
-In this case, once again two of the three principal components are not very insightful but the third is again talking about the Royal Albert Hall in London. The interesting thing to not here is that the associated eigenvalue for the third principal component and the most useful is actually the highest. This, as suspected, means that this method gives significantly better results that the previous method.
+In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together or separately. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 19th September 2012, where 2 police officers were killed and resulted in a trending topic on Twitter. 
+
+What is useful to note is that in the case of the first PC 7 or the 8 words a rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
 \subsubsection{The Normalised Matrix $\mathbf{A}_{n}$}
 Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic concept is to make it so that all the rows/columns sum to 1 so that it does not matter which words actually appear the most, but how often they appear with other words relative to their weighting.
@@ -573,19 +571,16 @@ Eigenvalue & -  & Eigenvalue & - \\
 
 Clearly this gives results that are absolutely irrelevant. The reason for this is because, now that all the words have been normalised, those that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
-\subsubsection{The Laplacian Matrix $\mathbf{A}_{l}$}
+\subsubsection{The Weighted Laplacian Matrix $\mathbf{A}_{l}$}
 
-Since the matrix $\covmat = \smat\tp\smat$ can be viewed as an undirected graph, it is natural to consider its Laplacian also. The Laplacian, $\mathbf{L}$, of a graph is given by the following equation:
+The weighted Laplacian is similar to to its unweighted counterpart but each edge is instead given a weight. This is much closer to the application being considered in this paper, as the weights are the number of occurrences of the corresponding words. $\mathbf{A}_{l}$, of a graph is given by the following equation:
 
 \begin{equation}
-\mathbf{L} = \mathbf{D} - \mathbf{B}
+\mathbf{A}_{l} = \mathbf{D} - \mathbf{B}
 \end{equation}
 
-where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element on the diagonal is the number of times an edge terminates on the the word index by the index of the diagonal. $\mathbf{B}$ is the adjacency matrix and element $[\mathbf{B}]_{i, j}$ is 1 if $i = j$ and 0 otherwise. More about the Laplacian is explained in \cite{laplacian}. 
+where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element $j$ on the diagonal is the sum of the weights of the edges that are connected to the vertex representing word $j$. $\mathbf{B}$ is the weighted adjacency matrix and is equal to $\smat\tp\smat$. More about the Laplacian is explained in \cite{laplacian} and \cite{laplacian_spielman}. 
 
-\subsubsection*{Results}
-%% TODO
-\textbf{ADD RESULTS}
 \subsubsection*{Results}
 \begin{table}[H]
 \center
@@ -593,16 +588,42 @@ where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix
 \hline
 Index & Word & Index & Word\\
 \hline
-2 & - & 1 & - \\
-1 & - & 3 & - \\
-4 & - & 9 & - \\
-3 & - & 17 & -\\
-6 & - & 8 & -\\
-10 & - & 6 & -\\ 
-7 & - & 4 & -\\
-9 & - & 11 & -\\
+6 & them & 16 & should\\
+28 & over & 17 & i've\\
+31 & down & 10 & still\\
+32 & after & 6 & them \\
+13 & make & 85 & their\\
+42 & week & 4 & work\\
+43 & though & 14 & here\\
+21 & look & 33 & getting\\
 \hline
-Eigenvalue & -  & Eigenvalue & - \\
+Eigenvalue & 607.6730  & Eigenvalue & 592.4499 \\
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
+
+\subsubsection{The Weighted Laplacian of the Hollow Matrix $\mathbf{A}_{lh}$}
+
+In this case, the Laplacian matrix is created of using the hollow matrix, $\covmat_h$ described above. This is to, once again, remove any relationship of the words with themselves. 
+
+\subsubsection*{Results}
+\begin{table}[H]
+\center
+\begin{tabular}{| c l | c l | c l |}
+\hline
+Index & Word & Index & Word\\
+\hline
+6 & them & 3 & want\\
+4 & work & 9 & only\\
+9 & only & 7 & yeah\\
+2 & need & 1 & haha\\
+13 & make & 53 & take\\
+10 & still & 16 & should\\
+31 & down & 85 & their\\
+67 & something & 30 & never\\
+\hline
+Eigenvalue & $1.1843\times 10^3$  & Eigenvalue & $1.1355 \times 10^3$   \\
 \hline
 \end{tabular}
 \caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
@@ -1240,6 +1261,10 @@ A =
 Since $a_{i, j} = 1$ when the word $j$ appears in Tweet $i$ and otherwise 0, the resulting matrix is basically a symmetric matrix with entry $(i, j)$ being composed of the number of times word $j$ occurs with word $i$ in the same Tweet over all the Tweets. The diagonal is  therefore the number of times the word $j$ appears over all the Tweets.
 
 This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $A$.  
+
+\section*{C. Laplacian Matrix}
+%% TODO
+
 
 
 \end{document}
