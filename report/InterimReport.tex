@@ -1035,9 +1035,10 @@ Clearly, Table \ref{john_terry} refers to the retirement of England's former cap
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time periods.
 
 \subsection{Comparing TPower and Spannogram PCA}
+% Results can be found in spannogram_vs_tpower.mat and then looking at the metrics matrix.
 To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparsities are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
-The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $S$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. 
+The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $S$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
 
 \begin{table}[H]
 \center
@@ -1059,33 +1060,23 @@ Index & Word \\
 \label{murder_8}
 \end{table}
 
-The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $S$ is recovered and that the performance score for both be monotonically increasing with $k$. Furthermore, any principal component extracted must have a higher eigenvalue (and therefore higher CPEV) than any of the subsequent principal components extracted. 
-\begin{comment}
-\begin{table}[H]
-\center
-\begin{tabular}{|c|r|r|r|r|}
-\hline
- & \multicolumn{2}{ |c|}{TPower } & \multicolumn{2}{ |c|}{Spannogram }\\
-\hline
-Sparsity& PC1 & PC2 & PC1 & PC2\\
-\hline
-4& 77.51 & 155.56 & 104.5 & 158.14\\
-5& 87.00 & 83.84 & 138.00 & 162.15\\
-6& 95.14 & 97.44 & 171.67 & 162.64\\
-7& 107.53 & 103.07 & 205.44 & 165.98\\
-8& 117.11 & 239.25 & 239.26 & 165.91\\
-\hline
-\end{tabular}
-\caption{Explained variance captured by first two principal components calculated by the TPower algorithm and the Spannogram algorithm.}
-\label{explained_var_table}
-\end{table}
+The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $S$ is recovered and that the performance score for both be monotonically increasing with $k$. Furthermore, any principal component extracted must have a higher eigenvalue (and therefore higher CPEV) than any of the following principal components extracted. 
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{TPower_VS_Spannogram.jpg}
-\caption{How the explained variance of the principal components varies with the sparsity.}
+\includegraphics[scale=0.3]{Spannogram_vs_TPower_k.eps}
+\caption{How the explained variance of the principal components varies with the number of non-zero elements in it, $k$.}
 \label{explained_var_graph}
 \end{figure}
+
+\begin{comment}
+%TODO Explain these results against the criteria stated above. 
+- Explain how the 2nd PC for TPower gives a higher variance than the first => bad.
+- Explain how for TPower not monotonically increasing until k = 8.
+- Explain how spannogram always wins.
+\end{comment}
+
+\begin{comment}
 
 
 As shown in Table \ref{explained_var_table} and Figure \ref{explained_var_graph} the Spannogram PCA algorithm always outperforms the TPower algorithm for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $S$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
@@ -1162,6 +1153,7 @@ Mention the following:
 - How to choose the size, k, of the batches.
 - How to choose the threshold for the CPEV. 
 - How to choose the size of the window size, W. 
+- How to choose max number of trending topics.
 \end{comment}
 
 \subsubsection{Complexity}
