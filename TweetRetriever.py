@@ -54,10 +54,8 @@ class TweetRetriever:
       # Some of the lines have encoding errors so ignore them  
       except UnicodeDecodeError:
         numberConsecutivePasses += 1
-        print("UnicodeDecodeError")
         pass
       except:
         numberConsecutivePasses += 1
-        print("Other error")
         pass
     return self.currentTweets 

@@ -74,7 +74,7 @@ print("    Size: " + str(len(listOfWords)))
 print("--- Finished printing number of unique and relevant words ---")
 # Make a matrix of size (len(tweetSet)+1)x(len(setOfWords)+1). The first row will have the words and the first column will have the tweets (NOT the zeroth).
 print("--- Opening file to output result to ---")
-fileOut = open("S", "w")
+fileOut = open("S_xab", "w")
 
 # Make a file that has the words that are indexed by the columns of the matrix with their index to the left.
 print("--- Opening file to output index of words to ---")
