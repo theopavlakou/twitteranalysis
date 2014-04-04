@@ -142,7 +142,7 @@ The purpose of this study is to examine how a certain implementations of Sparse 
 
 \section{Notation}
 
-Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ will be reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ and this corresponds to the covariance matrix of $\mathbf{S}$. $\mathbf{v}_i$ will be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ will denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=0}^n{\mathbf{[A}]_{i, j}^2}}}$.
+Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ is reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ and this corresponds to the co-occurence matrix of $\mathbf{S}$. $\mathbf{v}_i$ is to be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. Both $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=0}^n{\mathbf{[A}]_{i, j}^2}}}$.
 \section{Background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
@@ -668,7 +668,7 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \hline
 \end{tabular}
 \label{pcs_police}
-\caption{The first principal component of Twitter data during the period 25th September 2012 to the 26th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets.}
+\caption{The first principal component of Twitter data during the period 25th September 2012 to the 26th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
 \end{table}
 
 \begin{table}[H]
@@ -697,12 +697,43 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \hline
 \end{tabular}
 \label{pcs_jterry}
-\caption{The first principal component of Twitter data during the period 23rd September 2012 to the 24th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets.}
+\caption{The first principal component of Twitter data during the period 23rd September 2012 to the 24th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
+\end{table}
+
+\begin{table}[H]
+\center
+\begin{tabular}{| r | l | r | l| r | l | r | l|}
+\hline
+\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_h$}& \multicolumn{2}{|c|}{Matrix $\covmat_l$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
+
+\hline
+Index & Word &Index & Word & Index & Word & Index & Word\\
+\hline
+2 & haha & 14 & \textbf{rydercup} & 16 & them& 7 & still\\
+4 & need  & 38 & \textbf{europe} & 9 & only &  6 & xfactor\\
+8 & work &91 & \textbf{rydercup2012}& 7 & still  & 8 & work \\
+
+5 & work & 160 & \textbf{teameurope}&44 & year  & 27 & right \\
+
+7 & still &  12 & \textbf{great}&27 & right   & 40 & life\\
+
+6 & xfactor & 77 & \textbf{golf}  &64& weekend & 112 & other  \\ 
+
+3 & night &23 & done & 37 & week & 162 & there's\\
+ 
+9 & only & 102 & \textbf{ryder}  & 8 & work & 9 & only\\
+
+\hline
+\end{tabular}
+\label{pcs_ryder}
+\caption{The first principal component of Twitter data during the period 30th September 2012 to the 1st October 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
 \end{table}
 
 \subsubsection*{Conclusion}
 %TODO Build on this section more
-As can be seen from Tables \ref{pcs_police} and \ref{pcs_jterry}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
+As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, can be applied to any sparse principal component analysis application when using binary data to discover relationships in features that may otherwise be overpowered by components that do not necessarily give smart results. 
+
+Something else of interest is that, though the Twitter Data is the same as that used in \cite{microblogs}, the events that are discovered are different but still completely valid as can be confirmed by other sources.
 
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
