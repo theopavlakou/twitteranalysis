@@ -352,7 +352,7 @@ Furthermore, as mentioned previously, sparse PCA-like algorithms are also an act
 
 Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
 \begin{equation}
-\mathbf{v}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0^2 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
+\mathbf{v}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
 where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms come in. 
 
@@ -438,6 +438,8 @@ Other reasons this algorithm has been chosen is because it has a safe feature el
 \clearpage
 
 \section{Parameters to the Algorithms}
+
+In this section, various parameters which are inputted to the Sparse PCA algorithms are examined, since the application being considered is quite specific but is highly applicable to many different areas of big data analysis. Therefore, finding the optimal conditions for these algorithms to find sparse PCs is very beneficial. 
 \subsection{The Bag-of-Words: The Features of the Data}
 The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of case i.e. ``Road'' and ``road'' are to be considered equal. 
 
@@ -486,7 +488,10 @@ Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf
 \subsubsection*{Results}
 \begin{table}[H]
 \center
-\begin{tabular}{| c l | c l | c l |}
+\begin{tabular}{| r| l | r| l |}
+\hline
+\multicolumn{2}{|c|}{PC 1} & \multicolumn{2}{|c|}{PC 2}
+\\
 \hline
 Index & Word & Index & Word\\
 \hline
@@ -499,10 +504,10 @@ Index & Word & Index & Word\\
 7 & yeah & 4 & work\\
 9 & only & 11 & night\\
 \hline
-Eigenvalue & 818.8883  & Eigenvalue & 557.2168\\
+\multicolumn{2}{|c|}{ $\lambda_1 = 818.89$}  & \multicolumn{2}{|c|}{ $\lambda_2 = 557.25$}  \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 As it can be seen in the above table, the words of the sparse principal components do not really convey much information as to any particular event that took place and looking at their index, which is their rank according to the total number of times the particular word appears in the set of Tweets, they are all in the top 20 words. So essentially, the algorithm seems to be picking up these words purely because they occur very frequently. The least frequent word, ``i've'' appears 455 times, which will be useful to note when comparing with the results of variants of $\covmat$.
@@ -526,7 +531,9 @@ $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}_h]_{i, j}$, it takes
 \subsubsection*{Results}
 \begin{table}[H]
 \center
-\begin{tabular}{| c l | c l | c l |}
+\begin{tabular}{| r| l | r| l |}
+\hline
+\multicolumn{2}{|c|}{PC 1} & \multicolumn{2}{|c|}{PC 2}\\
 \hline
 Index & Word & Index & Word\\
 \hline
@@ -539,10 +546,10 @@ Index & Word & Index & Word\\
 190 & police & 4 & work\\
 787 & colleagues & 3 & want\\
 \hline
-Eigenvalue & 239.2562  & Eigenvalue & 166.0273 \\
+\multicolumn{2}{|c|}{ $\lambda_{h, 1} = 239.26$}  & \multicolumn{2}{|c|}{ $\lambda_{h, 2} = 166.03$}  \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the Hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the Hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together or separately. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 19th September 2012, where 2 police officers were killed and resulted in a trending topic on Twitter. 
@@ -568,7 +575,9 @@ where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix
 \subsubsection*{Results}
 \begin{table}[H]
 \center
-\begin{tabular}{| c l | c l | c l |}
+\begin{tabular}{| r| l | r| l |}
+\hline
+\multicolumn{2}{|c|}{PC 1} & \multicolumn{2}{|c|}{PC 2}\\
 \hline
 Index & Word & Index & Word\\
 \hline
@@ -581,10 +590,11 @@ Index & Word & Index & Word\\
 43 & though & 14 & here\\
 21 & look & 33 & getting\\
 \hline
-Eigenvalue & 607.6730  & Eigenvalue & 592.4499 \\
+\multicolumn{2}{|c|}{ $\lambda_{l, 1} =  607.67$}  & \multicolumn{2}{|c|}{ $\lambda_{l, 2} = 592.45$}  \\
+
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the Laplacian matrix, $ \mathbf{A}_l$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 2 principal components using the algorithm on the Laplacian matrix, $ \mathbf{A}_l$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 In this case, once again, both principal components do not seem to convey any useful information and it appears that most included words are just high frequency words in general. This may have to do with the fact that the diagonal has not been removed, as in the case of $\covmat_h$, which means that a similar effect is taking place as in the matrix $\covmat$.
@@ -596,7 +606,9 @@ To try to improve the results of the Laplacian, this time the matrix is created 
 \subsubsection*{Results}
 \begin{table}[H]
 \center
-\begin{tabular}{| c l | c l | c l |}
+\begin{tabular}{| r| l | r| l |}
+\hline
+\multicolumn{2}{|c|}{PC 1} & \multicolumn{2}{|c|}{PC 2}\\
 \hline
 Index & Word & Index & Word\\
 \hline
@@ -609,17 +621,49 @@ Index & Word & Index & Word\\
 31 & down & 85 & their\\
 67 & something & 30 & never\\
 \hline
-Eigenvalue & $1.1843\times 10^3$  & Eigenvalue & $1.1355 \times 10^3$   \\
+\multicolumn{2}{|c|}{ $\lambda_{lh,1} =1.1843\times 10^3$}  &
+\multicolumn{2}{|c|}{ $\lambda_{lh, 2} = 1.1355 \times 10^3$}  \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the matrix, $ \mathbf{A}_{lh}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 2 principal components using the algorithm on the matrix, $ \mathbf{A}_{lh}$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 The results however seem to indicate that this scenario also does not give anything useful. This is again due to the fact that the diagonal will be non-zero and will have the highest absolute value of any of the other entries in the same row, in fact it will be their sum with the opposite sign.  
 
 \subsubsection*{Conclusion}
 %TODO Build on this section more
-The hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
+\begin{table}[H]
+\center
+\begin{tabular}{| r | l | r | l| r | l | r | l|}
+\hline
+\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_l$}& \multicolumn{2}{|c|}{Matrix $\covmat_h$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
+
+\hline
+Index & Word &Index & Word & Index & Word & Index & Word\\
+\hline
+2 & need  & 6 & them & 12 & \textbf{please} & 6 & them\\
+1 & haha &28 & over  & 827 & \textbf{officers} &  4 & work\\
+4 & work& 31 & down &889 & \textbf{murders} & 9 & only \\
+
+3 & want &32 & after & 240 & \textbf{following} & 2 & need \\
+
+6 & them&13 & make  & 783 & \textbf{fallen} & 13 & make\\
+
+10 & still &42 & week & 756 & \textbf{recent} & 10 & still  \\ 
+
+7 & yeah  & 43 & though&190 & \textbf{police} & 31 & down\\
+ 
+9 & only & 21 & look & 787 & \textbf{colleagues} & 67 & something \\
+
+\hline
+\multicolumn{2}{|c|}{$\lambda = 818.89$ }& \multicolumn{2}{|c|}{$\lambda_l = 607.67$}  &\multicolumn{2}{|c|}{$\lambda_h = 239.26$}  & \multicolumn{2}{|c|}{$\lambda_{lh} = 1.1843\times 10^3$ }   \\
+\hline
+\end{tabular}
+\label{pcs_police}
+\caption{The first principal component using the Spannogram Algorithm the variants of the co-occurence matrix. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
+
+As can be seen from Table \ref{pcs_police}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
 
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
