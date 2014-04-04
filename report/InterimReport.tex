@@ -630,7 +630,9 @@ Index & Word & Index & Word\\
 
 The results however seem to indicate that this scenario also does not give anything useful. This is again due to the fact that the diagonal will be non-zero and will have the highest absolute value of any of the other entries in the same row, in fact it will be their sum with the opposite sign.  
 
-\subsubsection*{Conclusion}
+\subsubsection*{Further Testing and Aggregation of Results}
+
+The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012, this time only taking the first principal component and once again only the hollow matrix gives a PC which corresponds to an actual single distinct event that took place at that time, where John Terry, England's football team's former captain retired from international football \footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football}
 %TODO Build on this section more
 \begin{table}[H]
 \center
@@ -655,15 +657,45 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
  
 9 & only & 21 & look & 787 & \textbf{colleagues} & 67 & something \\
 
-\hline
-\multicolumn{2}{|c|}{$\lambda = 818.89$ }& \multicolumn{2}{|c|}{$\lambda_l = 607.67$}  &\multicolumn{2}{|c|}{$\lambda_h = 239.26$}  & \multicolumn{2}{|c|}{$\lambda_{lh} = 1.1843\times 10^3$ }   \\
+
 \hline
 \end{tabular}
 \label{pcs_police}
-\caption{The first principal component using the Spannogram Algorithm the variants of the co-occurence matrix. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first principal component of Twitter data during the period 25th September 2012 to the 26th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets.}
 \end{table}
 
-As can be seen from Table \ref{pcs_police}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
+\begin{table}[H]
+\center
+\begin{tabular}{| r | l | r | l| r | l | r | l|}
+\hline
+\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_l$}& \multicolumn{2}{|c|}{Matrix $\covmat_h$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
+
+\hline
+Index & Word &Index & Word & Index & Word & Index & Word\\
+\hline
+1 & haha  & 12 & them & 121 & \textbf{terry} & 5 & still\\
+7 & yeah &68 & their & 120 & \textbf{john} &  3 & night\\
+3 & night& 10 & great &321 & \textbf{international} & 7 & yeah \\
+
+5 & still &44 & ever & 908 & \textbf{retires} & 12 & them \\
+
+12 & them&33 & better  & 772 & \textbf{retired} & 2 & need\\
+
+6 & work &3& night & 1558 & \textbf{retirement} & 11 & only  \\ 
+
+2 & need  & 29 & after&66 & \textbf{football} & 6 & work\\
+ 
+9 & thanks & 21 & weak & 144 & \textbf{england} & 33 & better\\
+
+\hline
+\end{tabular}
+\label{pcs_jterry}
+\caption{The first principal component of Twitter data during the period 23rd September 2012 to the 24th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets.}
+\end{table}
+
+\subsubsection*{Conclusion}
+
+As can be seen from Tables \ref{pcs_police} and \ref{pcs_jterry}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
 
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
