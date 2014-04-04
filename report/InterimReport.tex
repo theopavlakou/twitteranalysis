@@ -131,7 +131,7 @@
 
 \section{Introduction}
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
-One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the features in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated with respect to a batch of Twitter data gathered from London in 2012 and then methods of improvement to one of the algorithms is also considered as well methods to scale it. 
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the features in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated with respect to a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}} and then methods of improvement to one of the algorithms is also considered as well methods to scale it. 
 
 %% Mention only if reference is found
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
@@ -478,7 +478,7 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 \subsection{The Co-occurrence Matrix: $\mathbf{A}$}
 \label{covmat}
 
-The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as it determines the sort of relationship the words appear to have with one another. As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as a representation of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex over all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered and any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
+The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as it determines the sort of relationship the words appear to have with one another. As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as a weighted adjacency matrix of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex over all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered and any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
 
 In this section, variations of the matrix are considered and evaluated against each other so as to find the optimal one to be used for the final implementation. All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
 
@@ -516,6 +516,7 @@ Something that is useful to note is that the eigenvalues also give some good ins
 
   
 \subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
+%TODO Demonstrate this with a 3x3 matrix e.g. [20, 0, 0; 0, 3, 3; 0, 3, 3]
 
 The problem with the previous matrix is the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
 $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}_h]_{i, j}$, it takes the value 
@@ -552,7 +553,7 @@ Index & Word & Index & Word\\
 \caption{The first 3 principal components using the algorithm on the Hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
-In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together or separately. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 19th September 2012, where 2 police officers were killed and resulted in a trending topic on Twitter. 
+In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together or separately. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 18th September 2012\footnote{As confirmed by BBC News: http://www.bbc.co.uk/news/uk-england-19635239}, where 2 police officers were killed and resulted in a trending topic on Twitter. 
 
 What is useful to note is that in the case of the first PC 7 or the 8 words a rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
@@ -632,30 +633,36 @@ The results however seem to indicate that this scenario also does not give anyth
 
 \subsubsection*{Further Testing and Aggregation of Results}
 
-The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012, this time only taking the first principal component and once again only the hollow matrix gives a PC which corresponds to an actual single distinct event that took place at that time, where John Terry, England's football team's former captain retired from international football \footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football}
-%TODO Build on this section more
+
+The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012, this time only taking the first principal component and the results can be seen in Table \ref{pcs_jterry}. Once again only the hollow matrix gives a PC which corresponds to an actual single distinct event that took place at that time, which refers the retirement of England's former captain, John Terry, from international football.\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football}
+\begin{comment}
+The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. 
+
+These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time periods.
+\end{comment}
+
 \begin{table}[H]
 \center
 \begin{tabular}{| r | l | r | l| r | l | r | l|}
 \hline
-\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_l$}& \multicolumn{2}{|c|}{Matrix $\covmat_h$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
+\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_h$}& \multicolumn{2}{|c|}{Matrix $\covmat_l$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
 
 \hline
 Index & Word &Index & Word & Index & Word & Index & Word\\
 \hline
-2 & need  & 6 & them & 12 & \textbf{please} & 6 & them\\
-1 & haha &28 & over  & 827 & \textbf{officers} &  4 & work\\
-4 & work& 31 & down &889 & \textbf{murders} & 9 & only \\
+2 & need & 12 & \textbf{please}  & 6 & them & 6 & them\\
+1 & haha & 827 & \textbf{officers}  &28 & over &  4 & work\\
+4 & work &889 & \textbf{murders} & 31 & down& 9 & only \\
 
-3 & want &32 & after & 240 & \textbf{following} & 2 & need \\
+3 & want & 240 & \textbf{following} &32 & after & 2 & need \\
 
-6 & them&13 & make  & 783 & \textbf{fallen} & 13 & make\\
+6 & them & 783 & \textbf{fallen}&13 & make  & 13 & make\\
 
-10 & still &42 & week & 756 & \textbf{recent} & 10 & still  \\ 
+10 & still & 756 & \textbf{recent} &42 & week & 10 & still  \\ 
 
-7 & yeah  & 43 & though&190 & \textbf{police} & 31 & down\\
+7 & yeah&190 & \textbf{police}  & 43 & though & 31 & down\\
  
-9 & only & 21 & look & 787 & \textbf{colleagues} & 67 & something \\
+9 & only & 787 & \textbf{colleagues} & 21 & look & 67 & something \\
 
 
 \hline
@@ -668,24 +675,24 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \center
 \begin{tabular}{| r | l | r | l| r | l | r | l|}
 \hline
-\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_l$}& \multicolumn{2}{|c|}{Matrix $\covmat_h$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
+\multicolumn{2}{|c|}{Matrix $\covmat$ }& \multicolumn{2}{|c|}{Matrix $\covmat_h$}& \multicolumn{2}{|c|}{Matrix $\covmat_l$} & \multicolumn{2}{|c|}{Matrix $\covmat_{lh}$} \\
 
 \hline
 Index & Word &Index & Word & Index & Word & Index & Word\\
 \hline
-1 & haha  & 12 & them & 121 & \textbf{terry} & 5 & still\\
-7 & yeah &68 & their & 120 & \textbf{john} &  3 & night\\
-3 & night& 10 & great &321 & \textbf{international} & 7 & yeah \\
+1 & haha & 121 & \textbf{terry} & 12 & them& 5 & still\\
+7 & yeah  & 120 & \textbf{john} &68 & their &  3 & night\\
+3 & night&321 & \textbf{international}& 10 & great  & 7 & yeah \\
 
-5 & still &44 & ever & 908 & \textbf{retires} & 12 & them \\
+5 & still & 908 & \textbf{retires}&44 & ever  & 12 & them \\
 
-12 & them&33 & better  & 772 & \textbf{retired} & 2 & need\\
+12 & them& 772 & \textbf{retired}&33 & better   & 2 & need\\
 
-6 & work &3& night & 1558 & \textbf{retirement} & 11 & only  \\ 
+6 & work& 1558 & \textbf{retirement}  &3& night & 11 & only  \\ 
 
-2 & need  & 29 & after&66 & \textbf{football} & 6 & work\\
+2 & need &66 & \textbf{football} & 29 & after & 6 & work\\
  
-9 & thanks & 21 & weak & 144 & \textbf{england} & 33 & better\\
+9 & thanks& 144 & \textbf{england}  & 21 & weak & 33 & better\\
 
 \hline
 \end{tabular}
@@ -694,7 +701,7 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \end{table}
 
 \subsubsection*{Conclusion}
-
+%TODO Build on this section more
 As can be seen from Tables \ref{pcs_police} and \ref{pcs_jterry}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis}, and the associate analysis is a finding that can be applied to any sparse principal component analysis application when using binary data, as is the case here.
 
 \subsection{The Data Matrix: $\smat$}
@@ -1047,9 +1054,11 @@ Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is n
 
 \subsubsection{Complexities of the Different Algorithms}
 
-%TODO
+\begin{comment}
 \subsection{Testing the Sparse PCA Algorithms on Twitter Data}
 \label{testing_twitter}
+%TODO Get rid of this subsection
+
 The file used to test the Spannogram PCA algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. It has been partitioned into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
 
 \begin{table}[H]
@@ -1106,15 +1115,14 @@ Index & Word \\
 \label{ryder_cup}
 \end{table}
 
-Clearly, Table \ref{john_terry} refers to the retirement of England's former captain, John Terry, from international football, which can be confirmed by the Daily Mail on the 23rd September 2012 and The Guardian on the 24th September 2012. Table \ref{murder}, on the other hand, is a result of a trending Tweet regarding a murder that took place on the 19th September 2012, where 2 police officers were killed. The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. 
+\end{comment}
 
-These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time periods.
 
 \subsection{Comparing TPower and Spannogram PCA}
 % Results can be found in spannogram_vs_tpower.mat and then looking at the metrics matrix.
 To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparseness are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
-The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $S$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
+The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $\mathbb{S}$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
 
 \begin{table}[H]
 \center
@@ -1136,7 +1144,7 @@ Index & Word \\
 \label{murder_8}
 \end{table}
 
-The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $S$ is recovered and that the performance score for both be monotonically increasing with $k$. Furthermore, any principal component extracted must have a higher eigenvalue (and therefore higher CPEV) than any of the following principal components extracted. 
+The way the two algorithms will be evaluated against one another is by running them on the data iteratively and upon each iteration increasing the desired number of non-zero elements in the principal components, $k$, by 1. The desired outcome for each is that on every iteration, a subset of $\mathbb{S}$ is recovered and that the performance score for both be monotonically increasing with $k$. Furthermore, any principal component extracted must have a higher eigenvalue (and therefore higher CPEV) than any of the following principal components extracted. 
 
 \begin{figure}[H]
 \centering
@@ -1155,7 +1163,7 @@ The way the two algorithms will be evaluated against one another is by running t
 \begin{comment}
 
 
-As shown in Table \ref{explained_var_table} and Figure \ref{explained_var_graph} the Spannogram PCA algorithm always outperforms the TPower algorithm for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $S$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
+As shown in Table \ref{explained_var_table} and Figure \ref{explained_var_graph} the Spannogram PCA algorithm always outperforms the TPower algorithm for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $\mathbb{S}$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
 
 These results are completely contrary to the results found in section \ref{testing}. This is largely believed to be accounted for by the structure of the $\mathbf{S}$ matrix in each case. In \cite{truncpower}, it is suggested that if the matrix $\mathbf{A}$ has sparse or approximately sparse eigenvectors then the TPower algorithm can approximate these, which has as its underlying assumption that the true eigenvectors are themselves almost sparse. The Spannogram algorithm does not make this assumption at all. Instead it finds PCs which may not represent the true PCs in any way whatsoever. For instance, getting the true leading eigenvector of $\mathbf{A}$, it turns out to be that 44 of the 3000 words are at least $50\%$ the magnitude of the highest magnitude element in the leading eigenvector. Which may be approximately sparse considering that this is a small fraction of 3000 but it is still much larger than just 4 to 8 words. In this context, the vector is not sparse at all. This is a crude measurement for ``approximately'' sparse but it is merely for illustration purposes. 
 
@@ -1221,7 +1229,17 @@ $[\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}] = [\mathbf{V}_\text{new}, 
 
 The OldPCsValid function checks whether the old Sparse Principal Components are still valid by checking what the percentage of variance explained by them is and how this has has changed since the previous iteration, if this has changed significantly from the last batch or it falls beneath a certain (heuristic) threshold, then new Sparse PCs are computed using the algorithm of choice. 
 
-Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster. 
+Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
+\subsection{Testing Streaming Algorithm} 
+%TODO
+\begin{comment}
+- Show that the algorithm works for the whole of the batch of data and count how many times the threshold detection was used.  
+\end{comment} 
+\subsection{Performance Increase of Algorithm}
+%TODO
+\begin{comment}
+- Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found.
+\end{comment} 
 \subsubsection{Parameter Choices}
 %TODO
 \begin{comment}
@@ -1308,7 +1326,7 @@ Which by setting the derivative with respect to $\mathbf{u}_1$ to zero, the foll
 
 Which means that $\mathbf{u}_1$ is maximised by finding the eigenvector with the largest eigenvalue $\lambda_1$. Similarly to find the $M$ principal components, the eigenvectors of the covariance matrix with the $M$ highest eigenvalues must be calculated.
 \clearpage
-\section*{B. Useful Intuition for the Covariance Matrix $\mathbf{A}$}
+\section*{B. Useful Intuition for the Co-occurrence Matrix $\mathbf{A}$}
 Consider a matrix, $S\in \mathbb{R}^{m\times n}$, where $m$ is the number of Tweets and $n$ is the number of features that the tweets are evaluated on, in this case the Bag-of-Words. Performing $S^TS = A$ where $A \in \mathbb{R}^{n\times n}$. 
 
 By example, imagine:
@@ -1350,7 +1368,7 @@ A =
 
 Since $a_{i, j} = 1$ when the word $j$ appears in Tweet $i$ and otherwise 0, the resulting matrix is basically a symmetric matrix with entry $(i, j)$ being composed of the number of times word $j$ occurs with word $i$ in the same Tweet over all the Tweets. The diagonal is  therefore the number of times the word $j$ appears over all the Tweets.
 
-This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $A$.  
+This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $A$ and can be seen as a weighted adjacency matrix.
 
 \section*{C. Laplacian Matrix}
 %TODO
