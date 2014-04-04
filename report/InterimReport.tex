@@ -365,7 +365,7 @@ The first attempt, and an algorithm that is still widely used regardless of its 
 {\operatorname{argmax}}\mathbf{x}^T\mathbf{A}\mathbf{x}
 \end{equation*}
  
-for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{shen}. This method uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis and but imposes a penalty on the size of the entries in the principal components. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is implemented in this project and used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
+for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{shen}. This method uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis and but imposes a penalty on the size of the entries in the principal components. Related to this, and almost identical apart for some pre-processing and post-processing is the Generalised Power Method (GPower) in \cite{GPower}, which is used in this project as a benchmark to compare algorithms. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is also used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
 %TODO Must be changed
 
 \begin{comment}
@@ -434,7 +434,7 @@ The equation is then transformed into a Rank-1 instance by creating the vector $
 Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equation \ref{spannogram}. The important thing to note is that, there is no actual need to calculate the actual value of the $\mathbf{v}_c$ for each $\phi$ to find the candidate indices for the $k$-sparse eigenvectors only the relative magnitudes between the different entries in  $\mathbf{v}_c$ must be taken into account. The relative magnitudes will only change at intersection points between the sinusoids, and therefore, only about these points must a candidate eigenvector indices actually be tested. This brings down the computation to $O \left(n^d\right)$ instead of $O \left(n^k\right)$. A more thorough description and justification of the algorithm can be found in \cite{dimakis}.
 
 \subsubsection{Other Benefits}
-Other reasons this algorithm has been chosen is because the authors of \cite{dimakis} claim it has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only non-negative entries, which it will in the case being considered (see section \ref{covmat}), the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. Another great feature it has is that the principal components found are also orthogonal to each other meaning that less redundancy has to be stored, which is based on the projection deflation method described in \cite{Mackey_deflationmethods}. 
+Other reasons this algorithm has been chosen is because it has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only non-negative entries, which it will in the case being considered (see section \ref{covmat}), the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. Another great feature it has is that the principal components found are also orthogonal to each other meaning that less redundancy has to be stored, which is based on the projection deflation method described in \cite{Mackey_deflationmethods} and it also allows the sparsity desired to be predefined as opposed to some other algorithms, typically based on optimisation procedures, such as \cite{GPower}.
 \clearpage
 
 \section{Parameters to the Algorithms}
@@ -476,12 +476,12 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 \subsection{The Co-occurrence Matrix: $\mathbf{A}$}
 \label{covmat}
 
-The matrix to be passed to the Sparse PCA algorithm is also of interest, as it determines what sort of relationship the words appear to have to one another. In this section, different versions of the matrix are considered and evaluated against each other so as to be used from here on. 
+The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as it determines the sort of relationship the words appear to have with one another. As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as a representation of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex over all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered and any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
 
-All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
+In this section, variations of the matrix are considered and evaluated against each other so as to find the optimal one to be used for the final implementation. All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
 
 \subsubsection{The Initial Matrix $\mathbf{A}$}
-Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$. As described in Appendix A, this matrix can be viewed as a representation of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex for all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered. Any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
+Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$. 
 
 \subsubsection*{Results}
 \begin{table}[H]
@@ -512,7 +512,7 @@ Something that is useful to note is that the eigenvalues also give some good ins
   
 \subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
 
-The problem with the previous is the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
+The problem with the previous matrix is the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
 $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}_h]_{i, j}$, it takes the value 
 
 \begin{equation}
@@ -542,7 +542,7 @@ Index & Word & Index & Word\\
 Eigenvalue & 239.2562  & Eigenvalue & 166.0273 \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the Hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together or separately. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 19th September 2012, where 2 police officers were killed and resulted in a trending topic on Twitter. 
@@ -584,7 +584,7 @@ Index & Word & Index & Word\\
 Eigenvalue & 607.6730  & Eigenvalue & 592.4499 \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the Laplacian matrix, $ \mathbf{A}_l$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 In this case, once again, both principal components do not seem to convey any useful information and it appears that most included words are just high frequency words in general. This may have to do with the fact that the diagonal has not been removed, as in the case of $\covmat_h$, which means that a similar effect is taking place as in the matrix $\covmat$.
@@ -612,7 +612,7 @@ Index & Word & Index & Word\\
 Eigenvalue & $1.1843\times 10^3$  & Eigenvalue & $1.1355 \times 10^3$   \\
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{The first 3 principal components using the algorithm on the matrix, $ \mathbf{A}_{lh}$. The index represents the rank of the word according to how frequent the word is found in the all the tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
 The results however seem to indicate that this scenario also does not give anything useful. This is again due to the fact that the diagonal will be non-zero and will have the highest absolute value of any of the other entries in the same row, in fact it will be their sum with the opposite sign.  
@@ -1036,7 +1036,7 @@ These are the most interesting principal components that appear from running the
 
 \subsection{Comparing TPower and Spannogram PCA}
 % Results can be found in spannogram_vs_tpower.mat and then looking at the metrics matrix.
-To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparsities are considered for the principal components and the first two principal components are evaluated by the algorithms. 
+To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparseness are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
 The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $S$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
 
