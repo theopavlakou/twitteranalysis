@@ -634,10 +634,10 @@ The results however seem to indicate that this scenario also does not give anyth
 \subsubsection*{Further Testing and Aggregation of Results}
 
 
-The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012, this time only taking the first principal component and the results can be seen in Table \ref{pcs_jterry}. Once again only the hollow matrix gives a PC which corresponds to an actual single distinct event that took place at that time, which refers the retirement of England's former captain, John Terry, from international football.\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football}
-\begin{comment}
-The final principal component, visible in Table \ref{ryder_cup}, emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. 
+The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012 and during the time period 30th September 2012 to the 1st October 2012, this time only taking the first principal component and the results can be seen in Tables \ref{pcs_jterry} and \ref{pcs_ryder}. Once again only the hollow matrix gives PCs which corresponds to an actual single distinct event that took place at the times considered. The one in Table \ref{pcs_jterry} refers the retirement of England's former captain, John Terry, from international football.\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football} and the one in Table \ref{pcs_ryder} emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. \footnote{Can be confirmed by the BBC: http://www.bbc.co.uk/sport/0/golf/19780678}
 
+\begin{comment}
+The final principal component, visible in Table \ref{ryder_cup}, 
 These are the most interesting principal components that appear from running the algorithm on the data, however some others also come up, which are associated with advertisements. Some batches, contrariwise, did not have any relevant principal components, which is a result of there not being any significant event that took place during the associated time periods.
 \end{comment}
 
@@ -1203,7 +1203,13 @@ It can be concluded that the Spannogram PCA algorithm performs best when the mat
 
 
 \subsection{Conclusion}
-
+%TODO 
+\begin{comment}
+- Which algorithm wins in terms of accuracy?
+- Which algorithm wins in terms of speed?
+- Which will be used in the next section and why?
+=> streaming => speed => TPower.
+\end{comment}
 \clearpage
 
 
@@ -1300,6 +1306,10 @@ Mention the following:
 %TODO
 \subsection{Further Work}
 %TODO
+\begin{comment}
+- A more sophisticated parser would give better results. For instance, in the John Terry example, the words 'retire', 'retired' and 'retirement' all appear in the same PC. What would be better is to have only the root of the word i.e. 'retire' and for them all to be considered the same.
+- Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
+\end{comment}
 
 
 \clearpage
