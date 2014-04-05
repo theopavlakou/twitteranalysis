@@ -15,16 +15,9 @@ class TPowerAlgorithm:
     Outputs:
       u:      The v vector zeroed apart from the k highest elements.
     """
-    print("--- Truncate Operator ---")
     u = zeros(v.shape[0])
-    print("--- Printing v --- ")
-    print(v)
-    # TODO make reversed
-    #sortedIndices = array(list(reversed(argsort(abs(v), axis=0))))
     sortedIndices = argsort(abs(v), axis=0)
     sortedIndices = fliplr(sortedIndices.T).T
-    print("Sorted: ")
-    print(sortedIndices)
     vRestricted = v[sortedIndices[0:k],0]
     normV = 0
     if isinstance(vRestricted, csc_matrix):
@@ -34,14 +27,7 @@ class TPowerAlgorithm:
     if normV == 0:
       return csc_matrix(zeros(v.shape[0]))
     a = array(double(vRestricted))/normV
-    print("Printing a")
-    print(a)
-    print(a.shape)
-
-    print(sortedIndices)
     u[sortedIndices[0:k]] = a[0:k, 0]
-    print(a[0:k, 0])
-    print(u)
     u = csc_matrix(u)
     return u
     
@@ -60,13 +46,8 @@ class TPowerAlgorithm:
 
     # Power step
     s = dot(A, transpose(x.todense()))
-    print("--- s vector is ----")
-    print(s)
     g = 2*s
-    print("--- Calculating f ---")
     f = dot(x.todense(), s)
-    print("--- Printing f ---")
-    print(f)
 
     # Truncate step
     x = self.truncateOperator(g, k)
@@ -78,12 +59,9 @@ class TPowerAlgorithm:
       s = dot(A, transpose(x.todense()))
       g = 2*s
       x = self.truncateOperator(g, k)
-      print("--- Printing x ----")
-      print(x)
       f = dot(x.todense(), s)
 
       if (abs(f - fOld) < tolerance):
-        print("=== Breaking ===")
         break
 
       fOld = f
