@@ -32,7 +32,15 @@ class TPowerAlgorithm:
     return u
     
   def getSparsePC(self, A, k):
-    
+    """ Performs the TPower algorithm to retrieve the first sparse PC.
+    Inputs:
+      A:      The (word x word) co-occurence matrix.
+      k:      The desired sparsity (number of non-zero elements)
+    Outputs:
+      x:      The first k-sparse PC.
+      f:      The eigenvalue associated with that PC.
+    """
+    # Tolerance related to the difference in eigenvalues
     tolerance = 0.0000001
     maxIterations = 50
     # Initialisation
@@ -42,6 +50,7 @@ class TPowerAlgorithm:
     x0 = zeros(A.shape[0])
     x0[0] = 1
 
+    # Turns x into a sparse vector
     x = csc_matrix(x0)
 
     # Power step
@@ -61,13 +70,12 @@ class TPowerAlgorithm:
       x = self.truncateOperator(g, k)
       f = dot(x.todense(), s)
 
+      # If the old and new eigenvalues are almost equal, stop
       if (abs(f - fOld) < tolerance):
         break
-
       fOld = f
       i += 1
-
-    return x, f
+    return x.T, f[0, 0]
 
 
       
