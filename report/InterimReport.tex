@@ -354,7 +354,7 @@ Sparse PCA algorithms aim to deliver similar results to PCA, but with the differ
 \begin{equation}
 \mathbf{v}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right)
 \end{equation}
-where $\|\mathbf{x}\|_0^2$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms come in. 
+where $\|\mathbf{x}\|_0$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms come in. 
 
 \subsubsection{Methods to perform Sparse PCA}
 Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
@@ -1284,7 +1284,7 @@ The OldPCsValid function checks whether the old Sparse Principal Components are 
 %TODO Must change this part. The covariance matrix must be calculated every time. 
 Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 
-\subsubsection{Parameter Choices}
+\subsection{Parameter Choices}
 %TODO
 \begin{comment}
 Mention the following:
@@ -1295,40 +1295,44 @@ Mention the following:
 - Explain how events are detected. 
 - Show that for a different data set that this is not optimal.
 - Time the average.
+- Do one more with w = 5000 and b = 500
 \end{comment}
-As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison}, which is within 25/09/2012 - 26/09/2012. 
+As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison}, which is within 25/09/2012 - 26/09/2012. This contains the event that is found in the same section regarding the death of the two police officers.
 
-
+\subsubsection{Changing the Number of Tweets}
+ 
+What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size: large, medium and small. 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_20000_5000.png}
-\caption{Testing the streaming application with a window size of 20000 Tweets and a shift of 5000 Tweets for each data point. The start and end dates are labeled on the graph.}
-\label{cpev_10}
+\caption{Testing the streaming application with a window size of 20000 Tweets and a shift of 5000 Tweets for each data point. The start and end dates are labeled on the graph. This corresponds to doing a calculation roughly every 2 hours.}
+\label{testing_app_20000}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_15000_3000.png}
-\caption{Testing the streaming application with a window size of 15000 Tweets and a shift of 3000 Tweets for each data point. The red points indicate points in which an event has been detected. The start and end dates and times are labeled on the graph, as well as the start and end dates and times of an event.}
-\label{cpev_10}
+\caption{Testing the streaming application with a window size of 15000 Tweets and a shift of 3000 Tweets for each data point. The red points indicate points in which an event has been detected. The start and end dates and times are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every 1 hour 20 minutes.}
+\label{testing_app_15000}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_10000_1000.png}
-\caption{Testing the streaming application with a window size of 10000 Tweets and a shift of 1000 Tweets for each data point. The red points indicate points in which an event has been detected. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event.}\label{cpev_10}
+\caption{Testing the streaming application with a window size of 10000 Tweets and a shift of 1000 Tweets for each data point. The red points indicate points in which an event has been detected. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every  25 minutes.}
+\label{testing_app_10000}
 \end{figure}
 
 \subsection{Testing Streaming Algorithm} 
 %TODO
 \begin{comment}
-- Show that the algorithm works for the whole of the batch of data and count how many times the threshold detection was used.  
+- Show that the algorithm works for the whole of the batch of data using the parameters chosen above and count how many times the threshold detection was used.
 \end{comment} 
 
 \subsection{Performance Increase of Algorithm}
 %TODO
 \begin{comment}
-- Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found.
+- Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found. Try this.
 \end{comment} 
 
 
@@ -1349,6 +1353,7 @@ As aforementioned there are many parameters that must be chosen, each needing to
 \begin{comment}
 - A more sophisticated parser would give better results. For instance, in the John Terry example, the words 'retire', 'retired' and 'retirement' all appear in the same PC. What would be better is to have only the root of the word i.e. 'retire' and for them all to be considered the same.
 - Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
+- Have a linear combo for threshold of event.
 \end{comment}
 
 
