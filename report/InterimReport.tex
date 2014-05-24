@@ -1317,7 +1317,7 @@ As aforementioned there are many parameters that must be chosen, each needing to
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually.
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually. In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 10 minutes.  
 
 \begin{figure}[H]
 \centering
@@ -1349,6 +1349,9 @@ As it can be seen, varying the window size has a very significant effect on the 
 
 \subsubsection{Parameter to Detect Events}
 %TODO How to choose the parameter to detect whether the change is large enough to signal an event.
+The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should jump quite rapidly upward. The parameter choices in this case are quite ad hoc and depend on quit a few factors, including the size of the matrix and the number of Tweets considered. The formula to detect an event reduces to:
+
+
 \subsection{Testing Streaming Algorithm} 
 %TODO
 \begin{comment}
