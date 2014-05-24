@@ -1285,6 +1285,20 @@ The OldPCsValid function checks whether the old Sparse Principal Components are 
 %TODO Must change this part. The covariance matrix must be calculated every time. 
 Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 
+\subsection{Time Per Calculation}
+As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
+
+This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Time_Matrix_Construction.png}
+\caption{The time it takes to create the data matrix $\smat$ against the number of Tweets.}
+\label{time_matrix_construction}
+\end{figure}
+
+It can be noted that, indeed, the time for construction of the matrix does vary linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should also stay the same. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be the same.
+
 \subsection{Parameter Choices}
 %TODO
 \begin{comment}
@@ -1295,8 +1309,7 @@ Mention the following:
 - How to choose max number of trending topics.
 - Explain how events are detected. 
 - Show that for a different data set that this is not optimal.
-- Time the average.
-- Do one more with w = 5000 and b = 500
+
 \end{comment}
 As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison} in the period 25/09/2012 - 26/09/2012, which contains the event regarding the death of the two police officers.
 
@@ -1304,8 +1317,8 @@ As aforementioned there are many parameters that must be chosen, each needing to
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the size of the matrix. 
-%TODO Analyse
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually.
+
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_20000_5000.png}
@@ -1334,19 +1347,8 @@ As it can be seen, varying the window size has a very significant effect on the 
 \label{testing_app_4000}
 \end{figure}
 
-\subsection{Time Per Calculation}
-As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
-
-This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
-%TODO Do this
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.25]{Time_Matrix_Construction.png}
-\caption{The time it takes to create the data matrix $\smat$ against the number of Tweets.}
-\label{time_matrix_construction}
-\end{figure}
+\subsubsection{Parameter to Detect Events}
+%TODO How to choose the parameter to detect whether the change is large enough to signal an event.
 \subsection{Testing Streaming Algorithm} 
 %TODO
 \begin{comment}
