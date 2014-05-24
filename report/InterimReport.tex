@@ -39,6 +39,7 @@
 %% Commands
 \newcommand{\inreal}{\in \mathbb{R}}
 \newcommand{\inrealmxn}{\in \mathbb{R}^{m\times n}}
+\newcommand{\inintmxn}{\in \mathbb{Z}^{m\times n}}
 \newcommand{\inints}{\in \mathbb{Z}}
 \newcommand{\innatural}{\in \mathbb{N}}
 \newcommand{\smat}{\mathbf{S}}
@@ -736,7 +737,7 @@ As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder
 Something else of interest is that, though the Twitter Data is the same as that used in \cite{microblogs}, the events that are discovered are different but still completely valid as can be confirmed by other sources.
 
 \subsection{The Data Matrix: $\smat$}
-Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
 \subsubsection{Taking Advantage of the Sparsity of $\mathbf{S}$}
 \label{sparsity_matrix}
@@ -1297,11 +1298,14 @@ Mention the following:
 - Time the average.
 - Do one more with w = 5000 and b = 500
 \end{comment}
-As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison}, which is within 25/09/2012 - 26/09/2012. This contains the event that is found in the same section regarding the death of the two police officers.
+As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison} in the period 25/09/2012 - 26/09/2012, which contains the event regarding the death of the two police officers.
 
 \subsubsection{Changing the Number of Tweets}
  
-What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size: large, medium and small. 
+What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
+
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the size of the matrix. 
+%TODO Analyse
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_20000_5000.png}
@@ -1323,11 +1327,33 @@ What is first considered is how the window size (the number of tweets considered
 \label{testing_app_10000}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Testing_Streaming_App_4000_400.png}
+\caption{Testing the streaming application with a window size of 4000 Tweets and a shift of 400 Tweets for each data point. The red points indicate points in which an event has been detected. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every  10 minutes.}
+\label{testing_app_4000}
+\end{figure}
+
+\subsection{Time Per Calculation}
+As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
+
+This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
+%TODO Do this
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Time_Matrix_Construction.png}
+\caption{The time it takes to create the data matrix $\smat$ against the number of Tweets.}
+\label{time_matrix_construction}
+\end{figure}
 \subsection{Testing Streaming Algorithm} 
 %TODO
 \begin{comment}
 - Show that the algorithm works for the whole of the batch of data using the parameters chosen above and count how many times the threshold detection was used.
 \end{comment} 
+
+\subsection{Calculating Multiple Principal Components Per Iteration}
 
 \subsection{Performance Increase of Algorithm}
 %TODO
