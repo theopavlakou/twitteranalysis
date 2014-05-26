@@ -1381,6 +1381,15 @@ Clearly, the solution to this equation is
 
 With the parameters calculated, all one must do to get the probability of a point being associated with an event is to plug in the value of $\lambda_i$ into equation \eqref{logit}. 
 
+One estimation of the function using a very small number of data points can be seen in Figure \ref{lambda_scatter}. It can be seen that the points in the range of $\lambda \in [100, 250]$ have quite a loose correlation to the probability of an event, however, outside this range it is almost certain that an event has not taken place if $\lambda < 100$ and almost certain that an event has taken place if $\lambda > 250$. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Lambda_scatter.png}
+\caption{An estimate of the mapping from the eigenvalue, $\lambda$, to the probability of an event.}
+\label{lambda_scatter}
+\end{figure}
+
 It should be noted that the labeling of the $\lambda_i$s is the only part of the procedure which is quite subjective, as it relies primarily on expert opinions, but like many probabilistic models, it is a necessary part to the process. 
 
 Given that at this point in time only the $\lambda_i$ is used to indicate whether an event has taken place, this simple training scheme is sufficient, coupled with cross validation. However, in a further iteration, possibly more variables could be considered, in which case a more sophisticated predictor could be used, such as a Support Vector Machine. 
