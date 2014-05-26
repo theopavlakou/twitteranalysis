@@ -1231,7 +1231,7 @@ If along the way any other difficulties arise, due to scalability issues or the 
 In this section, methods to ensure computational feasibility are considered, and an algorithm is created to make this possible under high volume data applications in which the rate of data is very large while the number of variables considered is comparatively low i.e. $m >> n$. As already mentioned previously, there are roughly 40k Tweets on average per day in London, which corresponds to quite a small volume which can be processed all in one go, but suppose that the world were to instead be considered, which would give a rate of about 58 million Tweets per day, then clearly a method would need to be considered to be able to process all that data in a streaming fashion. 
 
 Needless to say, this would only work if there were an actual trending topic in the whole of the population. 
-\subsubsection{Procedure}
+\subsubsection{Concerns}
 The idea is to stream Twitter data and to be able to automatically detect whether an event is taking place online. This could be used, for instance, as a web application to find events in certain areas or for marketing purposes. 
 
 There are various methods of doing this in an online fashion and it opens many doors for research, but the basic approach is to have a sliding window of some number of Tweets, which depends on the application and the size of the geographical location being considered, to perform the Sparse PCA algorithm on it and to see how the principal components change over time. There are various considerations that must be addressed, including:
@@ -1242,8 +1242,8 @@ There are various methods of doing this in an online fashion and it opens many d
 \item How could this scale?
 \end{itemize}
 
-\subsection{Sparse PCA Algorithm}
-The algorithm to be used in this scenario is the TPower algorithm. This is because, though it sometimes is less accurate, it is typically a factor of $10^3$ faster than the Spannogram PCA algorithm and so for a large data streaming application, the trade-off is worth it. 
+\subsection{Streaming Procedure}
+The algorithm to be used in this scenario is the TPower algorithm. This is because, though it sometimes is less accurate, it is typically a factor of $10^3$ faster than the Spannogram PCA algorithm and so for a large data streaming application, the trade-off of accuracy for speed is worth it. 
 
 \subsubsection{Algorithm}
 %TODO Change this whole subsubsection
@@ -1257,7 +1257,7 @@ The algorithm can be described as follows.
 \KwData{The Stream of Tweets}
 \KwResult{The Sparse Principal Components for each batch of Tweets}
 \While{Streaming} {
-// Calculate the new covariance matrix $\covmat = \smat\tp \smat - \text{diag}(\smat\tp \smat) $\\
+// Get the new data\\
 $\smat_\text{new} \leftarrow $ New Batch of $K$ Tweets;\\
 // Pop the old data off the queue, $\mathbf{Q}$\\
 $\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
@@ -1265,26 +1265,24 @@ $\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
 $ \mathbf{Q}(1:W-K) \leftarrow \mathbf{Q}(K+1:W) $\\
 // Put the new data at the end of the queue\\
 $ \mathbf{Q}(W-K+1:W) \leftarrow \smat_\text{new}$\\
-// Calculate the new covariance matrix using the old covariance matrix,\\
-// the old data and the new data\\
-$\covmat_\text{new} \leftarrow \covmat_\text{old} - \sum_{j = 1}^K \left[\smat_\text{old}\right]_{i,:}\tp\left[\smat_\text{old}\right]_{i,:} + \sum_{j = 1}^K \left[\smat_\text{new}\right]_{i,:}\tp\left[\smat_\text{new}\right]_{i,:}$\\ 
-// Check whether old PCs are valid or whether new ones must be calculated\\
-\If{OldPCsValid($\covmat_\text{new}$, $\mathbf{V}_\text{old}$, $\mathbf{\Lambda}_\text{old}$)} 
-{$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}] = [\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}]$}
-\Else {
-	$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$ = ComputeSparsePCA($\covmat_\text{new}$);
-}
+// Calculate the new covariance matrix
+\\
+$\covmat = \smat\tp \smat - \text{diag}(\smat\tp \smat) $\\
+// Compute new Sparse PCs\\
+$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$ = ComputeSparsePCA($\covmat_\text{new}$);\\
+// Save new data\\
 ListOfSparsePCs.Append($\mathbf{V}_\text{new}$)\\
 ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
-$[\mathbf{V}_\text{old}, \mathbf{\Lambda}_\text{old}] = [\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$
+
 }
 \end{algorithm}
 
-The OldPCsValid function checks whether the old Sparse Principal Components are still valid by checking what the percentage of variance explained by them is and how this has has changed since the previous iteration, if this has changed significantly from the last batch or it falls beneath a certain (heuristic) threshold, then new Sparse PCs are computed using the algorithm of choice. 
+
 
 %TODO Must change this part. The covariance matrix must be calculated every time. 
+\begin{comment}
 Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
-
+\end{comment}
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
 
@@ -1297,7 +1295,7 @@ This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ 
 \label{time_matrix_construction}
 \end{figure}
 
-It can be noted that, indeed, the time for construction of the matrix does vary linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should also stay the same. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be the same.
+It can be noted that, indeed, the time for construction of the matrix does vary linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should also stay the same. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be approximately the same.
 
 \subsection{Parameter Choices}
 %TODO
@@ -1309,11 +1307,10 @@ Mention the following:
 - How to choose max number of trending topics.
 - Explain how events are detected. 
 - Show that for a different data set that this is not optimal.
-
 \end{comment}
 As aforementioned there are many parameters that must be chosen, each needing to be chosen based on the volume of the Tweets and the scale of the geographical location that is being considered. An attempt is made in this section to show how different parameters affect the results and why. This is done using a subset of the data, namely the same data used in section \ref{comparison} in the period 25/09/2012 - 26/09/2012, which contains the event regarding the death of the two police officers.
 
-\subsubsection{Changing the Number of Tweets}
+\subsubsection{The Number of Tweets}
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
@@ -1347,10 +1344,46 @@ As it can be seen, varying the window size has a very significant effect on the 
 \label{testing_app_4000}
 \end{figure}
 
-\subsubsection{Parameter to Detect Events}
+\subsubsection{Event Detection Variable}
 %TODO How to choose the parameter to detect whether the change is large enough to signal an event.
-The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should jump quite rapidly upward. The parameter choices in this case are quite ad hoc and depend on quit a few factors, including the size of the matrix and the number of Tweets considered. The formula to detect an event reduces to:
+The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should jump quite rapidly upward. The parameter choices in this case are quite ad hoc and depend on quit a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
+One way of mapping a scalar to a probability is to use the logistic function, given as
+
+\begin{equation}
+p(\lambda_i)= \frac{1}{\left( 1 + e^{-(w_0 + w_1\lambda_i)}\right)}
+\label{logit}
+\end{equation},
+
+where $p(\lambda_i)$ is the probability of the data point associated with the eigenvalue $\lambda_i$ signifying an event and $w_0$ and $w_1$ are the parameters to be estimated. 
+
+%TODO add graph of logit function HERE
+
+The way the parameters are estimated is by taking a set of $\lambda_i$ values, each with a label indicating the probability of how likely it indicates an event. Then by rearranging \eqref{logit} above, it can be seen that
+
+\begin{equation}
+y(\lambda_i) = \ln\left( \frac{p(\lambda_i)}{(1-p(\lambda_i))}\right) = w_0 + w_1 \lambda_i,
+\end{equation}
+therefore, by solving the equation 
+
+\begin{equation*}
+ \mathbf{\Lambda}\mathbf{w} = \mathbf{y} ,
+\end{equation*}
+where the $i$th row of $\mathbf{\Lambda}$ is equal to $\left(\begin{matrix}
+1 & \lambda_i
+\end{matrix}  \right)$, the $i$th element of $\mathbf{y}$ is equal to $y(\lambda_i)$ and $\mathbf{w} = \left(\begin{matrix} w_0   &w_1\end{matrix}\right)^T$, the parameters $w_0$ and $w_1$ can be estimated in the least squares sense. 
+
+Clearly, the solution to this equation is
+
+\begin{equation*}
+\mathbf{w} = \left( \mathbf{\Lambda}^T \mathbf{\Lambda}\right)^{-1} \mathbf{\Lambda}^T\mathbf{y}.
+\end{equation*}
+
+With the parameters calculated, all one must do to get the probability of a point being associated with an event is to plug in the value of $\lambda_i$ into equation \eqref{logit}. 
+
+It should be noted that the labeling of the $\lambda_i$s is the only part of the procedure which is quite subjective, as it relies primarily on expert opinions, but like many probabilistic models, it is a necessary part to the process. 
+
+Given that at this point in time only the $\lambda_i$ is used to indicate whether an event has taken place, this simple training scheme is sufficient, coupled with cross validation. However, in a further iteration, possibly more variables could be considered, in which case a more sophisticated predictor could be used, such as a Support Vector Machine. 
 
 \subsection{Testing Streaming Algorithm} 
 %TODO
