@@ -134,7 +134,7 @@
 
 \section{Introduction}
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
-One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the features in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated with respect to a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}} and then methods of improvement to one of the algorithms is also considered as well methods to scale it. 
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the features in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated with respect to a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.} and then methods of improvement to one of the algorithms is also considered as well methods to scale it. 
 
 %% Mention only if reference is found
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
@@ -343,7 +343,6 @@ What is very useful to see, however, is that the singular values do decrease qui
 \end{figure}
 
 This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
-
 
 \subsection{Related Work}
 %TODO Must change this
@@ -1476,7 +1475,7 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 \clearpage
 \section{Conclusion}
 %TODO
-\subsection{Further Work}
+\section{Further Work}
 %TODO
 \begin{comment}
 - A more sophisticated parser would give better results. For instance, in the John Terry example, the words 'retire', 'retired' and 'retirement' all appear in the same PC. What would be better is to have only the root of the word i.e. 'retire' and for them all to be considered the same.
@@ -1499,6 +1498,8 @@ p(\lambda_i)= \frac{1}{\left( 1 + e^{-\mathbf{w}^T\bm{\lambda}}\right)},
 where $\bm{\lambda}$ takes the form $\left(\begin{matrix}
 1 & \lambda_i & \lambda_{i-1} & \cdots & \lambda_{i-n}
 \end{matrix}\right)^T$ where $n+1$ is the number of previous $\lambda$ values to consider. Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered.
+
+The rate of Tweets could also be considered, as in \cite{microblogs}. The basic principle behind this would be that, if there is a sudden increase in the rate of the Tweets, it is much more likely that an event has taken place. In this case, the window size could be determined by a time period rather than a number of Tweets and if the number of Tweets in the window were to increase, a linear combination could again be added to the \eqref{logit_general} equation as part of $\bm{\lambda}$.
 \clearpage
 
 \bibliography{bibliography}
