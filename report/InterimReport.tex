@@ -18,6 +18,7 @@
 \titlespacing{\subsubseSction}{0pt}{0.5ex}{0ex}
 \linespread{0.9}
 
+\usepackage{bm}
 \usepackage{changepage}
 \usepackage[hmargin=2cm, vmargin=2cm]{geometry}
 \usepackage{parskip}
@@ -139,6 +140,7 @@ One such technique is known as Principal Component Analysis (PCA) and is concern
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
 
 \section{Project Specification}
+%TODO Change this title or merge with previous section
 
 The purpose of this study is to examine how a certain implementations of Sparse PCA can help to infer results from data, focusing on that of social media which can be represented as a binary matrix. The performance of various algorithms are to be compared and evaluated against one another, with a special focus on the algorithm in \cite{dimakis} as this project can be seen as a continuation of their work. The data used is a batch of Tweets from London throughout the year 2012. The reason Twitter data has been chosen is due to the character limit imposed on each Tweet, which means that each message is typically quite information dense, which is best to test the algorithm and come up with useful results in the first iteration. Later improvements may be used on lengthier texts, but a more sophisticated parser may need to be used in that scenario. After concluding meaningful results from the data as a whole, windowing the data into smaller periods of time is also attempted and an evolution of the results is examined further to see how the principal components correlate to events that happened in 2012. Measures to improve the performance and the scalability of the resulting algorithm are also explored and further improvements are researched.
 
@@ -167,7 +169,6 @@ Principal Component Analysis is a method that can be used to reduce the dimensio
 \begin{pmatrix}
 0.6956 && 0.7184\\
  0.7184 && -0.6956\\
-
 \end{pmatrix}.
 \end{equation*}
 
@@ -1313,14 +1314,14 @@ As aforementioned there are many parameters that must be chosen, each needing to
 \subsubsection{The Number of Tweets}
 %TODO Analyse this further
  
-What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
+What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Four different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually. In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 10 minutes.
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 10000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components for the appropriate window, however, if all 10000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually. In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 10 minutes. 
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_20000_5000.png}
-\caption{Testing the streaming application with a window size of 20000 Tweets and a shift of 5000 Tweets for each data point. The start and end dates are labeled on the graph. This corresponds to doing a calculation roughly every 2 hours.}
+\caption{Testing the streaming application with a window size of 20000 Tweets and a shift of 5000 Tweets for each data point. The start and end dates are labeled on the graph. This corresponds to doing a calculation roughly every 2 hours. The event is completely missed out in this case.}
 \label{testing_app_20000}
 \end{figure}
 
@@ -1350,7 +1351,8 @@ As it can be seen, varying the window size has a very significant effect on the 
 
 The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
-One way of mapping a scalar to a probability is to use the logistic function, given as
+%TODO Check if citation is correct
+One way of mapping a scalar to a probability is to use the logistic function \cite{bishop}, given as
 
 \begin{equation}
 p(\lambda_i)= \frac{1}{\left( 1 + e^{-(w_0 + w_1\lambda_i)}\right)},
@@ -1381,7 +1383,7 @@ Clearly, the solution to this equation is
 
 With the parameters calculated, all one must do to get the probability of a point being associated with an event is to plug in the value of $\lambda_i$ into equation \eqref{logit}. 
 
-One estimation of the function using a very small number of data points can be seen in Figure \ref{lambda_scatter}. It can be seen that the points in the range of $\lambda \in [100, 250]$ have quite a loose correlation to the probability of an event, however, outside this range it is almost certain that an event has not taken place if $\lambda < 100$ and almost certain that an event has taken place if $\lambda > 250$. 
+One estimation of the function using a very small number of data points can be seen in Figure \ref{lambda_scatter}. It can be seen that the points in the range of $\lambda \in [100, 250]$ have quite a loose correlation to the probability of an event, however, outside this range it is almost certain that an event has not taken place if $\lambda < 100$ and almost certain that an event has taken place if $\lambda > 250$. For a more accurate solution a much larger number of data points should be considered more densely populating the $\lambda$ axis.
 
 \begin{figure}[H]
 \centering
@@ -1482,8 +1484,21 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 - Adaptive window size and parameters for different size of geographical location => different rate of Tweets.
 - Have a linear combo for threshold of event.
 \end{comment}
+As with most areas of research, there is room for improvement. 
 
+Firstly, in many of the principal component examples words appear that are from the same root or are similar in meaning, for instance, in the John Terry example, the words ``retire'', ``retired'' and ``retirement'' all appear in the same principal component. The problem with this is that since they are considered as separate features, even though they actually aren't, the appearance of one of these words may be distributed in a population of Tweets across all three of them, therefore decreasing the total count of the feature. This means that for some events, where many similes may be used, these may not be found purely because the words have not been aggregated together and thus the Sparse PCA algorithm has not kept them. Having a more sophisticated parser in the pre-processing step which could do this would ensure much better results and would be much more robust to vocabulary or spelling differences.
 
+Furthermore, as mentioned previously, the parameters have been trained in this instance to work on Tweets that have been collected from the area of London at a specific time, but would not work optimally for a location of a different size or with a different density of Twitter users. Therefore, a lot more research could go into finding a method of estimating these parameters, either in an adaptive fashion or by pre-computing some of the parameters and using a lookup table.
+
+Using more parameters to identify whether an event has happened should also be considered. For instance, taking into account previous values of $\lambda$ would also be very beneficial. Equation \eqref{logit} could take the more general form
+
+\begin{equation}
+p(\lambda_i)= \frac{1}{\left( 1 + e^{-\mathbf{w}^T\bm{\lambda}}\right)},
+\label{logit_general}
+\end{equation}
+where $\bm{\lambda}$ takes the form $\left(\begin{matrix}
+1 & \lambda_i & \lambda_{i-1} & \cdots & \lambda_{i-n}
+\end{matrix}\right)^T$ where $n+1$ is the number of previous $\lambda$ values to consider. Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered.
 \clearpage
 
 \bibliography{bibliography}
@@ -1586,6 +1601,11 @@ This is basically a form of clustering i.e. words that occur frequently together
 \section*{C. Laplacian Matrix}
 %TODO
 
+\section*{Code}
+All code written by me can be found on Github using the following link:
+%TODO
 
+\section{User Guide}
+%TODO is this necessary 
 
 \end{document}
