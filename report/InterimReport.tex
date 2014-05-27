@@ -33,6 +33,7 @@
 \restylefloat{table}
 \usepackage[english]{babel}
 \usepackage{algorithm2e}
+\usepackage{soul}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1345,19 +1346,18 @@ As it can be seen, varying the window size has a very significant effect on the 
 \end{figure}
 
 \subsubsection{Event Detection Variable}
+\label{event_detection}
 %TODO How to choose the parameter to detect whether the change is large enough to signal an event.
-The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should jump quite rapidly upward. The parameter choices in this case are quite ad hoc and depend on quit a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
+The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
 One way of mapping a scalar to a probability is to use the logistic function, given as
 
 \begin{equation}
-p(\lambda_i)= \frac{1}{\left( 1 + e^{-(w_0 + w_1\lambda_i)}\right)}
+p(\lambda_i)= \frac{1}{\left( 1 + e^{-(w_0 + w_1\lambda_i)}\right)},
 \label{logit}
-\end{equation},
+\end{equation}
 
 where $p(\lambda_i)$ is the probability of the data point associated with the eigenvalue $\lambda_i$ signifying an event and $w_0$ and $w_1$ are the parameters to be estimated. 
-
-%TODO add graph of logit function HERE
 
 The way the parameters are estimated is by taking a set of $\lambda_i$ values, each with a label indicating the probability of how likely it indicates an event. Then by rearranging \eqref{logit} above, it can be seen that
 
@@ -1385,8 +1385,8 @@ One estimation of the function using a very small number of data points can be s
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.25]{Lambda_scatter.png}
-\caption{An estimate of the mapping from the eigenvalue, $\lambda$, to the probability of an event.}
+\includegraphics[scale=0.35]{Lambda_scatter.png}
+\caption{An estimate of the mapping from the eigenvalue, $\lambda$, to the probability of an event. The range has been truncated to $\lambda \geq 0$ as $\lambda$ cannot take a negative value.}
 \label{lambda_scatter}
 \end{figure}
 
@@ -1397,8 +1397,50 @@ Given that at this point in time only the $\lambda_i$ is used to indicate whethe
 \subsection{Testing Streaming Algorithm} 
 %TODO
 \begin{comment}
-- Show that the algorithm works for the whole of the batch of data using the parameters chosen above and count how many times the threshold detection was used.
+- Give actual events that happened with the associated PCs, the actual eigenvalue values and dates in a tabular format. 
 \end{comment} 
+After training the parameters to be able to find the events that are known and have been found previously and testing their predictive performance to ensure over-fitting hasn't taken place, the algorithm is run on the entirety of the data from London 2012 and the result can be seen in Figure \ref{testing_app_all_data}. 
+
+In this case, soft classification is used as opposed to previously where a data point is either red to indicate an event or blue otherwise. This time a linear combination of red and blue is used to indicate the probability of an event taking place. To detect an event, one may attempt to take all points with a probability of greater than 0.6 possibly and look at the principal components.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Twitter_Data_All_Graph.png}
+\caption{Testing the streaming application with a window size of 15000 Tweets and a shift of 3000 Tweets for each data point. Using the mapping from section \ref{event_detection} each point is now assigned a probability of being associated with an event, which is visualised as a linear combination of red and blue. The more red a point is, the more likely it is associated with an event. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every 1 hour 20 minutes.}
+\label{testing_app_all_data}
+\end{figure}
+
+\begin{table}[H]
+\center
+\begin{tabular}{| l| r | l|}
+\hline
+Principal Component Words & $\lambda$ & Date\\
+\hline
+best, getting, please, could, ever, friends, retweet, sarah, married, matt & 212 & 21/09/2012	 \\
+please, world, support, towards, flight, squad, homeless, morocco, donations, costs & 360 & 22/09/2012\\
+terry, john, best, england, football, international, retired, news, retires, retirement & 359 &  23/09/2012\\
+\st{thanks, only, hours, retweet, name, flight, cover, costs, deadline, rapper} & \st{190} & \st{24/09/2012}\\
+please, follow, police, again, following, fallen, colleagues, recent, officers, murders & 343 & 26/09/2012\\
+arsenal, emirates, game, giroud, stadium, coventry, city, gunners, blues, highbury & 140 & 26/09/2012\\
+free, tomorrow, event, live, music, party, john, exhibitions, nightlife, clubbing & 136 & 28/09/2012\\
+\st{night, late, early, till, driving, thursday, bird, lessons, tuesday, flexible}
+& \st{202} & \st{28/09/2012}\\
+night, free, event, live, tomorrow, music, club, borough, exhibitions, gigs & 98 & 29/09/2012\\
+arsenal, chelsea, here, stadium, emirates, game, watch, gunners, blues, highbury & 202 & 29/09/2012\\
+spurs, coys, great, game, united, done, first, half, trafford, thfc & 78 & 29/09/2012\\
+follow, please, tweet, babe, harry, forever, directioner, hola, pido, alma & 134 & 30/09/2012\\
+tomorrow, free, live, music, club, event, comedy, borough, blues, lewisham & 77 & 30/09/2012\\
+xfactor, through, rylan, year, over, nicole, should, louis, jake, shows & 164 & 30/09/2012\\
+rydercup, europe, rydercup2012, golf, teameurope, great, rose, justin, goeurope, point & 192 & 30/09/2012\\
+first, happy, october, month, birthday, \st{punch, pinch,} black, history, returns & 131 & 01/10/2012\\
+happy, birthday, check, pics, blog, nathan, maxmonday, tickling, max's, exclusive & 226 & 01/10/2012\\
+free, tomorrow, event, live, music, comedy, john, exhibitions, acoustic, sugarfoot & 94 & 01/10/2012\\
+still, doing, next, again, year, week, marathon, huntingtons, adidas, teamsimran18 & 203 & 02/10/2012\\
+\st{them, look, made, does, friends, name, cause, deserve, bought, lwwy} & \st{142} & \st{02/10/2012}\\
+
+\hline
+\end{tabular}
+\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
+\end{table}
 
 \subsection{Calculating Multiple Principal Components Per Iteration}
 
@@ -1414,6 +1456,11 @@ Given that at this point in time only the $\lambda_i$ is used to indicate whethe
 
 \subsubsection{Limitations}
 %TODO
+\begin{comment}
+- Mention how the threshold detection alone is not very robust to areas which are quite uncertain.
+- Explain how the eigenvalue associated with the actual eigenvector might be small and still signify a small event or could just show the lack of an event e.g. football matches tend to have quite small eigenvalues in practice it seems. 
+- Explain how taking a different geographical location would require the whole procedure to be redone with the logistic function re-calibrated and the window size and increment also. 
+\end{comment}
 
 
 \clearpage
