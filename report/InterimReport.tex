@@ -634,8 +634,7 @@ Index & Word & Index & Word\\
 The results however seem to indicate that this scenario also does not give anything useful. This is again due to the fact that the diagonal will be non-zero and will have the highest absolute value of any of the other entries in the same row, in fact it will be their sum with the opposite sign.  
 
 \subsubsection*{Further Testing and Aggregation of Results}
-
-
+\label{first_three_pcs}
 The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012 and during the time period 30th September 2012 to the 1st October 2012, this time only taking the first principal component and the results can be seen in Tables \ref{pcs_jterry} and \ref{pcs_ryder}. Once again only the hollow matrix gives PCs which corresponds to an actual single distinct event that took place at the times considered. The one in Table \ref{pcs_jterry} refers the retirement of England's former captain, John Terry, from international football.\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football} and the one in Table \ref{pcs_ryder} emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. \footnote{Can be confirmed by the BBC: http://www.bbc.co.uk/sport/0/golf/19780678}
 
 \begin{comment}
@@ -1315,7 +1314,7 @@ As aforementioned there are many parameters that must be chosen, each needing to
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Three different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually. In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 10 minutes.  
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 1000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components, however, if all 1000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually. In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 10 minutes.
 
 \begin{figure}[H]
 \centering
@@ -1347,7 +1346,7 @@ As it can be seen, varying the window size has a very significant effect on the 
 
 \subsubsection{Event Detection Variable}
 \label{event_detection}
-%TODO How to choose the parameter to detect whether the change is large enough to signal an event.
+
 The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
 One way of mapping a scalar to a probability is to use the logistic function, given as
@@ -1394,14 +1393,12 @@ It should be noted that the labeling of the $\lambda_i$s is the only part of the
 
 Given that at this point in time only the $\lambda_i$ is used to indicate whether an event has taken place, this simple training scheme is sufficient, coupled with cross validation. However, in a further iteration, possibly more variables could be considered, in which case a more sophisticated predictor could be used, such as a Support Vector Machine. 
 
-\subsection{Testing Streaming Algorithm} 
-%TODO
-\begin{comment}
-- Give actual events that happened with the associated PCs, the actual eigenvalue values and dates in a tabular format. 
-\end{comment} 
+\subsection{Testing the Streaming Algorithm} 
 After training the parameters to be able to find the events that are known and have been found previously and testing their predictive performance to ensure over-fitting hasn't taken place, the algorithm is run on the entirety of the data from London 2012 and the result can be seen in Figure \ref{testing_app_all_data}. 
 
 In this case, soft classification is used as opposed to previously where a data point is either red to indicate an event or blue otherwise. This time a linear combination of red and blue is used to indicate the probability of an event taking place. To detect an event, one may attempt to take all points with a probability of greater than 0.6 possibly and look at the principal components.
+
+\subsubsection{Results}
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{Twitter_Data_All_Graph.png}
@@ -1427,7 +1424,7 @@ free, tomorrow, event, live, music, party, john, exhibitions, nightlife, clubbin
 night, free, event, live, tomorrow, music, club, borough, exhibitions, gigs & 98 & 29/09/2012\\
 arsenal, chelsea, here, stadium, emirates, game, watch, gunners, blues, highbury & 202 & 29/09/2012\\
 spurs, coys, great, game, united, done, first, half, trafford, thfc & 78 & 29/09/2012\\
-follow, please, tweet, babe, harry, forever, directioner, hola, pido, alma & 134 & 30/09/2012\\
+\st{follow, please, tweet, babe, harry, forever, directioner, hola, pido, alma} & \st{134} & \st{30/09/2012}\\
 tomorrow, free, live, music, club, event, comedy, borough, blues, lewisham & 77 & 30/09/2012\\
 xfactor, through, rylan, year, over, nicole, should, louis, jake, shows & 164 & 30/09/2012\\
 rydercup, europe, rydercup2012, golf, teameurope, great, rose, justin, goeurope, point & 192 & 30/09/2012\\
@@ -1439,8 +1436,15 @@ still, doing, next, again, year, week, marathon, huntingtons, adidas, teamsimran
 
 \hline
 \end{tabular}
-\caption{The first 3 principal components using the algorithm on the initial matrix, $ \mathbf{A}$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
+\caption{Some of the principal components sampled after running the algorithm on all the data from London 2012. The samples taken have a $\lambda > 70$ and it has been rounded to the nearest unit. The dates are also given. Words and dates that are crossed out indicate that they are not relevant for an event.}
+\label{streaming_test}
 \end{table}
+
+Table \ref{streaming_test} shows some of the results sampled after running the algorithm on the all the data. There are a few things to note. Firstly, in this test run it can be seen that any principal component with a $\lambda > 300$ is almost certainly linked to an event (in this case it definitely is), which agrees with the logistic function derived in \ref{event_detection}. Furthermore, no event has been found with a $\lambda < 70$, again agreeing with the logistic function derived in \ref{event_detection}. 
+
+Added to this, it is interesting to see that not only have all the principal components previously discovered, in section \ref{first_three_pcs}, been found but that more have also emerged, which is due to the calibration of the window size, which has been significantly reduced and has also been transformed into with a sliding window. For example, the second row of the table is related to a Twitter campaign which aimed at raising funds for the Homeless Football World Cup team for Morocco. This was previously in the same window as the news for John Terry's retirement and was overpowered by it.
+
+
 
 \subsection{Calculating Multiple Principal Components Per Iteration}
 
@@ -1454,25 +1458,27 @@ still, doing, next, again, year, week, marathon, huntingtons, adidas, teamsimran
 \subsubsection{Complexity}
 %TODO
 
-\subsubsection{Limitations}
+
+\subsection{Limitations}
 %TODO
 \begin{comment}
-- Mention how the threshold detection alone is not very robust to areas which are quite uncertain.
-- Explain how the eigenvalue associated with the actual eigenvector might be small and still signify a small event or could just show the lack of an event e.g. football matches tend to have quite small eigenvalues in practice it seems. 
 - Explain how taking a different geographical location would require the whole procedure to be redone with the logistic function re-calibrated and the window size and increment also. 
 \end{comment}
+Something to note is that for $\lambda \in (70, 300) $ there is a lot of uncertainty about whether a principal component indicates an event. On the one hand words can be used quite often together and therefore can result in a principal component, if there are no popular events during the same period, for instance the fourth row of Table \ref{streaming_test}. On the other hand however, some principal components clearly are consistent with events, however, they may not be that popular. An example of this can be seen by looking at the 11th row of the table which is related to a game of football in which Tottenham beat Manchester United at the Old Trafford on that day. Not having taken place in London may have also contributed to the fact that it was not that popular, but it can be seen that, though the associated $\lambda$ is quite low, it definitely is related to a genuine event. 
 
+This uncertainty makes it difficult to assign hard classification thresholds and is why a probabilistic approach is instead considered. What can be said though, is that if there is an event of significant popularity in the area considered, the algorithm will return words related to this.
+
+Moreover, given a larger geographical area, the whole procedure i.e. training of the parameters, must be redone, which takes time.
 
 \clearpage
 \section{Conclusion}
-%TODO
-\subsection{Optimal Choice of Parameters}
 %TODO
 \subsection{Further Work}
 %TODO
 \begin{comment}
 - A more sophisticated parser would give better results. For instance, in the John Terry example, the words 'retire', 'retired' and 'retirement' all appear in the same PC. What would be better is to have only the root of the word i.e. 'retire' and for them all to be considered the same.
 - Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
+- Adaptive window size and parameters for different size of geographical location => different rate of Tweets.
 - Have a linear combo for threshold of event.
 \end{comment}
 
