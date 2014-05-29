@@ -7,7 +7,9 @@
 %\headheight = 1pt
 %\oddsidemargin = 1pt
 %\marginparwidth = 1pt
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%TODO Use this website for formatting http://codeinthehole.com/writing/writing-a-thesis-in-latex/
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Save space packages and settings %%
 \usepackage{cite}
 
@@ -145,6 +147,7 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
+%TODO Mention streaming everything else
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\cite{statbrain}. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
 One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the features in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated with respect to a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.} and then methods of improvement to one of the algorithms is also considered as well methods to scale it. 
 
@@ -202,7 +205,7 @@ The first principal component (i.e. the first eigenvector of the $n\times n$ mat
 \begin{equation}
 \mathbf{v}_1 = \underset{\|\mathbf{x}\|^2 = 1}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right).
 \end{equation}
-An intuition to what $\mathbf{A}$ represents is presented in the Appendix. Principal Component Analysis alongside Singular Value Decomposition is explained further in \cite{datascience} and \cite{bishop}. 
+Here $\covmat$ is the covariance matrix associated with the data points. Principal Component Analysis alongside Singular Value Decomposition is explained further in \cite{datascience} and \cite{bishop}. 
 
 \begin{figure}[H]
 \centering
@@ -215,14 +218,14 @@ An intuition to what $\mathbf{A}$ represents is presented in the Appendix. Princ
 This work is largely an extension of \cite{lecture_svd}.
 
 \subsubsection{Description}
-SVD is a decomposition method that is very important in many areas due to the way it factorises a matrix into 3 matrices, each with a very informative structure. The basic concept is as such:
+SVD is a decomposition method that is very important in many areas due to the way it factorises a matrix into 3 matrices, each with a very informative structure. The basic decomposition is as such:
 \begin{equation}
-\mathbf{S} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
+\mathbf{S} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T,
 \end{equation}
-Where $\mathbf{S} \in \mathbb{R}^{m \times n}$,  $\mathbf{U} \in \mathbb{R}^{m \times r}$ and is a column orthonormal matrix, where $r$ is equal to the rank of the matrix,  $\mathbf{V} \in \mathbb{R}^{n \times r}$ is also a column orthonormal matrix, and  $\mathbf{\Sigma} \in \mathbb{R}^{r \times r}$ is a diagonal matrix where the elements are sorted in descending order.
+where $\mathbf{S} \in \mathbb{R}^{m \times n}$,  $\mathbf{U} \in \mathbb{R}^{m \times r}$ and is a column orthonormal matrix, where $r$ is equal to the rank of the matrix,  $\mathbf{V} \in \mathbb{R}^{n \times r}$ is also a column orthonormal matrix, and  $\mathbf{\Sigma} \in \mathbb{R}^{r \times r}$ is a diagonal matrix where the elements are sorted in descending order.
 
 \subsubsection{Example Related to Project}
-In the scenario considered in this paper, the matrix $\mathbf{S}$ is a matrix with the rows representing the tweets and the columns representing the words (features). The matrix is made up of only ones and zeros, with $[\mathbf{S}]_{i,j} = 1$, if tweet $i$ contains word $j$ and zero otherwise. As a toy example, suppose we have the matrix:
+In the scenario considered in this paper, the matrix $\mathbf{S}$ is a matrix with the rows representing the tweets and the columns representing the words (features). The matrix is made up of only ones and zeros, with $[\mathbf{S}]_{i,j} = 1$, if tweet $i$ contains word $j$ and zero otherwise. As a toy example, let:
 \begin{equation}
 \mathbf{S} = 
 \begin{pmatrix}
@@ -235,7 +238,7 @@ In the scenario considered in this paper, the matrix $\mathbf{S}$ is a matrix wi
 0 & 0 & 0 & 1 & 1\\
 \end{pmatrix}
 \end{equation}
-Where the columns represent the ordered bag of words, referenced from left to right \{football, cup, win, cyprus, eu\}, and there are two main topics trending on Twitter. One is about some football victory, and the other is about Cyprus joining the EU. This is a very artificial example as it assumes that the tweets would contain the exact same words, but a more general example will be given later. As it can be seen, this matrix is of rank 2, which is also the number of topics that are presented by the matrix. 
+Where the columns represent the ordered bag of words, referenced from left to right \{football, cup, win, cyprus, eu\}, and there are two main topics trending on Twitter. One is about some football victory, and the other is about Cyprus joining the EU. This is a very artificial example as it assumes that the Tweets would contain the exact same words, but a more general example will be given later. As it can be seen, this matrix is of rank 2, which is also the number of topics that are presented by the matrix. 
 
 Performing the SVD on the matrix, what is acquired is:
 
@@ -352,8 +355,8 @@ What is very useful to see, however, is that the singular values do decrease qui
 This intuitively makes sense since it is not hard to tell, after looking at the eigenvectors, that the first eigenvector is associated with the words Cyprus and EU, as 7 of the rows only mention these two words from the bag of words. The second eigenvector is associated with the words football, cup and win, as 4 of the rows only contain these words. These are obviously the major concepts and so their eigenvalues are relatively quite high, with the first one being slightly higher. After these however, the eigenvalues fall significantly which relate to the added noise which is present due to the rows 8 and 13, since not much variance can be explained by these two eigenvectors and therefore they carry very little information. 
 
 \subsection{Related Work}
-%TODO Must change this
-The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm that is focused on initially is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. These both may change as the findings of this project progress, however. The focus of these however is not entirely the same. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are also explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
+%TODO Must change this as now the focus is quite different
+The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Some particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the Sparse PCA algorithm that is focused on initially is the same algorithm, with some slight modifications, as in \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. These both may change as the findings of this project progress. The focus of these, however, is not entirely the same. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are also explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. 
 
 Furthermore, as mentioned previously, sparse PCA-like algorithms are also an active area of research and as such, much work has been done, some specific examples of which will be explored in this project.
 
@@ -368,14 +371,14 @@ where $\|\mathbf{x}\|_0$ is the $l_0$ cardinality of $x$ i.e. how many non-zero 
 \subsubsection{Methods to perform Sparse PCA}
 %TODO Add all the papers to this section.
 Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
- 
+ %TODO Cite the paper that explains why the thresholding algorithm is bad
 The first attempt, and an algorithm that is still widely used regardless of its many limitations is the Thresholding method, which simply performs regular PCA and then forces the entries that are small in magnitude, to zero. This can be misleading and an arbitrary selection of the threshold must be made, which may not actually be valid \cite{cadima}. In \cite{scotlass}, the authors aim to force sparsity by solving the equation
 \begin{equation*}
 \underset{\substack{\|\mathbf{x}\|_2 = 1, \\ \sum_{j=1}^n|\mathbf{x}| \leq t}}
 {\operatorname{argmax}}\mathbf{x}^T\mathbf{A}\mathbf{x},
 \end{equation*}
  
-for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{shen}. This method uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis and but imposes a penalty on the size of the entries in the principal components. Related to this, and almost identical apart for some pre-processing and post-processing is the Generalised Power Method (GPower) in \cite{GPower}, which is used in this project as a benchmark to compare algorithms. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is also used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. The problem with many of these methods is that (a) some are quite slow in practice on large data sets, (b) some do not generally guarantee principal components that are orthogonal and so this means that lots of redundancy must also be stored. 
+for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{shen}. This method uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis but imposes a penalty on the size of the entries in the principal components. Related to this, and almost identical apart for some pre-processing and post-processing is the Generalised Power Method (GPower) in \cite{GPower}, which is used in this project as a benchmark to compare algorithms. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is also used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. 
 %TODO Must be changed
 
 \begin{comment}
@@ -383,7 +386,7 @@ A few more methods must be considered, including \cite{zou}, \cite{daspremont} a
 \end{comment}
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
-This is the algorithm\cite{dimakis} that is most focused on in this paper and for a variety of reasons, which will be mentioned throughout this section, but this may change as the project progresses, if other algorithms prove to be better according to measures that will be defined later. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
+This is the algorithm\cite{dimakis} that is initially focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. The reason for this being that the authors of\cite{dimakis} used the algorithm in the same way that is being considered in here. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
 
 \subsubsection{Intuitive Explanation of the Algorithm}
 The assumption is made that a rank $d$ approximation of the covariance matrix at hand is arbitrarily close to the original based on the Forbenius norm. That is:
@@ -396,7 +399,7 @@ where $\epsilon$ can be determined. This can then be expressed as:
 \mathbf{A}_d = \sum_{i=1}^d \lambda_i \mathbf{v}_i \mathbf{v}_i^T.
 \end{equation*}
 
-The basic idea behind this algorithm is that the sparse approximation to the first principal component can be found by calculating the eigenvector $\mathbf{x}_*$ with the largest eigenvalue for all the possible $k\times k$ submatrices of $\mathbf{A}$. This leads to finding $n \choose k$ possible sparse eigenvectors, however. This would be quite wasteful however since it would lead to needing to find $O\left( n^k\right)$ eigenvectors, where $k$ is the sparsity of the eigenvector, i.e. how many elements of the vector are non-zero. In \cite{dimakis}, it can be shown that only $O\left(n^d\right)$ candidates need to be examined though and since $d < k$ typically, this means that the time complexity is reduced significantly. This reduction is the result of the Spannogram algorithm described in \cite{dimakis} and the resulting time complexity turns out to be $O \left( n^{d+1}\log(n) + n^d k^2 + dn^2\right)$. Depending on the structure of the matrix $\mathbf{A}$, either one of the terms could prevail.
+The basic idea behind this algorithm is that the sparse approximation to the first principal component can be found by calculating the eigenvector $\mathbf{x}_*$ with the largest eigenvalue for all the possible $k\times k$ submatrices of $\mathbf{A}$. This leads to finding $n \choose k$ possible sparse eigenvectors. This would be quite wasteful however since it would lead to needing to find $O\left( n^k\right)$ eigenvectors, where $k$ is the sparsity of the eigenvector, i.e. how many elements of the vector are non-zero. In \cite{dimakis}, it can be shown that only $O\left(n^d\right)$ candidates need to be examined though and since $d < k$ typically, this means that the time complexity is reduced significantly. This reduction is the result of the Spannogram algorithm described in \cite{dimakis} and the resulting time complexity turns out to be $O \left( n^{d+1}\log(n) + n^d k^2 + dn^2\right)$. Depending on the structure of the matrix $\mathbf{A}$, either one of the terms could prevail.
 
 \subsubsection{The Spannogram Algorithm}
 
@@ -444,6 +447,7 @@ The equation is then transformed into a Rank-1 instance by creating the vector $
 Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equation \ref{spannogram}. The important thing to note is that, there is no actual need to calculate the actual value of the $\mathbf{v}_c$ for each $\phi$ to find the candidate indices for the $k$-sparse eigenvectors only the relative magnitudes between the different entries in  $\mathbf{v}_c$ must be taken into account. The relative magnitudes will only change at intersection points between the sinusoids, and therefore, only about these points must a candidate eigenvector indices actually be tested. This brings down the computation to $O \left(n^d\right)$ instead of $O \left(n^k\right)$. A more thorough description and justification of the algorithm can be found in \cite{dimakis}.
 
 \subsubsection{Other Benefits}
+%TODO Probably will get rid of this section completely
 Other reasons this algorithm has been chosen is because it has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only non-negative entries, which it will in the case being considered (see section \ref{covmat}), the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. Another great feature it has is that the principal components found are also orthogonal to each other meaning that less redundancy has to be stored, which is based on the projection deflation method described in \cite{Mackey_deflationmethods} and it also allows the sparsity desired to be predefined as opposed to some other algorithms, typically based on optimisation procedures, such as \cite{GPower}.
 \clearpage
 
@@ -492,7 +496,7 @@ The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as 
 
 In this section, variations of the matrix are considered and evaluated against each other so as to find the optimal one to be used for the final implementation. All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
 
-\subsubsection{The Initial Matrix $\mathbf{A}$}
+\subsubsection{The Initial Matrix: $\mathbf{A}$}
 Initially, the approach considered in \cite{dimakis} is taken, in which $\mathbf{A} = \mathbf{S}^T \mathbf{S}$. 
 
 \subsubsection*{Results}
@@ -525,10 +529,10 @@ As it can be seen in the above table, the words of the sparse principal componen
 Something that is useful to note is that the eigenvalues also give some good insight and are useful for scoring the importance of different principal components. The higher the eigenvalue, the higher the variance this principal component accounts for, and therefore the more information it holds. It should be noted, however, that these eigenvalues are only useful to compare principal components which have been extracted using the same type of $\covmat$ for a specific set of Tweets.
 
   
-\subsubsection{The Hollow Matrix $\mathbf{A}_{h}$}
+\subsubsection{The Hollow Matrix: $\mathbf{A}_{h}$}
 %TODO Demonstrate this with a 3x3 matrix e.g. [20, 0, 0; 0, 3, 3; 0, 3, 3]
 
-The problem with the previous matrix is the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
+The problem with the previous matrix is the fact that the diagonal represents the number of times each word appears in total, regardless of any relation to the other words i.e. each node has a link to itself, with the highest weighting. This means that words that occur very frequently have very large values on their diagonal, regardless of how they relate to other words, which can be deceiving when taking the eigenvalues of the matrix, since words that may not have been filtered out of the bag of words, such as ``haha'' or ``this'', may appear very frequently but not have a distinct pattern as to the sorts of words they pair with most frequently. Since the whole point of the sparse principal components is to find a relationship of a few words together, it is only natural to want to prevent this. The matrix $\mathbf{A}$, therefore,  is substituted for 
 $\mathbf{A}_h$ where for each of its elements, $[\mathbf{A}_h]_{i, j}$, it takes the value 
 
 \begin{equation}
@@ -567,13 +571,13 @@ In this case, the second sparse PC once again does not represent any significant
 
 What is useful to note is that in the case of the first PC 7 or the 8 words a rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
-\subsubsection{The Normalised Matrix $\mathbf{A}_{n}$}
+\subsubsection{The Normalised Matrix: $\mathbf{A}_{n}$}
 Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic intuition behind this is to make it such that all the rows/columns sum to 1 so that it does not matter which pairs of words actually appear the most, but how often they appear with other words relative to their weighting.
 
 \subsubsection*{Results}
 In this case the algorithm did not even terminate for this data, but for other data it has given irrelevant results. The reason for this is because, in this case the words that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
-\subsubsection{The Weighted Laplacian Matrix $\mathbf{A}_{l}$}
+\subsubsection{The Weighted Laplacian Matrix: $\mathbf{A}_{l}$}
 
 The Laplacian of a graph is a very useful representation of it and is very useful in applications involving Spectral Graph Theory and Partial Differential Equations. $\mathbf{A}_{l}$, of a graph is given by the following equation:
 
@@ -610,7 +614,7 @@ Index & Word & Index & Word\\
 
 In this case, once again, both principal components do not seem to convey any useful information and it appears that most included words are just high frequency words in general. This may have to do with the fact that the diagonal has not been removed, as in the case of $\covmat_h$, which means that a similar effect is taking place as in the matrix $\covmat$.
 
-\subsubsection{The Weighted Laplacian of the Hollow Matrix $\mathbf{A}_{lh}$}
+\subsubsection{The Weighted Laplacian of the Hollow Matrix: $\mathbf{A}_{lh}$}
 
 To try to improve the results of the Laplacian, this time the matrix is created using the graph represented by the hollow matrix, $\covmat_h$ described above.
 
@@ -745,7 +749,7 @@ As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder
 Something else of interest is that, though the Twitter Data is the same as that used in \cite{microblogs}, the events that are discovered are different but still completely valid as can be confirmed by other sources.
 
 \subsection{The Data Matrix: $\smat$}
-Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+Until this point, the matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\cite{statbrain} 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
 
 \subsubsection{Taking Advantage of the Sparsity of $\mathbf{S}$}
 \label{sparsity_matrix}
@@ -753,11 +757,11 @@ Until this point, the matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
 The maximum number of elements that could possibly be non-zero in each row is 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
 
-This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, Matlab has an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{R}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{R}^{50k\times3k}$.
+This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, both Matlab and Python have an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{Z}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{Z}^{50k\times3k}$.
 
 \subsubsection{Reducing the Dimensionality of $\mathbf{S}$}
 %TODO Is this necessary?
-The data matrix $\mathbf{S} \in \mathbb{R}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, should be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
+The data matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, could be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{Z}^{k \times n}$ as the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
 
 
 \begin{equation*}
@@ -795,7 +799,7 @@ Methods of this form will be considered further, if needed, but will not be the 
 %More on random projections can be found in \cite{randomprojections}.
 
 \subsubsection{On the Dimensionality of the Problem}
-The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) data, which has become very popular also with the increase of analysis in genetics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper may be valid for these types of matrices only. 
+The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of analysis in genetics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper may be valid for these types of matrices only. 
 
 %TODO Complete this
 
@@ -873,7 +877,7 @@ Note that this gives the same result as the previous method for continuous data.
 Another obvious measure of performance, is the sparsity level which is attained by the algorithm. If a desired sparsity is stated, then the algorithm should be able to attain close to that and if it doesn't, the performance score should decrease. 
 
 \subsubsection{Objective Function for Performance}
-The objective function for the performance for each algorithm is therefore given as a result of these measurements. It is chosen arbitrarily but with good reasoning. The formula is given by:
+The objective function for the performance for each algorithm is therefore given as a result of these measurements. The formula is given by:
 
 \begin{equation}
 P = v_\text{cpev} - \gamma \left(k - \hat{k}\right)^2
@@ -950,7 +954,7 @@ The algorithms used are the Spannogram algorithm in \cite{dimakis} with a rank 3
 \center
 \begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  Performance Score Max &  Performance Score Min & Average Computation Time/s\\
+Algorithm &  Score Max & Score Min & Average Computation Time/s\\
 \hline
 Spannogram-R3 &0.9085 &    0.1710 &   9.9238\\
 TPower &    0.9992 &   0.6460&    0.0187 \\
@@ -967,7 +971,7 @@ TPower &    0.9992 &   0.6460&    0.0187 \\
 \center
 \begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  Performance Score Max &  Performance Score Min & Average Computation Time/s\\
+Algorithm &  Score Max &  Score Min & Average Computation Time/s\\
 \hline
 Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
  TPower  &    0.9990  &  0.7308  &  0.0233\\
@@ -995,7 +999,7 @@ Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
 \end{figure}
 
 %TODO
-It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. When the GPower methods do work, however, the basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
+It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. When the GPower methods do work, however, they basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
 
 \begin{comment}
 These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
@@ -1015,7 +1019,7 @@ The data matrix, $\smat$, is created by adding a one to each entry independent o
 \center
 \begin{tabular}{|l|r|r|r|}
 \hline
-Algorithm &  Performance Score Max &   Performance Score Min & Average Computation Time/s\\
+Algorithm &  Score Max &  Score Min & Average Computation Time/s\\
 \hline
   Spannogram-R3&   0.4297&    0.1441&    		9.9996\\
  TPower&   0.4297   & 0.1431   & 		0.0048\\
@@ -1094,7 +1098,7 @@ Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is n
 %TODO  Explain further
 
 \subsubsection{Complexities of the Different Algorithms}
-
+%TODO Probably will get rid of this section
 \begin{comment}
 \subsection{Testing the Sparse PCA Algorithms on Twitter Data}
 \label{testing_twitter}
@@ -1164,7 +1168,7 @@ Index & Word \\
 % Results can be found in spannogram_vs_tpower.mat and then looking at the metrics matrix.
 To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparseness are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
-The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $\mathbb{S}$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not actually represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
+The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $\mathbb{S}$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not necessarily represent a single event. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
 
 \begin{table}[H]
 \center
