@@ -1399,18 +1399,49 @@ Given that at this point in time only the $\lambda_i$ is used to indicate whethe
 \subsubsection{How $\lambda$ Varies with the Window Size}
 It is crucial to show how $\lambda$ is related to the window size in the application as this highlights the fact that the learned model of the previous section \ref{event_detection} is not universal to all problems, as the window size may change.
 
-To demonstrate this, an experiment is carried out to find the average $\lambda$ in the absence of an event, with different sizes of the data matrix $\smat$.
+Mathematically, it is not hard to see the expected relationship. It is already known that if
 
+\begin{equation*}
+\smat = \left( \begin{matrix}
+a_{1, 1} & a_{1, 2} & \cdots & a_{1, n} \\ 
+a_{2, 1} & a_{2, 2} & \cdots &  a_{2, n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m, 1} & a_{m, 2} &\cdots &  a_{m, n} \\
 
-\ref{binary_data}
+\end{matrix} \right),
+\end{equation*}
+ then the co-occurence matrix used is given by:
+\begin{equation*}
+\covmat =
+\left( \begin{matrix}
+0 & \sum_{i=1}^m a_{i,1} a_{i,2} & \cdots & \sum_{i=1}^m a_{i,1} a_{i,n}\\ 
+\sum_{i=1}^m a_{i,2} a_{i,1}  & 0& \cdots & \sum_{i=1}^m a_{i,2} a_{i,n}\\ 
+\vdots & \vdots& \ddots & \vdots \\ 
+\sum_{i=1}^m a_{i,n} a_{i,1} & \sum_{i=1}^m a_{i,n} a_{i,2} & \cdots & 0\\ 
+\end{matrix} \right).
+\end{equation*}
+
+Therefore, the expected value of any entry in $\covmat$ can be given by
+
+\begin{align*}
+\mathbb{E}\{[\covmat]_{i, j}\} & =  \mathbb{E}\{\sum_{k=1}^m a_{k,i} a_{k,j}\},\\
+& =  \sum_{k=1}^m \mathbb{E}\{ a_{k,i} a_{k,j}\},\\
+& =  \sum_{k=1}^m \mathbb{E}\{ a_{k,i}\}\mathbb{E}\{ a_{k,j}\},\\
+ & =   \sum_{k=1}^m p_1^2, \\
+ & =   mp_1^2,
+\end{align*}
+
+if $i \neq j$ and 0 otherwise. This clearly shows that the larger $m$ is i.e. the number of rows of $\smat$, the higher the expected value of each of the off-diagonal elements of $\covmat$. This is why the expected $\lambda$ grows with $m$, the number of Tweets per window.
+
+To demonstrate this further, an experiment is carried out to find the average $\lambda$ in the absence of an event, with different sizes of the data matrix $\smat$. This is done by creating $\smat$ and with a varied number of rows, and adding a 1 with some probability $p_1$ and a zero else, much like in section \ref{binary_data} for the first trial. This should simulate the scenario of the absence of an event since each entry will be independent and identically distributed, therefore so will each feature of each row. Then this matrix is run through the algorithm and the associated $\lambda$ is found. For each size of the matrix $\smat$ the process is repeated 10 times and an average $\lambda$ is obtained. This is then plotted, as in Figure \ref{lambda_vs_tweets}, and a first order polynomial has been fit through the points in the least squares sense. 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{lambda_vs_number_tweets.eps}
-\caption{How the average $\lambda$ varies with the number of Tweets in the initial matrix $\mathbf{S}$.}
+\caption{How the average $\lambda$ varies with the number of Tweets represented by the rows of $\mathbf{S}$.}
 \label{lambda_vs_tweets}
 \end{figure}
 
-
+As is evident, the average $\lambda$ varies approximately linearly with the number of rows of $\smat$ in the absence of an event. This means that though the probability of an event with a window size of 5000 may be very likely for some certain $\lambda$, it would probably be very unlikely if a window size of 50000 were to be considered. This highlights the fact that a different model needs to be trained for each window size.
 
 \subsection{Testing the Streaming Algorithm on London Data} 
 After training the parameters to be able to find the events that are known and have been found previously and testing their predictive performance to ensure over-fitting hasn't taken place, the algorithm is run on the entirety of the data from London 2012 and the result can be seen in Figure \ref{testing_app_all_data}. 
@@ -1605,7 +1636,7 @@ Consider a matrix, $S\in \mathbb{R}^{m\times n}$, where $m$ is the number of Twe
 By example, imagine:
 
 \begin{equation}
-S = \left( \begin{matrix}
+\smat = \left( \begin{matrix}
 a_{1, 1} & a_{1, 2} & a_{1, 3} \\ 
 a_{2, 1} & a_{2, 2} & a_{2, 3} \\
 a_{3, 1} & a_{3, 2} & a_{3, 3} \\
@@ -1614,7 +1645,7 @@ a_{4, 1} & a_{4, 2} & a_{4, 3}
 \end{equation}
 
 \begin{equation}
-A = S^TS =
+\covmat = \smat^T\smat =
  \left( \begin{matrix}
 a_{1, 1} & a_{2, 1} & a_{3, 1} & a_{4, 1} \\ 
 a_{1, 2} & a_{2, 2} & a_{3, 2} & a_{4, 2} \\ 
@@ -1631,7 +1662,7 @@ a_{4, 1} & a_{4, 2} & a_{4, 3}
 
 
 \begin{equation}
-A =
+\covmat =
 \left( \begin{matrix}
 \sum_{i=1}^4 a_{i,1}^2& \sum_{i=1}^4 a_{i,1} a_{i,2} &  \sum_{i=1}^4 a_{i,1} a_{i,3} \\ 
 \sum_{i=1}^4 a_{i,2}a_{i, 1} & \sum_{i=1}^4 a_{i,2}^2 &  \sum_{i=1}^4 a_{i,2} a_{i,3} \\ 
@@ -1641,7 +1672,7 @@ A =
 
 Since $a_{i, j} = 1$ when the word $j$ appears in Tweet $i$ and otherwise 0, the resulting matrix is basically a symmetric matrix with entry $(i, j)$ being composed of the number of times word $j$ occurs with word $i$ in the same Tweet over all the Tweets. The diagonal is  therefore the number of times the word $j$ appears over all the Tweets.
 
-This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $A$ and can be seen as a weighted adjacency matrix.
+This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $\covmat$ and can be seen as a weighted adjacency matrix.
 
 \section*{C. Laplacian Matrix}
 %TODO
