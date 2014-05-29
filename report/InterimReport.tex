@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 %\textheight = 630pt
 %\textwidth = 480pt
 %\topmargin = 3pt
@@ -834,6 +834,7 @@ v_\text{cpev} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \ma
 and has a value between 0 and 1. This quantity is referred to as the cumulative percentage of explained variance (CPEV) in \cite{shen} and shall be referred to as such here also. 
 
 \subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Binary Data}
+\label{binary_data}
 
 In this case, \eqref{cpev_eq} will not work, since $\smat$ is not a mean centered data matrix. What will be done in this case is instead the variance captured, $v_c$, will first be calculated, as such:
 
@@ -1265,7 +1266,7 @@ $\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
 $ \mathbf{Q}(1:W-K) \leftarrow \mathbf{Q}(K+1:W) $\\
 // Put the new data at the end of the queue\\
 $ \mathbf{Q}(W-K+1:W) \leftarrow \smat_\text{new}$\\
-// Calculate the new covariance matrix
+// Calculate the new co-occurrence matrix
 \\
 $\covmat = \smat\tp \smat - \text{diag}(\smat\tp \smat) $\\
 // Compute new Sparse PCs\\
@@ -1281,7 +1282,7 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 
 %TODO Must change this part. The covariance matrix must be calculated every time. 
 \begin{comment}
-Computation time is saved in two ways. Firstly, the covariance matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
+Computation time is saved in two ways. Firstly, the co-occurrence matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 \end{comment}
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
@@ -1395,7 +1396,23 @@ It should be noted that the labeling of the $\lambda_i$s is the only part of the
 
 Given that at this point in time only the $\lambda_i$ is used to indicate whether an event has taken place, this simple training scheme is sufficient, coupled with cross validation. However, in a further iteration, possibly more variables could be considered, in which case a more sophisticated predictor could be used, such as a Support Vector Machine. 
 
-\subsection{Testing the Streaming Algorithm} 
+\subsubsection{How $\lambda$ Varies with the Window Size}
+It is crucial to show how $\lambda$ is related to the window size in the application as this highlights the fact that the learned model of the previous section \ref{event_detection} is not universal to all problems, as the window size may change.
+
+To demonstrate this, an experiment is carried out to find the average $\lambda$ in the absence of an event, with different sizes of the data matrix $\smat$.
+
+
+\ref{binary_data}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{lambda_vs_number_tweets.eps}
+\caption{How the average $\lambda$ varies with the number of Tweets in the initial matrix $\mathbf{S}$.}
+\label{lambda_vs_tweets}
+\end{figure}
+
+
+
+\subsection{Testing the Streaming Algorithm on London Data} 
 After training the parameters to be able to find the events that are known and have been found previously and testing their predictive performance to ensure over-fitting hasn't taken place, the algorithm is run on the entirety of the data from London 2012 and the result can be seen in Figure \ref{testing_app_all_data}. 
 
 In this case, soft classification is used as opposed to previously where a data point is either red to indicate an event or blue otherwise. This time a linear combination of red and blue is used to indicate the probability of an event taking place. To detect an event, one may attempt to take all points with a probability of greater than 0.6 possibly and look at the principal components.
@@ -1446,10 +1463,29 @@ Table \ref{streaming_test} shows some of the results sampled after running the a
 
 Added to this, it is interesting to see that not only have all the principal components previously discovered, in section \ref{first_three_pcs}, been found but that more have also emerged, which is due to the calibration of the window size, which has been significantly reduced and has also been transformed into with a sliding window. For example, the second row of the table is related to a Twitter campaign which aimed at raising funds for the Homeless Football World Cup team for Morocco. This was previously in the same window as the news for John Terry's retirement and was overpowered by it.
 
+\subsection{Testing the Streaming Algorithm on Different Data}
+As previously mentioned, to measure the general effectiveness of the algorithm, it must at least be tested on other Twitter data also from a different geographical location. Therefore, using the Twitter API \cite{twitter_api}, more data has been collected from the United States of America, the coordinates, given as a bounding box of (latitude, longitude) coordinates with the SW corner given first and then the NE, are (-126.8,33.2),(-76.7,48.8).\footnote{Found using the online tool http://boundingbox.klokantech.com/.} A modest amount of data has been collected, namely from 7:21 a.m. on the 28th May 2014 to 10:49 a.m. on the 28th May 2014, which is roughly 3.5 hours of data, which amounts to about 76000 Tweets. Just as a measure of comparison, it can be seen that in just 3.5 hours in the U.S.A. there has been more Tweets that in a day in London, which is not surprising, but gives rise to interesting results. 
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Testing_Streaming_App_25000_2000_USA.png}
+\caption{Testing the streaming application on the U.S.A data with a window size of 25000 Tweets and a shift of 2000 Tweets for each data point. Using the mapping from section \ref{event_detection} each point is now assigned a probability of being associated with an event, which is visualised as a linear combination of red and blue. The more red a point is, the more likely it is associated with an event. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every 7 minutes.}
+\label{testing_app_25000_usa}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Testing_Streaming_App_5000_500_USA.png}
+\caption{Testing the streaming application on the U.S.A data with a window size of 5000 Tweets and a shift of 500 Tweets for each data point. Using the mapping from section \ref{event_detection} each point is now assigned a probability of being associated with an event, which is visualised as a linear combination of red and blue. The more red a point is, the more likely it is associated with an event. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every 1 and a half minutes.}
+\label{testing_app_5000_usa}
+\end{figure}
+
+From Figures \ref{testing_app_25000_usa} and \ref{testing_app_5000_usa}, it can be seen that, once again, different values for the window size and for the increment size lead to different results. 
+
+%TODO Show that the parameters in this case are not optimal and show that there are differences in the scale of the data
+%TODO Show why larger number of tweets considered gives rise to a larger average eigenvalue. demo_scale_S_eigenvalue in Matlab.
 \subsection{Calculating Multiple Principal Components Per Iteration}
-
+%TODO Don't know if this will add any value
 \subsection{Performance Increase of Algorithm}
 %TODO
 \begin{comment}
@@ -1466,11 +1502,12 @@ Added to this, it is interesting to see that not only have all the principal com
 \begin{comment}
 - Explain how taking a different geographical location would require the whole procedure to be redone with the logistic function re-calibrated and the window size and increment also. 
 \end{comment}
-Something to note is that for $\lambda \in (70, 300) $ there is a lot of uncertainty about whether a principal component indicates an event. On the one hand words can be used quite often together and therefore can result in a principal component, if there are no popular events during the same period, for instance the fourth row of Table \ref{streaming_test}. On the other hand however, some principal components clearly are consistent with events, however, they may not be that popular. An example of this can be seen by looking at the 11th row of the table which is related to a game of football in which Tottenham beat Manchester United at the Old Trafford on that day. Not having taken place in London may have also contributed to the fact that it was not that popular, but it can be seen that, though the associated $\lambda$ is quite low, it definitely is related to a genuine event. 
+Something to note is that for $\lambda \in (70, 300) $ there is a lot of uncertainty about whether a principal component indicates an event. On the one hand words can be used quite often together and therefore can result in a principal component, if there are no popular events during the same period, for instance the fourth row of Table \ref{streaming_test}. On the other hand however, some principal components are clearly consistent with events, however, they may not be that popular. An example of this can be seen by looking at the 11th row of the table which is related to a game of football in which Tottenham beat Manchester United at the Old Trafford on that day. Not having taken place in London may have also contributed to the fact that it was not that popular, but it can be seen that, though the associated $\lambda$ is quite low, it definitely is related to a genuine event. 
 
-This uncertainty makes it difficult to assign hard classification thresholds and is why a probabilistic approach is instead considered. What can be said though, is that if there is an event of significant popularity in the area considered, the algorithm will return words related to this.
+This uncertainty makes it difficult to assign hard classification thresholds and this is why a probabilistic approach is instead considered. What can be said though, is that if there is an event of significant popularity in the area considered, the algorithm will return words related to this.
 
-Moreover, given a larger geographical area, the whole procedure i.e. training of the parameters, must be redone, which takes time.
+Moreover, given a larger geographical area, the whole procedure i.e. training of the parameters, must be redone, which takes time. 
+
 
 \clearpage
 \section{Conclusion}
@@ -1478,17 +1515,18 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 \section{Further Work}
 %TODO
 \begin{comment}
-- A more sophisticated parser would give better results. For instance, in the John Terry example, the words 'retire', 'retired' and 'retirement' all appear in the same PC. What would be better is to have only the root of the word i.e. 'retire' and for them all to be considered the same.
 - Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
-- Adaptive window size and parameters for different size of geographical location => different rate of Tweets.
-- Have a linear combo for threshold of event.
 \end{comment}
 As with most areas of research, there is room for improvement. 
 
+\subsection{Clustering of features in the Bag of Words}
 Firstly, in many of the principal component examples words appear that are from the same root or are similar in meaning, for instance, in the John Terry example, the words ``retire'', ``retired'' and ``retirement'' all appear in the same principal component. The problem with this is that since they are considered as separate features, even though they actually aren't, the appearance of one of these words may be distributed in a population of Tweets across all three of them, therefore decreasing the total count of the feature. This means that for some events, where many similes may be used, these may not be found purely because the words have not been aggregated together and thus the Sparse PCA algorithm has not kept them. Having a more sophisticated parser in the pre-processing step which could do this would ensure much better results and would be much more robust to vocabulary or spelling differences.
 
+\subsection{Generalising the Parameter Selection}
 Furthermore, as mentioned previously, the parameters have been trained in this instance to work on Tweets that have been collected from the area of London at a specific time, but would not work optimally for a location of a different size or with a different density of Twitter users. Therefore, a lot more research could go into finding a method of estimating these parameters, either in an adaptive fashion or by pre-computing some of the parameters and using a lookup table.
 
+\subsection{Improving the Event Detection Parameter}
+\subsubsection{Using Previous $\lambda$ Values}
 Using more parameters to identify whether an event has happened should also be considered. For instance, taking into account previous values of $\lambda$ would also be very beneficial. Equation \eqref{logit} could take the more general form
 
 \begin{equation}
@@ -1497,9 +1535,15 @@ p(\lambda_i)= \frac{1}{\left( 1 + e^{-\mathbf{w}^T\bm{\lambda}}\right)},
 \end{equation}
 where $\bm{\lambda}$ takes the form $\left(\begin{matrix}
 1 & \lambda_i & \lambda_{i-1} & \cdots & \lambda_{i-n}
-\end{matrix}\right)^T$ where $n+1$ is the number of previous $\lambda$ values to consider. Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered.
+\end{matrix}\right)^T$ where $n+1$ is the number of previous $\lambda$ values to consider. 
 
+\subsubsection{Using a More Sophisticated Classifier}
+Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered. Here roughly 12 days of data has been used and has given rise to about 16 significant events. This means that only 16 data points can be used as positive targets to train the classifier. Given more time, much more data could be collected, for instance, over the period of possibly 2 months. This data could then actually be manually classified and then a Support Vector Machine could be trained using a proportion of this data. This could then be validated using 
+
+\subsubsection{Using the Rate of Tweets}
 The rate of Tweets could also be considered, as in \cite{microblogs}. The basic principle behind this would be that, if there is a sudden increase in the rate of the Tweets, it is much more likely that an event has taken place. In this case, the window size could be determined by a time period rather than a number of Tweets and if the number of Tweets in the window were to increase, a linear combination could again be added to the \eqref{logit_general} equation as part of $\bm{\lambda}$.
+
+
 \clearpage
 
 \bibliography{bibliography}
