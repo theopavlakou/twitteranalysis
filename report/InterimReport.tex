@@ -124,6 +124,16 @@
 
 
 \section*{\center Abstract}
+%TODO
+\begin{comment}
+- Inspired by the work of Dimakis and Microblogs, seek to combine the work.
+- Evaluate Sparse PCA algorithms for the general case and for the specific binary matrix case. 
+- Altered the input matrix to improve results. 
+- Tests are done on Twitter data and results confirmed by real life events.
+- A streaming app created with automatic event recognition. 
+- Proof of concept. 
+- Room for further work.
+\end{comment}
 \clearpage
 \section*{\center Acknowledgments}
 \clearpage
@@ -254,16 +264,11 @@ Performing the SVD on the matrix, what is acquired is:
 These three matrices all have a very significant meaning. It has already been stated that due to the obvious form of $\mathbf{S}$ it can be seen that there are only 2 topics or concepts. The $\mathbf{U}$ matrix can be viewed as the Tweet to concept correlation matrix i.e. how correlated the Tweets are to the corresponding topics. Similarly, the $\mathbf{V}^T$ matrix can be viewed  the concept to word correlation matrix i.e. how related the concept is to the particular word. For example, $\mathbf{U}_{2,1}$ would be how related the second Tweet is to the first concept and $\mathbf{V}^T_{2,3}$ would be how related the second topic is related to the third word, which in this case is zero, i.e. there is no similarity, because the second concept is about Cyprus joining the EU and the third word is win, which does not appear in any Tweet regarding Cyprus and the EU. The $\mathbf{\Sigma}$ matrix is then just the concept strengths.
 
 It can then be shown that $\mathbf{S}^T\mathbf{S}$ represents the correlation of the words in the tweets to each other, i.e. a covariance matrix (see Appendix). But 
-\begin{equation*}
-\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Sigma}\mathbf{U}^T \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T
-\end{equation*}
-\begin{equation}
-\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Sigma}^2\mathbf{V}^T,
-\end{equation}
-which can be rewritten as:
-\begin{equation}
-\mathbf{S}^T\mathbf{S} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T,
-\end{equation}
+\begin{align*}
+\mathbf{S}^T\mathbf{S} &= \mathbf{V}\mathbf{\Sigma}\mathbf{U}^T \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T,\\
+& = \mathbf{V}\mathbf{\Sigma}^2\mathbf{V}^T,\\
+& = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T,
+\end{align*}
 which essentially means that the columns of $\mathbf{V}$ are the eigenvectors of the matrix $\mathbf{S}^T\mathbf{S}$ and the diagonal values of $\mathbf{\Lambda}$ are the corresponding eigenvalues, which are the squares of the singular values found in $\mathbf{\Sigma}$.
 
 As it can be seen, there is a close relationship between SVD and PCA, which uses the eigenvectors of the covariance matrix. Therefore, to find the principal components of a matrix $\mathbf{S}$, the SVD can instead be found and the principal components would be the columns of $\mathbf{V}$ (or of $\mathbf{U}$ if we want to find the principal components of $\mathbf{S}\mathbf{S}^T$) and the variances are given by squaring the singular values.
@@ -359,6 +364,7 @@ Sparse PCA algorithms aim to deliver similar results to PCA, but with the differ
 where $\|\mathbf{x}\|_0$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms come in. 
 
 \subsubsection{Methods to perform Sparse PCA}
+%TODO Add all the papers to this section.
 Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
  
 The first attempt, and an algorithm that is still widely used regardless of its many limitations is the Thresholding method, which simply performs regular PCA and then forces the entries that are small in magnitude, to zero. This can be misleading and an arbitrary selection of the threshold must be made, which may not actually be valid \cite{cadima}. In \cite{scotlass}, the authors aim to force sparsity by solving the equation
@@ -793,8 +799,8 @@ The scenario which is being considered mostly in this paper deals with the case 
 
 \clearpage
 
-\section{Evaluation of Algorithms}
-\subsection{Measuring Performance of Sparse PCA Algorithms}
+\section{Evaluation of the Algorithms}
+\subsection{Measuring Performance of the Sparse PCA Algorithms}
 
 \subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}
 Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal component, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the following formula, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section:
@@ -1213,6 +1219,7 @@ It can be concluded that the Spannogram PCA algorithm performs best when the mat
 - Which will be used in the next section and why?
 => streaming => speed => TPower.
 \end{comment}
+From the findings it appears that the Spannogram PCA algorithm is more accurate and more consistent in terms of the principal components found in the context of finding events in Twitter data, using the defined objective function. However, after the sparsity increases beyond 8, they appear to perform almost equally. On the other hand, the speed of the TPower algorithm is much better than that of the Spannogram PCA algorithm, by a factor of approximately $10^3$, which should be taken into account when developing an application which requires quick computation time. In any case, either one of these should be used to suit the needs of the application and the trade-off between speed and accuracy should be the deciding factor. 
 \clearpage
 
 
@@ -1684,4 +1691,6 @@ All code written by me can be found on Github using the following link:
 \section{User Guide}
 %TODO is this necessary 
 
+\section{Resources}
+%TODO Here mention the laptop used and the APIs
 \end{document}
