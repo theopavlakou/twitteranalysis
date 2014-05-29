@@ -1448,6 +1448,7 @@ To demonstrate this further, an experiment is carried out to find the average $\
 As is evident, the average $\lambda$ varies approximately linearly with the number of rows of $\smat$ in the absence of an event. This means that though the probability of an event with a window size of 5000 may be very likely for some certain $\lambda$, it would probably be very unlikely if a window size of 50000 were to be considered. This highlights the fact that a different model needs to be trained for each window size.
 
 \subsection{Testing the Streaming Algorithm on London Data} 
+\label{london_test}
 After training the parameters to be able to find the events that are known and have been found previously and testing their predictive performance to ensure over-fitting hasn't taken place, the algorithm is run on the entirety of the data from London 2012 and the result can be seen in Figure \ref{testing_app_all_data}. 
 
 In this case, soft classification is used as opposed to previously where a data point is either red to indicate an event or blue otherwise. This time a linear combination of red and blue is used to indicate the probability of an event taking place. To detect an event, one may attempt to take all points with a probability of greater than 0.6 possibly and look at the principal components.
@@ -1517,6 +1518,21 @@ As previously mentioned, to measure the general effectiveness of the algorithm, 
 
 From Figures \ref{testing_app_25000_usa} and \ref{testing_app_5000_usa}, it can be seen that, once again, different values for the window size and for the increment size lead to different results. 
 
+In the first case, all points are pretty unlikely to be associated with an event. In the second case, however, it can be seen that there are two distinct peaks in the value of $\lambda$. These are both associated with the same event and the words that appear as the supports can be found in Table \ref{streaming_test_us}. They refer to a flash flood being issued in Charleston and Jackson on the day which woke many people up and there was a surge of Tweets complaining about it. It should be noted that each window is compromised by roughly 7 minutes of date in the second scenario which is quite different to the case explored in section \ref{london_test} where each window has about 2.5 hours of Twitter data, which again shows how important different parameters are for different window sizes. 
+\begin{table}[H]
+\center
+\begin{tabular}{| l| r | l|}
+\hline
+Principal Component Words & $\lambda$ & Date\\
+\hline
+\st{watch}, \st{wanna}, until, issued, flood, flash, \st{someone}, charleston, jackson, \st{netflix} & 274 & 28/05/2014	 \\
+want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mobile}& 195 & 28/05/2014	 \\
+\hline
+\end{tabular}
+\caption{The principal components found after running the algorithm on the data from the U.S.A. The samples taken have a $\lambda > 70$ and it has been rounded to the nearest unit. The dates are also given. Words and dates that are crossed out indicate that they are not relevant for an event.}
+\label{streaming_test_us}
+\end{table}
+
 %TODO Show that the parameters in this case are not optimal and show that there are differences in the scale of the data
 %TODO Show why larger number of tweets considered gives rise to a larger average eigenvalue. demo_scale_S_eigenvalue in Matlab.
 \subsection{Calculating Multiple Principal Components Per Iteration}
@@ -1552,7 +1568,7 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 \begin{comment}
 - Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
 \end{comment}
-As with most areas of research, there is room for improvement. 
+As with most areas of research, there is room for improvement but given the time constraints and the lack of data some of these areas must be left for a later time. 
 
 \subsection{Clustering of features in the Bag of Words}
 Firstly, in many of the principal component examples words appear that are from the same root or are similar in meaning, for instance, in the John Terry example, the words ``retire'', ``retired'' and ``retirement'' all appear in the same principal component. The problem with this is that since they are considered as separate features, even though they actually aren't, the appearance of one of these words may be distributed in a population of Tweets across all three of them, therefore decreasing the total count of the feature. This means that for some events, where many similes may be used, these may not be found purely because the words have not been aggregated together and thus the Sparse PCA algorithm has not kept them. Having a more sophisticated parser in the pre-processing step which could do this would ensure much better results and would be much more robust to vocabulary or spelling differences.
