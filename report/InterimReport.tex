@@ -494,7 +494,7 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 \subsection{The Co-occurrence Matrix: $\mathbf{A}$}
 \label{covmat}
-
+%TODO Mention that the work in this section will be published. 
 The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as it determines the sort of relationship the words appear to have with one another. As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as a weighted adjacency matrix of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex over all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered and any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
 
 In this section, variations of the matrix are considered and evaluated against each other so as to find the optimal one to be used for the final implementation. All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
@@ -1227,7 +1227,7 @@ From the findings it appears that the Spannogram PCA algorithm is more accurate 
 
 
 
-\section{Implementation of Application}
+\section{Application Implementation}
 \begin{comment}
 From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont}, \cite{asteris} 
 and any others, and finding which ones would be best to use for the specific scenario. It may be the case that the Spannogram PCA algorithm performs worse with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
@@ -1297,14 +1297,16 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 Computation time is saved in two ways. Firstly, the co-occurrence matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 \end{comment}
 \subsection{Time Per Calculation}
-%TODO Calculate time of each portion of algorithm
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
+\subsubsection{Time to Construct $\smat$}
+%TODO Calculate time of each portion of algorithm
+
 
 This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.25]{Time_Matrix_Construction.png}
+\includegraphics[scale=0.30]{Time_Matrix_Construction.png}
 \caption{The time it takes to create the data matrix $\smat$ against the number of Tweets.}
 \label{time_matrix_construction}
 \end{figure}
@@ -1530,7 +1532,7 @@ From Figures \ref{testing_app_25000_usa} and \ref{testing_app_5000_usa}, it can 
 In the first case, all points are pretty unlikely to be associated with an event. In the second case, however, it can be seen that there are two distinct peaks in the value of $\lambda$. These are both associated with the same event and the words that appear as the supports can be found in Table \ref{streaming_test_us}. They refer to a flash flood being issued in Charleston and Jackson on the day which woke many people up and there was a surge of Tweets complaining about it. It should be noted that each window is compromised by roughly 7 minutes of date in the second scenario which is quite different to the case explored in section \ref{london_test} where each window has about 2.5 hours of Twitter data, which again shows how important different parameters are for different window sizes. 
 \begin{table}[H]
 \center
-\begin{tabular}{| l| r | l|}
+\begin{tabular}{| p{11cm}| r | l|}
 \hline
 Principal Component Words & $\lambda$ & Date\\
 \hline
@@ -1599,7 +1601,7 @@ therefore,
 \covmat\new = \covmat\old - \smat\old^T \smat\old + \smat\new^T\smat\new.
 \end{equation}
 
-This means that upon each iteration instead of calculating the whole matrix again, which takes $O(mn^2)$, two matrices with much less elements must be considered, bringing the calculation of the co-occurrence matrix to $O(kn^2)$ where $k << m$. For instance, for the parameters chosen above for the London Twitter data, $m = 10000$ and $k = 1000$, therefore, on average a computational saving of about $80\%$ is saved (due to there being two matrices that need to be calculated, not just one). Since this calculation is the actual bottleneck in the whole streaming algorithm, as the TPower method is so fast, this would give rise to a great performance increase. 
+This means that upon each iteration instead of calculating the whole matrix again, which takes $O(mn^2)$, two matrices with much less elements must be considered, bringing the calculation of the co-occurrence matrix to $O(kn^2)$ where $k << m$. For instance, for the parameters chosen above for the London Twitter data, $m = 10000$ and $k = 1000$, therefore, on average a computational saving of about $80\%$ is saved (due to there being two matrices that need to be calculated, not just one). Since populating the matrix $\smat$ is the actual bottleneck in the whole streaming algorithm this would give rise to a great performance increase. 
 
 In this scenario the change in the Bag-of-Words is not considered for simplicity, but with some alterations, this can be adapted to work for the more general case.
 \subsubsection{Complexity}
@@ -1623,7 +1625,7 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 \section{Further Work}
 %TODO
 \begin{comment}
-- Have a window that changes size when the rate of Tweeting changes => change point analysis as is described in the microblogs paper => see Grubb's Test.
+- Put in Appendix a section on how SVM works.
 \end{comment}
 As with most areas of research, there is room for improvement but given the time constraints and the lack of data some of these areas must be left for a later time. 
 
@@ -1662,12 +1664,12 @@ Other parameters included in the JSON returned by the Streaming API of Twitter c
 \bibliographystyle{plain}
 \clearpage
 
-\section*{Appendix}\label{appendixa}
+\section{Appendix}\label{appendixa}
 
 \appendix
 \pagenumbering{Roman}
 
-\section*{A. PCA Formulation Explained (A variant of \cite{bishop})}
+\section{PCA Formulation Explained (A variant of \cite{bishop})}
 
 Consider a set of observations $\{\mathbf{x}_n\}$ for $n = 1, ..., N$ and each $\mathbf{x}_n \in \mathbb{R}^D$, to project the data onto just one dimension whilst keeping the maximum amount of variation possible (and therefore information), we can project the data onto one D-dimensional vector, $\mathbf{u}_1 \in \mathbb{R}^D$. The mean of the projected data is then $\mathbf{u}_1^T \mathbf{\overline{x}}$, where
 \begin{equation*}
@@ -1755,10 +1757,11 @@ Since $a_{i, j} = 1$ when the word $j$ appears in Tweet $i$ and otherwise 0, the
 
 This is basically a form of clustering i.e. words that occur frequently together will have high corresponding values in the matrix $\covmat$ and can be seen as a weighted adjacency matrix.
 
-\section*{C. Laplacian Matrix}
+\section{Laplacian Matrix}
 %TODO
 
-\section*{Code}
+\section{Support Vector Machine}
+\section{Code}
 All code written by me can be found on Github using the following link:
 %TODO
 
