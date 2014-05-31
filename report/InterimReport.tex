@@ -57,6 +57,7 @@
 \DeclareMathOperator{\Tr}{Tr}
 \newcommand{\new}{_\text{new}}
 \newcommand{\old}{_\text{old}}
+\newcommand{\common}{_\text{common}}
 
 
 
@@ -140,6 +141,11 @@
 \end{comment}
 \clearpage
 \section*{\center Acknowledgments}
+The work presented in this project would not be possible without the help and support of many people. 
+
+Firstly, I would like to thank my supervisor, Dr. M. Draief, who has been there to advise and encourage me throughout the whole process. I would also like to thank Dr. A. Babaee, who has given me insights in standard practices of research and has helped me with finding data so that measurements could be made and mathematical concepts could be validated. 
+
+My fiancee, my family, my friends and my community have also been understanding and supportive the whole way and their love and care has been a great comfort throughout.
 \clearpage
 \tableofcontents
 \newpage
@@ -1542,11 +1548,59 @@ want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mo
 \begin{comment}
 - Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found. Try this.
 \end{comment} 
+\subsubsection{Building the Co-occurrence Matrix $\covmat$}
+One method to increase the speed of the algorithm, and therefore the rate at which it can operate, is by taking note that, if the increment size is fairly small compared to the size of the window, then lots of unnecessary calculation is being done by actually building the co-occurrence matrix upon each iteration. 
 
+This can be shown by looking at two consecutive windows, given in the matrix form: 
+\begin{equation*}
+\smat = \left(\begin{matrix}
+\smat_{\text{old}}\\
+\smat_{\text{common}}\\
+\smat_{\text{new}}
+\end{matrix}\right),
+\end{equation*}
+where the first window is $\left(\begin{matrix}
+\smat_{\text{old}}^T&
+\smat_{\text{common}}^T\\
+\end{matrix}\right)^T
+$ and the second is $\left(\begin{matrix}
+\smat_{\text{common}}^T&
+\smat_{\text{new}}^T\\
+\end{matrix}\right)^T
+$
+and each $\smat_{\text{old}}, \smat_{\text{new}} \in \mathbb{Z}^{k \times n}$, where $k$ is the increment size, in number of Tweets, and $\smat_{\text{common}} \in \mathbb{Z}^{(m-k) \times n}$ where $m$ is the window size. 
 
+Let $\covmat_{\text{old}}$ be the old non-hollow co-occurrence matrix and $\covmat_{\text{new}}$ be the new one. Then it can be seen that
+
+\begin{align*}
+\covmat\old & = \left( \begin{matrix}
+\smat\old^T & \smat\common^T
+\end{matrix}\right)\left( \begin{matrix}
+\smat\old \\ \smat\common
+\end{matrix}\right),\\
+& = 
+\smat\old^T \smat\old+ \smat\common^T \smat\common,
+\end{align*}
+ and similarly, 
+\begin{align*}
+\covmat\new & = \left( \begin{matrix}
+\smat\common^T & \smat\new^T
+\end{matrix}\right)\left( \begin{matrix}
+\smat\common \\ \smat\new
+\end{matrix}\right),\\
+& = 
+\smat\common^T \smat\common+ \smat\new^T \smat\new,
+\end{align*} 
+therefore, 
+\begin{equation}
+\covmat\new = \covmat\old - \smat\old^T \smat\old + \smat\new^T\smat\new.
+\end{equation}
+
+This means that upon each iteration instead of calculating the whole matrix again, which takes $O(mn^2)$, two matrices with much less elements must be considered, bringing the calculation of the co-occurrence matrix to $O(kn^2)$ where $k << m$. For instance, for the parameters chosen above for the London Twitter data, $m = 10000$ and $k = 1000$, therefore, on average a computational saving of about $80\%$ is saved (due to there being two matrices that need to be calculated, not just one). Since this calculation is the actual bottleneck in the whole streaming algorithm, as the TPower method is so fast, this would give rise to a great performance increase. 
+
+In this scenario the change in the Bag-of-Words is not considered for simplicity, but with some alterations, this can be adapted to work for the more general case.
 \subsubsection{Complexity}
 %TODO
-
 
 \subsection{Limitations}
 %TODO
@@ -1594,6 +1648,10 @@ Alternatively, a more sophisticated method could be considered, for example, usi
 \subsubsection{Using the Rate of Tweets}
 The rate of Tweets could also be considered, as in \cite{microblogs}. The basic principle behind this would be that, if there is a sudden increase in the rate of the Tweets, it is much more likely that an event has taken place. In this case, the window size could be determined by a time period rather than a number of Tweets and if the number of Tweets in the window were to increase, a linear combination could again be added to the \eqref{logit_general} equation as part of $\bm{\lambda}$.
 
+\subsubsection{Using Other Parameters Provided by Twitter}
+Something else that could be used for classification purposes could be the geocode parameter which indicates where the Tweet has come from geographically. The reasoning behind this is simple. For instance, some events may be quite specific to some borough of London, e.g. a concert of some sort in the Royal Albert Hall, and therefore, there is a possibility that a lot of the Tweets will come from areas around the Royal Albert Hall and therefore, these would be a lot more probable to be associated with events. 
+
+Other parameters included in the JSON returned by the Streaming API of Twitter could also be used as features. 
 
 \clearpage
 
