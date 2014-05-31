@@ -1260,7 +1260,7 @@ The algorithm to be used in this scenario is the TPower algorithm. This is becau
 %TODO Change this whole subsubsection
 %TODO Must add to the algorithm that the PC words must be added to the bag of words. 
 %TODO Must remove the part which states that not the whole cov matrix will have to be calculated because it is untrue. There will be new words therefore the old covariance matrix will no longer be valid. 
-The algorithm can be described as follows.
+The algorithm can be described as follows:
 
 \RestyleAlgo{boxruled}
 \LinesNumbered
@@ -1269,13 +1269,15 @@ The algorithm can be described as follows.
 \KwResult{The Sparse Principal Components for each batch of Tweets}
 \While{Streaming} {
 // Get the new data\\
-$\smat_\text{new} \leftarrow $ New Batch of $K$ Tweets;\\
+$D_\text{new} \leftarrow $ New Batch of $K$ Tweets;\\
 // Pop the old data off the queue, $\mathbf{Q}$\\
-$\smat_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
+$D_\text{old} \leftarrow \mathbf{Q}(1:K)$;\\
 // Shift the queue of data. W is the sliding window size.\\
 $ \mathbf{Q}(1:W-K) \leftarrow \mathbf{Q}(K+1:W) $\\
 // Put the new data at the end of the queue\\
-$ \mathbf{Q}(W-K+1:W) \leftarrow \smat_\text{new}$\\
+$ \mathbf{Q}(W-K+1:W) \leftarrow D_\text{new}$\\
+// Populate the new data matrix\\
+$\smat = \text{getMatrixFromData}(D)$\\
 // Calculate the new co-occurrence matrix
 \\
 $\covmat = \smat\tp \smat - \text{diag}(\smat\tp \smat) $\\
@@ -1295,7 +1297,8 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 Computation time is saved in two ways. Firstly, the co-occurrence matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 \end{comment}
 \subsection{Time Per Calculation}
-As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the co-occurrence matrix being considered.
+%TODO Calculate time of each portion of algorithm
+As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
 
 This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
 
@@ -1446,7 +1449,7 @@ if $i \neq j$ and 0 otherwise. This clearly shows that the larger $m$ is i.e. th
 To demonstrate this further, an experiment is carried out to find the average $\lambda$ in the absence of an event, with different sizes of the data matrix $\smat$. This is done by creating $\smat$ and with a varied number of rows, and adding a 1 with some probability $p_1$ and a zero else, much like in section \ref{binary_data} for the first trial. This should simulate the scenario of the absence of an event since each entry will be independent and identically distributed, therefore so will each feature of each row. Then this matrix is run through the algorithm and the associated $\lambda$ is found. For each size of the matrix $\smat$ the process is repeated 10 times and an average $\lambda$ is obtained. This is then plotted, as in Figure \ref{lambda_vs_tweets}, and a first order polynomial has been fit through the points in the least squares sense. 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.35]{lambda_vs_number_tweets.eps}
+\includegraphics[scale=0.30]{lambda_vs_number_tweets.eps}
 \caption{How the average $\lambda$ varies with the number of Tweets represented by the rows of $\mathbf{S}$.}
 \label{lambda_vs_tweets}
 \end{figure}
@@ -1462,14 +1465,14 @@ In this case, soft classification is used as opposed to previously where a data 
 \subsubsection{Results}
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.35]{Twitter_Data_All_Graph.png}
+\includegraphics[scale=0.30]{Twitter_Data_All_Graph.png}
 \caption{Testing the streaming application with a window size of 15000 Tweets and a shift of 3000 Tweets for each data point. Using the mapping from section \ref{event_detection} each point is now assigned a probability of being associated with an event, which is visualised as a linear combination of red and blue. The more red a point is, the more likely it is associated with an event. The start and end dates are labeled on the graph, as well as the start and end dates and times of an event. This corresponds to doing a calculation roughly every 1 hour 20 minutes.}
 \label{testing_app_all_data}
 \end{figure}
 
 \begin{table}[H]
-\center
-\begin{tabular}{| l| r | l|}
+
+\begin{tabular}{| p{11cm}| r | l|}
 \hline
 Principal Component Words & $\lambda$ & Date\\
 \hline
@@ -1543,7 +1546,7 @@ want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mo
 %TODO Show why larger number of tweets considered gives rise to a larger average eigenvalue. demo_scale_S_eigenvalue in Matlab.
 \subsection{Calculating Multiple Principal Components Per Iteration}
 %TODO Don't know if this will add any value
-\subsection{Performance Increase of Algorithm}
+\subsection{Increasing the Performance of the Algorithm}
 %TODO
 \begin{comment}
 - Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found. Try this.
@@ -1643,7 +1646,7 @@ where $\bm{\lambda}$ takes the form $\left(\begin{matrix}
 \end{matrix}\right)^T$ where $n+1$ is the number of previous $\lambda$ values to consider. 
 
 \subsubsection{Using a More Sophisticated Classifier}
-Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered. Here roughly 12 days of data has been used and has given rise to about 16 significant events. This means that only 16 data points can be used as positive targets to train the classifier. Given more time, much more data could be collected, for instance, over the period of possibly 2 months. This data could then actually be manually classified and then a Support Vector Machine could be trained using a proportion of this data. This could then be validated using 
+Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered. Here roughly 12 days of data has been used and has given rise to about 16 significant events. This means that only 16 data points can be used as positive targets to train the classifier. Given more time, much more data could be collected, for instance, over the period of possibly 2 months. This data could then actually be manually classified and then a Support Vector Machine could be trained using a proportion of this data. This could then be validated using the other portion, which is a commonly used method in Machine Learning to test whether a model has not been fit too well to the data such that it cannot generalise to new data points.
 
 \subsubsection{Using the Rate of Tweets}
 The rate of Tweets could also be considered, as in \cite{microblogs}. The basic principle behind this would be that, if there is a sudden increase in the rate of the Tweets, it is much more likely that an event has taken place. In this case, the window size could be determined by a time period rather than a number of Tweets and if the number of Tweets in the window were to increase, a linear combination could again be added to the \eqref{logit_general} equation as part of $\bm{\lambda}$.
