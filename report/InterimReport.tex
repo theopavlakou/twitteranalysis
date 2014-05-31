@@ -1296,9 +1296,13 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 \begin{comment}
 Computation time is saved in two ways. Firstly, the co-occurrence matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
 \end{comment}
+
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
-\subsubsection{Time to Construct $\smat$}
+\subsubsection{Complexity}
+%TODO
+\subsubsection{Proportion of Time Spent in Each Portion}
+\subsubsection{The Bottle Neck: Time to Construct $\smat$}
 %TODO Calculate time of each portion of algorithm
 
 
@@ -1604,8 +1608,7 @@ therefore,
 This means that upon each iteration instead of calculating the whole matrix again, which takes $O(mn^2)$, two matrices with much less elements must be considered, bringing the calculation of the co-occurrence matrix to $O(kn^2)$ where $k << m$. For instance, for the parameters chosen above for the London Twitter data, $m = 10000$ and $k = 1000$, therefore, on average a computational saving of about $80\%$ is saved (due to there being two matrices that need to be calculated, not just one). Since populating the matrix $\smat$ is the actual bottleneck in the whole streaming algorithm this would give rise to a great performance increase. 
 
 In this scenario the change in the Bag-of-Words is not considered for simplicity, but with some alterations, this can be adapted to work for the more general case.
-\subsubsection{Complexity}
-%TODO
+
 
 \subsection{Limitations}
 %TODO
