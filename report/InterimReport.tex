@@ -1298,19 +1298,11 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 }
 \end{algorithm}
 
-
-
-%TODO Must change this part. The covariance matrix must be calculated every time. 
-\begin{comment}
-Computation time is saved in two ways. Firstly, the co-occurrence matrix doesn't need to be computed directly every single time. This is significant if the window size, $W$, is much larger than the batch size, $K$, reducing it from $O(Wn^2)$ to $O(Kn^2)$, which is not a major improvement but still makes a difference. The most significant improvement is seen in the validation of the old principal components. This does a quick check to see whether the variance explained by the Sparse PCs still qualifies them to be the dominant components and, if so, the algorithm doesn't actually have to be implemented for that particular iteration, saving computation time. This means that, on average, for a buffered streaming input, the output rate of PCs can increase for much smaller batches. The great thing about this is that smaller batches means better resolution in time and it means that for large volume applications that the algorithm will terminate much faster.
-\end{comment}
-
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
 \subsubsection{Complexity}
-%TODO
-The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data (a) is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the bag of words (b) has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix (c) has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix (d) is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
 %TODO Check complexity of TPower
+The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data (a) is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the bag of words (b) has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix (c) has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix (d) is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
 
 It should be noted that these complexities represent different types of operations and therefore a combined complexity has not been given. 
 \subsubsection{Proportion of Time Spent in Each Portion}
