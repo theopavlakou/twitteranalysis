@@ -139,11 +139,13 @@
 - Proof of concept. 
 - Room for further work.
 \end{comment}
+With the explosive growth of social media users and the ease by which one can retrieve user data, there has recently been a plethora of research being done focusing on how this data can be used to make useful inferences. The purpose of this study is to develop the framework for an application that can be used to automatically detect events from Twitter data in an online fashion, using a class of techniques collectively referred to as Sparse Principal Component Analysis (SPCA). Methods to improve the output of SPCA for the specific context are presented by altering the input matrix, taking into account what it represents, and various SPCA algorithms are evaluated against one another, bearing in mind the specific needs of the final application. A streaming application is then developed and its performance is tested using real Twitter data by confirming that the results obtained align well with events that happened within the time period being considered. 
+
 \clearpage
 \section*{\center Acknowledgments}
 The work presented in this project would not be possible without the help and support of many people. 
 
-Firstly, I would like to thank my supervisor, Dr. M. Draief, who has been there to advise and encourage me throughout the whole process. I would also like to thank Dr. A. Babaee, who has given me insights in standard practices of research and has helped me with finding data so that measurements could be made and mathematical concepts could be validated. 
+Firstly, I would like to thank my supervisor, Dr. M. Draief, who has been there to advise and encourage me throughout the whole process. I would also like to thank Dr. A. Babaee, who has given me insights into the standard practices of research and has helped me with finding data so that the necessary measurements could be made and the mathematical concepts presented could be validated. 
 
 My fiancee, my family, my friends and my community have also been understanding and supportive the whole way and their love and care has been a great comfort throughout.
 \clearpage
@@ -167,7 +169,10 @@ The purpose of this study is to examine how a certain implementations of Sparse 
 
 \section{Notation}
 
-Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ is reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ and this corresponds to the co-occurence matrix of $\mathbf{S}$. $\mathbf{v}_i$ is to be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. Both $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=0}^n{\mathbf{[A}]_{i, j}^2}}}$.
+Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ is reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ or a variant of this and it corresponds to the co-occurrence matrix of $\mathbf{S}$. $\mathbf{v}_i$ is to be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. Both $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=0}^n{\mathbf{[A}]_{i, j}^2}}}$.
+
+\section{Organisation}
+%TODO
 \section{Background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
@@ -1302,8 +1307,9 @@ As streaming is being considered, which is an online process, it is very useful 
 \subsubsection{Complexity}
 %TODO
 \subsubsection{Proportion of Time Spent in Each Portion}
-\subsubsection{The Bottle Neck: Time to Construct $\smat$}
 %TODO Calculate time of each portion of algorithm
+
+\subsubsection{The Bottle Neck: Time to Construct $\smat$}
 
 
 This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
@@ -1332,6 +1338,7 @@ As aforementioned there are many parameters that must be chosen, each needing to
 
 \subsubsection{The Number of Tweets}
 %TODO Analyse this further
+%TODO Try to do with a very small amount of points e.g. 100 so that it also doesn't work
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Four different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}. 
 
