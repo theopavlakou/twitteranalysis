@@ -1,0 +1,59 @@
+\select@language {english}
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Project Specification}{1}
+\contentsline {section}{\numberline {3}Notation}{1}
+\contentsline {section}{\numberline {4}Background}{1}
+\contentsline {subsection}{\numberline {4.1}Principal Component Analysis (PCA)}{2}
+\contentsline {subsubsection}{\numberline {4.1.1}Description}{2}
+\contentsline {subsection}{\numberline {4.2}Similarity to Singular Value Decomposition (SVD)}{2}
+\contentsline {subsubsection}{\numberline {4.2.1}Description}{2}
+\contentsline {subsubsection}{\numberline {4.2.2}Example Related to Project}{3}
+\contentsline {subsubsection}{\numberline {4.2.3}Further Example Related to Project}{4}
+\contentsline {subsection}{\numberline {4.3}Related Work}{5}
+\contentsline {subsubsection}{\numberline {4.3.1}Sparse PCA}{5}
+\contentsline {subsubsection}{\numberline {4.3.2}Methods to perform Sparse PCA}{5}
+\contentsline {subsection}{\numberline {4.4}Sparse PCA through Low-Rank Approximation Algorithm}{6}
+\contentsline {subsubsection}{\numberline {4.4.1}Intuitive Explanation of the Algorithm}{6}
+\contentsline {subsubsection}{\numberline {4.4.2}The Spannogram Algorithm}{6}
+\contentsline {subsubsection}{\numberline {4.4.3}Other Benefits}{7}
+\contentsline {section}{\numberline {5}Parameters to the Algorithms}{8}
+\contentsline {subsection}{\numberline {5.1}The Bag-of-Words: The Features of the Data}{8}
+\contentsline {subsubsection}{\numberline {5.1.1}Using Set of All Words in Tweets}{8}
+\contentsline {subsubsection}{\numberline {5.1.2}Using Set of Three Thousand Most Common Words in the English Language}{8}
+\contentsline {subsubsection}{\numberline {5.1.3}Adding Words in Tweets to the Bag-of-Words with a Certain Probability}{8}
+\contentsline {subsubsection}{\numberline {5.1.4}Taking $M$ Words of Highest Occurrence}{9}
+\contentsline {subsection}{\numberline {5.2}The Co-occurrence Matrix: $\mathbf {A}$}{9}
+\contentsline {subsubsection}{\numberline {5.2.1}The Initial Matrix $\mathbf {A}$}{9}
+\contentsline {subsubsection}{\numberline {5.2.2}The Hollow Matrix $\mathbf {A}_{h}$}{10}
+\contentsline {subsubsection}{\numberline {5.2.3}The Normalised Matrix $\mathbf {A}_{n}$}{10}
+\contentsline {subsubsection}{\numberline {5.2.4}The Weighted Laplacian Matrix $\mathbf {A}_{l}$}{11}
+\contentsline {subsubsection}{\numberline {5.2.5}The Weighted Laplacian of the Hollow Matrix $\mathbf {A}_{lh}$}{11}
+\contentsline {subsection}{\numberline {5.3}The Data Matrix: $\mathbf {S}$}{12}
+\contentsline {subsubsection}{\numberline {5.3.1}Taking Advantage of the Sparsity of $\mathbf {S}$}{12}
+\contentsline {subsubsection}{\numberline {5.3.2}Reducing the Dimensionality of $\mathbf {S}$}{13}
+\contentsline {subsubsection}{\numberline {5.3.3}On the Dimensionality of the Problem}{13}
+\contentsline {section}{\numberline {6}Evaluation of Algorithms}{14}
+\contentsline {subsection}{\numberline {6.1}Measuring Performance of Sparse PCA Algorithms}{14}
+\contentsline {subsubsection}{\numberline {6.1.1}Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}{14}
+\contentsline {subsubsection}{\numberline {6.1.2}Cumulative Percentage of Explained Variance (CPEV) for Binary Data}{14}
+\contentsline {subsubsection}{\numberline {6.1.3}Sparsity}{15}
+\contentsline {subsubsection}{\numberline {6.1.4}Objective Function for Performance}{15}
+\contentsline {subsection}{\numberline {6.2}Testing the Sparse PCA Algorithms on Artificial Data}{15}
+\contentsline {subsubsection}{\numberline {6.2.1}Testing with Sparse Principal Components for Continuous Data}{15}
+\contentsline {subsubsection}{\numberline {6.2.2}Testing with Binary Data Matrix $\mathbf {S}$}{17}
+\contentsline {subsubsection}{\numberline {6.2.3}Complexities of the Different Algorithms}{19}
+\contentsline {subsection}{\numberline {6.3}Testing the Sparse PCA Algorithms on Twitter Data}{19}
+\contentsline {subsection}{\numberline {6.4}Comparing TPower and Spannogram PCA}{19}
+\contentsline {subsection}{\numberline {6.5}Conclusion}{20}
+\contentsline {section}{\numberline {7}Implementation of Application}{21}
+\contentsline {subsection}{\numberline {7.1}Big Data Streaming Application}{21}
+\contentsline {subsubsection}{\numberline {7.1.1}Algorithm}{21}
+\contentsline {subsubsection}{\numberline {7.1.2}Parameter Choices}{22}
+\contentsline {subsubsection}{\numberline {7.1.3}Complexity}{22}
+\contentsline {subsubsection}{\numberline {7.1.4}Limitations}{22}
+\contentsline {subsection}{\numberline {7.2}Financial Application: Hedging}{23}
+\contentsline {subsection}{\numberline {7.3}Bayesian Networks: Pearl's Algorithm}{23}
+\contentsline {subsection}{\numberline {7.4}Classification Brazilian Text Example}{23}
+\contentsline {section}{\numberline {8}Conclusion}{24}
+\contentsline {subsection}{\numberline {8.1}Optimal Choice of Parameters}{24}
+\contentsline {subsection}{\numberline {8.2}Further Work}{24}

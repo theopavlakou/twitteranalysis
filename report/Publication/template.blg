@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: template.aux
+The style file: ieeetr.bst
+Database file #1: bibliography.bib
+A bad cross reference---entry "laplacian_spielman"
+refers to entry "DBLP:conf/icalp/2012-2", which doesn't exist
+Warning--I didn't find a database entry for "DBLP:conf/icalp/2012-2"
+You've used 9 entries,
+            1876 wiz_defined-function locations,
+            530 strings with 4821 characters,
+and the built_in function-call counts, 1953 in all, are:
+= -- 181
+> -- 79
+< -- 0
++ -- 30
+- -- 21
+* -- 122
+:= -- 282
+add.period$ -- 8
+call.type$ -- 9
+change.case$ -- 9
+chr.to.int$ -- 0
+cite$ -- 9
+duplicate$ -- 98
+empty$ -- 201
+format.name$ -- 21
+if$ -- 479
+int.to.chr$ -- 0
+int.to.str$ -- 9
+missing$ -- 6
+newline$ -- 30
+num.names$ -- 9
+pop$ -- 39
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 77
+stack$ -- 0
+substring$ -- 92
+swap$ -- 36
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 18
+width$ -- 10
+write$ -- 77
+(There was 1 error message)

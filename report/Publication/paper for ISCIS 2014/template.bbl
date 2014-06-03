@@ -1,0 +1,47 @@
+\begin{thebibliography}{1}
+
+\bibitem{shen}
+H.~Shen and J.~Z. Huang, ``Sparse principal component analysis via regularized
+  low rank matrix approximation,'' {\em Journal of Multivariate Analysis 99},
+  2007.
+
+\bibitem{daspremont}
+A.~d'Aspremont, L.~E. Ghaoui, M.~I. Jordan, and G.~R.~G. Lanckriet, ``A direct
+  formulation for sparse pca using semidefinite programming,'' in {\em NIPS},
+  2004.
+
+\bibitem{zou}
+H.~Zou, T.~Hastie, and R.~Tibshirani, ``Sparse principal component analysis,''
+  {\em Journal of Computational and Graphical Statistics}, vol.~15, p.~2006,
+  2004.
+
+\bibitem{truncpower}
+X.-T. {Yuan} and T.~{Zhang}, ``{Truncated Power Method for Sparse Eigenvalue
+  Problems},'' {\em ArXiv e-prints}, Dec. 2011.
+
+\bibitem{microblogs}
+M.-D. Albakour, C.~Macdonald, and I.~Ounis, ``Identifying local events by using
+  microblogs as social sensors,'' in {\em Proceedings of the 10th Conference on
+  Open Research Areas in Information Retrieval}, OAIR '13, (Paris, France,
+  France), pp.~173--180, LE CENTRE DE HAUTES ETUDES INTERNATIONALES
+  D'INFORMATIQUE DOCUMENTAIRE, 2013.
+
+\bibitem{dimakis}
+D.~S. Papailiopoulos and A.~G. Dimakis, ``Sparse pca through low-rank
+  approximations,'' 2013.
+
+\bibitem{Mackey_deflationmethods}
+L.~Mackey, ``Deflation methods for sparse pca.,'' in {\em NIPS} (D.~Koller,
+  D.~Schuurmans, Y.~Bengio, and L.~Bottou, eds.), pp.~1017--1024, Curran
+  Associates, Inc., 2008.
+
+\bibitem{GPower}
+M.~Journ{\'e}e, Y.~Nesterov, P.~Richt\'{a}rik, and R.~Sepulchre, ``Generalized
+  power method for sparse principal component analysis,'' {\em J. Mach. Learn.
+  Res.}, vol.~11, pp.~517--553, Mar. 2010.
+
+\bibitem{laplacian_spielman}
+D.~A. Spielman, ``Algorithms, graph theory, and the solution of laplacian
+  linear equations,'' in {\em ICALP (2)}, pp.~24--26, 2012.
+
+\end{thebibliography}
