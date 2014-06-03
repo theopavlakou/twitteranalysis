@@ -139,7 +139,7 @@
 - Proof of concept. 
 - Room for further work.
 \end{comment}
-With the explosive growth of social media users and the ease by which one can retrieve user data, there has recently been a plethora of research being done focusing on how this data can be used to make useful inferences. The purpose of this study is to develop the framework for an application that can be used to automatically detect events from Twitter data in an online fashion, using a class of techniques collectively referred to as Sparse Principal Component Analysis (SPCA). Methods to improve the output of SPCA for the specific context are presented by altering the input matrix, taking into account what it represents, and various SPCA algorithms are evaluated against one another, bearing in mind the specific needs of the final application. A streaming application is then developed and its performance is tested using real Twitter data by confirming that the results obtained align well with events that happened within the time period being considered. 
+With the explosive growth of social media users and the ease by which one can retrieve user data, there has recently been a plethora of research being done focusing on how this data can be used to make useful inferences. The purpose of this study is to develop the framework for an application that can be used to automatically detect events from Twitter data in an online fashion, using a class of techniques collectively referred to as Sparse Principal Component Analysis (SPCA). These are similar to regular Principal Component Analysis, however, they produce vectors which do not have many non-zero entries, which helps with their interpretation in areas such as document analysis. Methods to improve the output of SPCA for the specific context are presented by altering the input co-occurrence matrix and one variant is shown to consistently outperform the rest. Furthermore, various SPCA algorithms are evaluated against one another, bearing in mind the specific needs of the final application. A streaming application is then developed and its performance is tested using real Twitter data by confirming that the results obtained align well with events that happened within the time period being considered. 
 
 \clearpage
 \section*{\center Acknowledgments}
@@ -156,8 +156,9 @@ My fiancee, my family, my friends and my community have also been understanding 
 
 \section{Introduction}
 %TODO Mention streaming everything else
-Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. }. Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
+Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average.\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013.} Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
 One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms is also considered by cleaning the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final algorithm are explored. 
+%TODO possibly put organisation here. 
 
 %% Mention only if reference is found
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
@@ -396,7 +397,7 @@ for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then so
 
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
-This is the algorithm\cite{dimakis} that is initially focused on in this paper and for a variety of reasons, which will be mentioned throughout this section. The reason for this being that the authors of\cite{dimakis} used the algorithm in the same way that is being considered in here. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
+This is the algorithm\cite{dimakis} that is initially focused on in this paper. The reason for this being that the authors of\cite{dimakis} used the algorithm in a similar way to what is being considered here. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
 
 \subsubsection{Intuitive Explanation of the Algorithm}
 The assumption is made that a rank $d$ approximation of the covariance matrix at hand is arbitrarily close to the original based on the Forbenius norm. That is:
@@ -463,7 +464,7 @@ Other reasons this algorithm has been chosen is because it has a safe feature el
 
 \section{Parameters to the Algorithms}
 
-In this section, various parameters which are inputted to the Sparse PCA algorithms are examined, since the application being considered is quite specific but is highly applicable to many different areas of big data analysis. Therefore, finding the optimal conditions for these algorithms to find sparse PCs is very beneficial. 
+In this section, various parameters which are inputted to the Sparse PCA algorithms are examined, since the application being considered is quite specific. That being said, the results found are highly applicable to many different areas of big data analysis. Therefore, finding the optimal conditions for these algorithms to find sparse PCs is very beneficial. 
 \subsection{The Bag-of-Words: The Features of the Data}
 The choice of words to be chosen as the features must be carefully considered. For instance, one could simply take a union of all the words in the English dictionary, the words that are used on the internet, such as ``lol'' and ``yey'', and all the possible names of people and places, which would solve the problem of possibly missing out any features. This however would result in a matrix of immense dimension and therefore would be impossible to process, at least given any consumer computer. Therefore, some careful selection for the features must be exhibited so as to gain the features that carry the most information whilst still keeping the number of features to a manageable size. Some general guidelines for all methods are that words that typically do not give any additional information e.g. ``is'', ``the'', ``this'', etc. are to be eliminated. Furthermore, the Bag-of-Words should be completely independent of case i.e. ``Road'' and ``road'' are to be considered equal. 
 
@@ -1304,17 +1305,19 @@ As streaming is being considered, which is an online process, it is very useful 
 %TODO Check complexity of TPower
 The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data (a) is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the bag of words (b) has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix (c) has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix (d) is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
 
-It should be noted that these complexities represent different types of operations and therefore a combined complexity has not been given. 
+It should be noted that these complexities represent different types of operations and therefore a combined complexity has not been given.
+ 
 \subsubsection{Proportion of Time Spent in Each Portion}
-%TODO Must redo this now...
+%TODO Explain this
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.30]{proportion_time.png}
-\caption{The time it takes to create the data matrix $\smat$ against the number of Tweets.}
+\caption{The proportion of the total time it takes per iteration to perform the calculation of the sparse principal component and to populate the matrix $\smat$ vs the number of Tweets per window.}
 \label{time_matrix_construction}
 \end{figure}
-\subsubsection{The Bottle Neck: Time to Construct $\smat$}
 
+
+\subsubsection{The Bottle Neck: Time to Construct $\smat$}
 
 This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
 
