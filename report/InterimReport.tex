@@ -384,7 +384,6 @@ Sparse PCA algorithms aim to deliver similar results to PCA, but with the differ
 where $\|\mathbf{x}\|_0$ is the $l_0$ cardinality of $x$ i.e. how many non-zero elements x has. This is where Sparse PCA algorithms come in. 
 
 \subsubsection{Methods to perform Sparse PCA}
-%TODO Add all the papers to this section.
 Plenty of methods have been designed to get sparse principal components or principal component like vectors, due to the importance of such an algorithm in practice, as detailed above. A few are described here, but by no means do these constitute the full work in this active area of research.
 
 The first attempt, and an algorithm that is still widely used regardless of its many limitations is the Thresholding method, which simply performs regular PCA and then forces the entries that are small in magnitude, to zero. This can be misleading and an arbitrary selection of the threshold must be made, which may not actually be valid \cite{cadima}. In \cite{scotlass}, the authors aim to force sparsity by solving the equation
@@ -394,7 +393,6 @@ The first attempt, and an algorithm that is still widely used regardless of its 
 \end{equation*}
  
 for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then solving a regression type problem. This is done so as to maximise the variance captured by the particular principal component with the constraint that the sum of the entries must be small, which in turn introduces sparsity. This is different to using the $l_2$ norm, which is used in ridge regression and attains variables that are close to, but not exactly, zero and is referred to as the Lasso, which is explained further in \cite{lasso}. Another method which makes use of the Lasso penalty, and various others, can be found in \cite{zou} and \cite{shen}. The method described in \cite{shen} uses the relationship between Singular Value Decomposition (SVD) and PCA as its basis but imposes a penalty on the size of the entries in the principal components. Related to this, and almost identical apart for some pre-processing and post-processing is the Generalised Power Method (GPower) in \cite{GPower}, which is used in this project as a benchmark to compare algorithms. Another attempt has been made by the authors of \cite{daspremont} in which a convex relaxation of the problem is considered to transform it so that it can be solved using Semidefinite Programming. Yet another method is known as the Truncated Power Method (TPower), which can be found in \cite{truncpower} and is also used as a benchmark due to its fast performance. This method performs the well known power method for retrieving the dominant eigenvector of a matrix, but keeps the top $k$ values in magnitude and forces the rest to zero upon each iteration till convergence. 
-%TODO Must be changed
 
 \subsubsection{Finding Events using Twitter Data}
 %TODO
@@ -508,7 +506,7 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 \subsection{The Co-occurrence Matrix: $\mathbf{A}$}
 \label{covmat}
-%TODO Check if this is correct
+%TODO Check if this is correct regarding publication
 \textit{The work in this section has recently been submitted and accepted to the 29th International Symposium on Computer and Information Sciences 2014 with the title ``Improving Event recognition using Sparse PCA in the Context of London Twitter Data''.}
 
 
@@ -763,10 +761,9 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \end{table}
 
 \subsubsection*{Conclusion}
-%TODO Build on this section more
-As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in,\cite{dimakis} can be applied to any sparse principal component analysis application when using binary data, such as in document analysis, to discover relationships in features that may otherwise be overpowered by components that do not necessarily give smart results. 
+As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis} can be applied to any sparse principal component analysis application when using binary data, such as in document analysis, to discover relationships in features that may otherwise be overpowered by components that do not necessarily give relevant results. Another thing to note is that, once again, it can be seen that in all cases the supports of the principal components are well within the 3000 word limit assigned to the Bag-Of-Words, with ``retirement'' being the one with the lowest rank of 1558 and the rest all being within the top 1000 words. This further justifies the Bag-Of-Words limit. 
 
-Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources.
+Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources. 
 
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
@@ -791,32 +788,6 @@ The data matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the numbe
 for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm. 
 
 Methods of this form could be considered for further work but will not be considered in this paper as the dimensionality of the problem is not overly large.
-
-%\subsubsection*{Frequent-Directions Method}
-%This method is described in detail in \cite{edo}. 
-%\textbf{Discuss further with supervisor and ask questions in exercise book before writing about this.}
-%\subsubsection*{Random Projection Method}
-%In this method, one tries to find a matrix  $\mathbf{P} \in \mathbb{R}^{k \times m}$, such that:
-
-%\begin{equation*}
-%\mathbf{S}_{new} = \mathbf{P}\mathbf{S} 
-%\end{equation*}
-
-%where $\mathbf{S}_{new} \in \mathbb{R}^{k \times n}$ is the new data matrix where $k << m$. \textbf{Provide reference to paper where random projection is used with Gaussian matrix.}
-
-%The problem with the direct implementation in practice is that, in order to get $\mathbf{S}_{new}$, $\mathbf{S}$ must first be loaded into memory, which is exactly what needs to be avoided in the first place. The way to work around this is to tweak this equation so that it can be done on disk, without having to move everything into memory. This gives rise to:
-
-%\begin{equation*}
-%\mathbf{S}_{new}^T = \mathbf{S}^T\mathbf{P}^T 
-%\end{equation*}
-
-%\begin{equation*}
-%\mathbf{s}_{new, i}^T = \mathbf{s}_{i}^T\mathbf{P}^T 
-%\end{equation*}
-
-%where $\mathbf{s}_{new, i}^T \in \mathbb{R}^{1 \times k}$ and $\mathbf{s}_{i}^T \in \mathbb{R}^{1 \times m}$ are the $i$th rows of $\mathbf{S}_{new}^T$ and $\mathbf{S}^T$ respectively. This now results to just reading in line by line the file containing $S^T$ from disk storage, which is completely feasible. The resulting matrix $\mathbf{S}_{new}^T$ has $n$ rows corresponding to the bag of words projected onto a lower dimension $k$ of Tweets.
-
-%More on random projections can be found in \cite{randomprojections}.
 
 \subsubsection{On the Dimensionality of the Problem}
 The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of research in bioinformatics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper are primarily valid for these types of matrices. 
@@ -1017,7 +988,6 @@ Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
 \label{cpev_10}
 \end{figure}
 
-%TODO
 It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. When the GPower methods do work, however, they basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
 
 \subsubsection{Testing with Binary Data Matrix $\smat$}
@@ -1147,17 +1117,16 @@ The way the two algorithms will be evaluated against one another is by running t
 \label{explained_var_graph}
 \end{figure}
 
+From the findings it appears that the Spannogram PCA algorithm is more accurate and more consistent in terms of the principal components found in the context of finding events in Twitter data, using the defined objective function. 
+
+\subsection{Conclusion}
+
 \begin{comment}
-%TODO Explain these results against the criteria stated above. 
 - Explain how the 2nd PC for TPower gives a higher variance than the first => bad.
 - Explain how for TPower not monotonically increasing until k = 8.
 - Explain how spannogram always wins.
 \end{comment}
-
-\subsection{Conclusion}
-
 %TODO Fix this again
-From the findings it appears that the Spannogram PCA algorithm is more accurate and more consistent in terms of the principal components found in the context of finding events in Twitter data, using the defined objective function. 
 
 As shown in Figure \ref{explained_var_graph} the Spannogram PCA algorithm either outperforms the TPower algorithm or does equally well for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $\mathbb{S}$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
 
@@ -1198,9 +1167,6 @@ There are various methods of doing this in an online fashion and it opens many d
 The algorithm to be used in this scenario is the TPower algorithm. This is because, though it sometimes is less accurate, it is typically a factor of $10^3$ faster than the Spannogram PCA algorithm and so for a large data streaming application, the trade-off of accuracy for speed is worth it. 
 
 \subsubsection{Algorithm}
-%TODO Change this whole subsubsection
-%TODO Must add to the algorithm that the PC words must be added to the bag of words. 
-%TODO Must remove the part which states that not the whole cov matrix will have to be calculated because it is untrue. There will be new words therefore the old covariance matrix will no longer be valid. 
 The algorithm can be described as follows:
 
 \RestyleAlgo{boxruled}
@@ -1235,13 +1201,11 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
 \subsubsection{Complexity}
-%TODO Check complexity of TPower
 The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data (a) is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the bag of words (b) has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix (c) has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix (d) is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
 
 It should be noted that these complexities represent different types of operations and therefore a combined complexity has not been given.
  
 \subsubsection{Proportion of Time Spent in Each Portion}
-%TODO Explain this
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.30]{proportion_time.png}
@@ -1250,10 +1214,10 @@ It should be noted that these complexities represent different types of operatio
 \end{figure}
 
 As it can be seen in Figure \ref{proportion_time}, for a Bag-Of-Words with 3000 words, which is the setting that has been chosen and has been used up until this point in this paper, the proportion of time spent in the section of the algorithm to populate the matrix $\smat$ grows with the number of Tweets and starts to level off at about 0.8. The opposite is true for the TPower algorithm, which uses less of the proportion of the total time as the number of Tweets increases in a given window. For most practical scenarios, the size of the window, $m$, will be greater than 1000 and therefore most of the time will be spent in the populating of $\smat$. This means that trying to optimise this piece of code would increase performance significantly.
-%TODO Finish this 
+
 \subsubsection{The Bottle Neck: Time to Construct $\smat$}
 
-This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
+This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change on average, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
 
 \begin{figure}[H]
 \centering
@@ -1262,7 +1226,7 @@ This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ 
 \label{time_matrix_construction}
 \end{figure}
 
-It can be noted that, indeed, the time for construction of the matrix does vary linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should also stay the same. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be approximately the same.
+It can be noted that, indeed, the time for construction of the matrix does vary approximately linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should not change by much. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be approximately the same.
 
 \subsection{Parameter Choices}
 %TODO
