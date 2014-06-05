@@ -1805,7 +1805,33 @@ This is basically a form of clustering i.e. words that occur frequently together
 
 \section{Laplacian Matrix}
 %TODO
+Let a graph be defined as $G = (V, E, w)$ where $V$ is the set of vertices and $E$ is the set of edges, which are given as tuples of elements in the set $V$ and $w: E \rightarrow \mathbb{R}^+$ gives the weight associated with each edge. 
 
+The adjacency matrix of this graph is given by
+
+\begin{equation*}
+[\mathbf{A}]_{i, j} = \begin{cases}
+w(i, j), & \text{if}\ (i, j) \in E \\
+      0, & \text{otherwise}
+\end{cases}, 
+\end{equation*}
+i.e. the $(i, j)$th entry is given by the weight of the edge connecting the  vertex $i$ to vertex $j$.
+The degree matrix is then given by
+
+\begin{equation*}
+[\mathbf{D}]_{i, i} = 
+\sum_j [\mathbf{A}]_{i, j},
+\end{equation*}
+which is given by the sum of all the weights of the edges coming out of vertex $i$.
+
+The Laplacian, $\mathbf{L}$ is then given by
+\begin{equation*}
+\mathbf{L} = \mathbf{D} - \mathbf{A}.
+\end{equation*}
+
+For an unweighted graph, each edge is taken to have weight 1.
+
+The Laplacian matrix has many useful properties for graph theory.
 \section{Support Vector Machine}
 \section{Code}
 All code written by me can be found on Github using the following link:
