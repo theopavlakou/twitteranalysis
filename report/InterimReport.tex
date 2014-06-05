@@ -819,9 +819,8 @@ Methods of this form could be considered for further work but will not be consid
 %More on random projections can be found in \cite{randomprojections}.
 
 \subsubsection{On the Dimensionality of the Problem}
-The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of analysis in genetics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper may be valid for these types of matrices only. 
+The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of research in bioinformatics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper are primarily valid for these types of matrices. 
 
-%TODO Complete this
 
 \clearpage
 
@@ -1021,11 +1020,6 @@ Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
 %TODO
 It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in \cite{dimakis}, and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap of roughly $10$\% between the two, TPower being best. When the GPower methods do work, however, they basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
 
-\begin{comment}
-These results highlight the fact that more work must be done evaluating some of the other algorithms that exist, such as those in \cite{shen}, \cite{zou}, \cite{daspremont} and \cite{asteris} throughout the remaining part of this project.
-\end{comment}
-
-
 \subsubsection{Testing with Binary Data Matrix $\smat$}
 \begin{comment}
  results can be found in testing_sparse_PCA_binary_matrix_different_levels_sparsity_results.mat
@@ -1113,75 +1107,9 @@ The features to be correlated are arbitrarily chosen to be feature numbers $1, 2
 0.1698\\
 \end{pmatrix}
 \end{equation*}
-Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is not sparse at all, which is the difference with the previous section in which the algorithms were trying to retrieve the actual sparse eigenvectors. This is why the Spannogram performed so badly in comparison to the other algorithms. 
+Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is not sparse at all, which is the difference with the previous section in which the algorithms were trying to retrieve the actual sparse eigenvectors. This is why the Spannogram performs so badly in comparison to the other algorithms. 
 
 %TODO  Explain further
-
-\subsubsection{Complexities of the Different Algorithms}
-%TODO Probably will get rid of this section
-\begin{comment}
-\subsection{Testing the Sparse PCA Algorithms on Twitter Data}
-\label{testing_twitter}
-%TODO Get rid of this subsection
-
-The file used to test the Spannogram PCA algorithm contains all the Tweets in the London area from 23rd September 2012 to the 2nd October 2012. It has been partitioned into 10 files, each containing roughly 40k Tweets, which corresponds to about a day of Tweets for each file.
-
-\begin{table}[H]
-\center
-\begin{tabular}{| c l |}
-\hline
-Index & Word \\
-\hline
-134 & terry\\
-133 & john\\
-79 & football\\
-334 & international\\
-157 & england\\
-921 & retires\\
-\hline
-\end{tabular}
-\caption{The dominant principal component for 23/09/2012 - 24/09/2012.}
-\label{john_terry}
-\end{table}
-
-\begin{table}[H]
-\center
-\begin{tabular}{| c l |}
-\hline
-Index & Word \\
-\hline
-24 & please\\
-258 & following\\
-842 & officers\\
-904 & murders\\
-798 & fallen\\
-204 & police\\
-\hline
-\end{tabular}
-\caption{The dominant principal component for 25/09/2012 - 26/09/2012.}
-\label{murder}
-\end{table}
-
-\begin{table}[H]
-\center
-\begin{tabular}{| c l |}
-\hline
-Index & Word \\
-\hline
-41 & europe\\
-17 & rydercup\\
-6 & come\\
-2 & well\\
-95 & rydercup2012\\
-26 & done\\
-\hline
-\end{tabular}
-\caption{The dominant principal component for 30/09/2012 - 01/09/2012.}
-\label{ryder_cup}
-\end{table}
-
-\end{comment}
-
 
 \subsection{Comparing TPower and Spannogram PCA}
 \label{comparison}
@@ -1226,20 +1154,16 @@ The way the two algorithms will be evaluated against one another is by running t
 - Explain how spannogram always wins.
 \end{comment}
 
-\begin{comment}
+\subsection{Conclusion}
 
+%TODO Fix this again
+From the findings it appears that the Spannogram PCA algorithm is more accurate and more consistent in terms of the principal components found in the context of finding events in Twitter data, using the defined objective function. 
 
-As shown in Table \ref{explained_var_table} and Figure \ref{explained_var_graph} the Spannogram PCA algorithm always outperforms the TPower algorithm for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $\mathbb{S}$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
+As shown in Figure \ref{explained_var_graph} the Spannogram PCA algorithm either outperforms the TPower algorithm or does equally well for both principal components (PC). The interesting thing to note from these is that (a) the TPower algorithm is not consistent in its findings, as can be seen by its second PC, which initially has quite a high value and one of the words from $\mathbb{S}$, but after increasing the value of k, fails to have any of the words in $S$ until k becomes 8, at which point it contains all the words in $S$. The Spannogram algorithm on the other hand consistently keeps its previously calculated words and, upon each increase in sparsity, it just adds an extra word. Furthermore, for the Spannogram algorithm, the explained variance associated with both PCs monotonically increase with respect to the sparsity, which is not the case for the TPower algorithm, the red line in the figure increasing the most since it is associated with the words in Table \ref{murder_8}.
 
 These results are completely contrary to the results found in section \ref{testing}. This is largely believed to be accounted for by the structure of the $\mathbf{S}$ matrix in each case. In \cite{truncpower}, it is suggested that if the matrix $\mathbf{A}$ has sparse or approximately sparse eigenvectors then the TPower algorithm can approximate these, which has as its underlying assumption that the true eigenvectors are themselves almost sparse. The Spannogram algorithm does not make this assumption at all. Instead it finds PCs which may not represent the true PCs in any way whatsoever. For instance, getting the true leading eigenvector of $\mathbf{A}$, it turns out to be that 44 of the 3000 words are at least $50\%$ the magnitude of the highest magnitude element in the leading eigenvector. Which may be approximately sparse considering that this is a small fraction of 3000 but it is still much larger than just 4 to 8 words. In this context, the vector is not sparse at all. This is a crude measurement for ``approximately'' sparse but it is merely for illustration purposes. 
 
-It can be concluded that the Spannogram PCA algorithm performs best when the matrix $\mathbf{A}$ does not actually have sparse PCs in the conventional sense but still has sparse components that can model the variance in the data fairly well. 
-\end{comment}
-
-
-\subsection{Conclusion}
-
-From the findings it appears that the Spannogram PCA algorithm is more accurate and more consistent in terms of the principal components found in the context of finding events in Twitter data, using the defined objective function. However, after the sparsity increases beyond 8, they appear to perform almost equally. On the other hand, the speed of the TPower algorithm is much better than that of the Spannogram PCA algorithm, by a factor of approximately $10^3$, which should be taken into account when developing an application which requires quick computation time. In any case, either one of these should be used to suit the needs of the application and the trade-off between speed and accuracy should be the deciding factor. 
+It can be concluded that the Spannogram PCA algorithm performs best when the matrix $\mathbf{A}$ does not actually have sparse PCs in the conventional sense but still has sparse components that can model the variance in the data fairly well. However, after the sparsity increases beyond 8, they appear to perform almost equally. On the other hand, the speed of the TPower algorithm is much better than that of the Spannogram PCA algorithm, by a factor of approximately $10^3$, which should be taken into account when developing an application which requires quick computation time. In any case, either one of these should be used to suit the needs of the application and the trade-off between speed and accuracy should be the deciding factor. 
 \clearpage
 
 
