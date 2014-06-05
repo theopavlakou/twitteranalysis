@@ -130,7 +130,6 @@
 
 
 \section*{\center Abstract}
-%TODO
 \begin{comment}
 - Inspired by the work of Dimakis and Microblogs, seek to combine the work.
 - Evaluate Sparse PCA algorithms for the general case and for the specific binary matrix case. 
@@ -156,9 +155,9 @@ My fiancee, my family, my friends and my community have also been understanding 
 \pagenumbering{arabic}
 
 \section{Introduction}
-%TODO Mention streaming everything else
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average.\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013.} Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
-One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms is also considered by cleaning the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final algorithm are explored. 
+
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms is also considered by cleaning the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final application are explored. 
 %TODO possibly put organisation here. 
 
 %% Mention only if reference is found
@@ -372,13 +371,13 @@ This intuitively makes sense since it is not hard to tell, after looking at the 
 
 \subsection{Related Work}
 %TODO Must change this as now the focus is quite different
-The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Two particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the idea of using Sparse PCA to find words that can be associated with events for a particular batch of Tweets has come from \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these, however, is not entirely the same. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are also explored, such as the trade-off between the number of features chosen, the number of points taken and the results obtained. Moreover, scalability is also considered in much more detail than in any of these. Added to this, the final product of this study is to create a prototype for a streaming application that can be used to automatically find events online, using Sparse PCA as a tool in the process. In \cite{microblogs} the focus is on finding events that match a users query, whereas in this study an attempt is made to find events in an unsupervised manner.
+The idea of using social media as a medium for data analysis is not new and much work has been done in this area. Two particular examples are \cite{dimakis} and \cite{microblogs}. These two both lay a solid foundation for the work explored in this paper as it uses a lot of their findings and results and starts where they left off. For instance, the idea of using Sparse PCA to find words that can be associated with events for a particular batch of Tweets has come from \cite{dimakis} and the data used is the same data as was used in \cite{microblogs}. The focus of these, however, is not entirely the same. In \cite{dimakis}, a lot more emphasis is put on the actual algorithm itself, whereas in this paper many other areas are also explored, such as the trade-off between the number of features chosen, the number of points taken and the input to the algorithm itself. Added to this, the final goal of this study is to create a prototype for a streaming application that can be used to automatically find events online, using Sparse PCA as a tool in the process. In \cite{microblogs} the focus is on finding events that match a users query, whereas in this study an attempt is made to find events in an unsupervised manner.
 
-Furthermore, as mentioned previously, sparse PCA-like algorithms are also an active area of research and as such, much work has been done, some specific examples of which will be explored in this project.
+Some of the previous work in both the areas of Sparse PCA and finding events using Twitter will now be presented.
 
 \subsubsection{Sparse PCA}
 
-Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the eigenvectors is because sparse approximations of the eigenvectors are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
+Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the principal components is because sparse approximations of the principal components are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
 \begin{equation}
 \mathbf{v}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right),
 \end{equation}
@@ -406,7 +405,7 @@ Additionally, authors of \cite{resourceadaptive} and \cite{datastreaming}  focus
 Though much work has been done here, the methods are either too specific\cite{earthquake}, are based on a user making a query for a type of event\cite{microblogs} or do not take advantage of the textual features.\cite{eventtwitter} Contrarily, this study focuses on developing an application to find events in a stream of Tweets without prior knowledge of any such event and by using the Tweet content primarily.
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
-This is the algorithm\cite{dimakis} that is initially focused on in this paper. The reason for this being that the authors of\cite{dimakis} used the algorithm in a similar way to what is being considered here. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
+This is the algorithm\cite{dimakis} that is initially focused on in this paper. The reason for this being that the authors of\cite{dimakis} used the algorithm in a similar way to what is being considered here and therefore it has been used as a benchmark. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
 
 \subsubsection{Intuitive Explanation of the Algorithm}
 The assumption is made that a rank $d$ approximation of the covariance matrix at hand is arbitrarily close to the original based on the Forbenius norm. That is:
@@ -466,9 +465,7 @@ The equation is then transformed into a Rank-1 instance by creating the vector $
 
 Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equation \ref{spannogram}. The important thing to note is that, there is no actual need to calculate the actual value of the $\mathbf{v}_c$ for each $\phi$ to find the candidate indices for the $k$-sparse eigenvectors only the relative magnitudes between the different entries in  $\mathbf{v}_c$ must be taken into account. The relative magnitudes will only change at intersection points between the sinusoids, and therefore, only about these points must a candidate eigenvector indices actually be tested. This brings down the computation to $O \left(n^d\right)$ instead of $O \left(n^k\right)$. A more thorough description and justification of the algorithm can be found in \cite{dimakis}.
 
-\subsubsection{Other Benefits}
-%TODO Probably will get rid of this section completely
-Other reasons this algorithm has been chosen is because it has a safe feature elimination procedure which results in a significant improvement to the computation time and is based on the Spannogram Algorithm described above. Also, if $\mathbf{A}$ consists of only non-negative entries, which it will in the case being considered (see section \ref{covmat}), the algorithm speeds up by a factor of $2^d$, which further brings down the time complexity. Another great feature it has is that the principal components found are also orthogonal to each other meaning that less redundancy has to be stored, which is based on the projection deflation method described in \cite{Mackey_deflationmethods} and it also allows the sparsity desired to be predefined as opposed to some other algorithms, typically based on optimisation procedures, such as \cite{GPower}.
+
 \clearpage
 
 \section{Parameters to the Algorithms}
@@ -511,7 +508,10 @@ This suffers from the same problem as the probabilistic method, however, it ensu
 
 \subsection{The Co-occurrence Matrix: $\mathbf{A}$}
 \label{covmat}
-%TODO Mention that the work in this section will be published. 
+%TODO Check if this is correct
+\textit{The work in this section has recently been submitted and accepted to the 29th International Symposium on Computer and Information Sciences 2014 with the title ``Improving Event recognition using Sparse PCA in the Context of London Twitter Data''.}
+
+
 The matrix to be passed to the Sparse PCA algorithm is of utmost importance, as it determines the sort of relationship the words appear to have with one another. As described in Appendix A, the matrix $\mathbf{A} = \mathbf{S}^T \mathbf{S}$ can be viewed as a weighted adjacency matrix of an undirected graph with each vertex being a word and each edge weight being the total number of times that word appears with the word represented by the connecting vertex over all the Tweets. The element $[\covmat]_{i, j}$ is the total number of times word $i$ appears with the word $j$ in the set of Tweets being considered and any number on the diagonal, $[\covmat]_{i, i}$, is the total number of times word $i$ appears. 
 
 In this section, variations of the matrix are considered and evaluated against each other so as to find the optimal one to be used for the final implementation. All testing is done using a subset of the Tweets, namely from the 25th September 2012 to the 26th September 2012, roughly a day's worth of data, and this gives about 40,000 Tweets. The Spannogram Algorithm\footnote{Note that the Spannogram Algorithm itself has not yet been evaluated but is taken to work well enough as an assumption which is based on \cite{dimakis}} is run on each of the matrices using the same parameters and 2 8-sparse PCAs are computed.
@@ -764,7 +764,7 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 
 \subsubsection*{Conclusion}
 %TODO Build on this section more
-As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in,\cite{dimakis} can be applied to any sparse principal component analysis application when using binary data to discover relationships in features that may otherwise be overpowered by components that do not necessarily give smart results. 
+As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in,\cite{dimakis} can be applied to any sparse principal component analysis application when using binary data, such as in document analysis, to discover relationships in features that may otherwise be overpowered by components that do not necessarily give smart results. 
 
 Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources.
 
