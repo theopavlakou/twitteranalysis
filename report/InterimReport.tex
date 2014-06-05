@@ -1235,7 +1235,6 @@ Mention the following:
 - How to choose the size, k, of the batches.
 - How to choose the threshold for the CPEV. 
 - How to choose the size of the window size, W. 
-- How to choose max number of trending topics.
 - Explain how events are detected. 
 - Show that for a different data set that this is not optimal.
 \end{comment}
@@ -1243,11 +1242,10 @@ As aforementioned there are many parameters that must be chosen, each needing to
 
 \subsubsection{The Number of Tweets}
 %TODO Analyse this further
-%TODO Try to do with a very small amount of points e.g. 100 so that it also doesn't work
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Four different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}, \ref{testing_app_80}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 10000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components for the appropriate window, however, if all 10000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually and that the time resolution of the events is finer meaning that events can be pinpointed in time much more effectively. Furthermore, the higher the resolution, the more the events that can be found (up to a reasonable extent i.e. having a window size of one Tweet would not return anything useful apart from some words from that one Tweet). The problem with having a window size that is too small however, is that small insignificant events also appear. For instance, in Figure \ref{testing_app_80} it can be seen that close to the end another event is detected. However, this ``event'' is based purely on the fact that many people retweeted a Tweet that someone wrote regarding a celebrity Ariana Grande but which was not actually an event but which for a very small period of time was quite prevalent in the Twitter feed. Therefore, by decreasing the window size too much, these micro-events can also creep in and distort results. 
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 10000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components for the appropriate window, however, if all 10000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually and that the time resolution of the events is finer meaning that events can be pinpointed in time much more precisely. Furthermore, the higher the resolution, the more the events that can be found (up to a reasonable extent i.e. having a window size of one Tweet would not return anything useful apart from some words from that one Tweet). The problem with having a window size that is too small however, is that small insignificant events also appear. For instance, in Figure \ref{testing_app_80} it can be seen that close to the end another event is detected. However, this ``event'' is based purely on the fact that many people retweeted a Tweet that someone wrote regarding a celebrity Ariana Grande but which was not actually an event but which for a very small period of time was quite prevalent in the Twitter feed. Therefore, by decreasing the window size too much, these micro-events can also creep in and distort results. 
 
 In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 15 seconds, which for the matrix size, is within the bounds to be able to keep up with real time calculations.
 
@@ -1290,10 +1288,9 @@ In all scenarios, the algorithm is more than fast enough to carry out the necess
 \subsubsection{Event Detection Variable}
 \label{event_detection}
 
-The method used to detect events is quite simple and intuitive, yet very effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
+The method used to detect events is quite simple and intuitive, yet quite effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
-%TODO Check if citation is correct
-One way of mapping a scalar to a probability is to use the logistic function \cite{bishop}, given as
+One way of mapping a scalar to a probability is to use the logistic function,\cite{bishop} given as
 
 \begin{equation}
 p(\lambda_i)= \frac{1}{\left( 1 + e^{-(w_0 + w_1\lambda_i)}\right)},
@@ -1471,14 +1468,9 @@ want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mo
 \end{table}
 
 %TODO Show that the parameters in this case are not optimal and show that there are differences in the scale of the data
-%TODO Show why larger number of tweets considered gives rise to a larger average eigenvalue. demo_scale_S_eigenvalue in Matlab.
-\subsection{Calculating Multiple Principal Components Per Iteration}
-%TODO Don't know if this will add any value
+
 \subsection{Increasing the Performance of the Algorithm}
-%TODO
-\begin{comment}
-- Use the streaming algorithm with the threshold detection vs the streaming without it and show that the time it takes for the threshold is less and for not a significant deterioration in the pcs found. Try this.
-\end{comment} 
+%TODO Maybe do this also with the permutation matrix
 \subsubsection{Building the Co-occurrence Matrix $\covmat$}
 One method to increase the speed of the algorithm, and therefore the rate at which it can operate, is by taking note that, if the increment size is fairly small compared to the size of the window, then lots of unnecessary calculation is being done by actually building the co-occurrence matrix upon each iteration. 
 
@@ -1593,6 +1585,10 @@ Other parameters included in the JSON returned by the Streaming API of Twitter c
 \subsubsection{Tracking Events}
 %TODO Check this
 Another useful feature for the application would be to be able to track whether a previous event is the same as a current event, if they are consecutive. For instance, it may be that two events are taking place, one after the other, and it just so happens that the algorithm returns very similar eigenvalues for both. Given the time series alone, one may infer that just one long event has taken place, however, looking at the words associated with the principal components, it would be evident that they would be very different. In this case, an automatic way of detecting this would be to take the dot product between the two principal components and check whether the result would be close to 1. If this were to be the case, the two events would be classified as equal, else they would be classified as different. 
+
+\subsection{Calculating Multiple Principal Components Per Iteration}
+In this application only the first principal component is calculated, however, this could quite easily be extended to calculate more than one. This may find events that happen simultaneously, but in which one event overpowers the other. 
+
 \clearpage
 
 \bibliography{bibliography}
@@ -1720,7 +1716,6 @@ The Laplacian, $\mathbf{L}$ is then given by
 For an unweighted graph, each edge is taken to have weight 1.
 
 The Laplacian matrix has many useful properties for graph theory.
-\section{Support Vector Machine}
 \section{Code}
 All code written for this project can be found on Github and can be cloned by using the clone https:
 \url{https://github.com/theopavlakou/projectapplication.git}
