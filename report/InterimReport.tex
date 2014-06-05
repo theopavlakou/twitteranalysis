@@ -398,10 +398,9 @@ for some $t$ where $1<t<\sqrt{n}$, by applying a Lagrange multiplier and then so
 
 \subsubsection{Finding Events using Twitter Data}
 %TODO
+Finding events in Twitter data can be defined as a particular example of Topic Detection and Tracking (TDT), which was a DARPA-sponsored initiative to investigate how events can be found and tracked in a stream of broadcasts, which the reader can read more about in \cite{tdt}. In this particular case, the broadcasting channel is Twitter. Since then, much work has been done on finding events in a Twitter stream, and other similar work, such as finding the most useful words to describe events in a Twitter stream or event summarisation using Tweets\cite{eventsummary} etc. 
 The authors of \cite{petrovic} aim to find events in an unsupervised learning mechanism based on clustering. The basic principle is to represent Tweets as a vector (using the Bag-Of-Words model, described later) and new Tweets are compared to the stored ones using a distance measure. If the distance to all is quite large, it is declared as a new story. Various mechanisms are employed to keep the complexity low also.
-Furthermore, an attempt to find events in an online manner using online clustering is done in \cite{Becker_beyondtrending}. Clusters are created adaptively, without any prior knowledge of how many clusters there are, using a threshold, and then a classifier is trained to be able to distinguish between clusters that are based around events and non-event clusters. 
-
- In \cite{eventtwitter} the authors attempt to detect events by creating a linear classifier with 10 features, 5 being the past, current, and future Tweet rates and the other 5 being the Retweet rates for the same time periods. They find that events tend to cause a rush of Tweets and Retweets beforehand and right after the events an even larger burst. They do not use any textual features, however. 
+Furthermore, an attempt to find events in an online manner using online clustering is done in \cite{Becker_beyondtrending}. Clusters are created adaptively, without any prior knowledge of how many clusters there are, using a threshold, and then a classifier is trained to be able to distinguish between clusters that are based around events and non-event clusters. In \cite{eventtwitter} the authors attempt to detect events by creating a linear classifier with 10 features, 5 being the past, current, and future Tweet rates and the other 5 being the Retweet rates for the same time periods. They find that events tend to cause a rush of Tweets and Retweets beforehand and right after the events an even larger burst. They do not use any textual features, however. 
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
 This is the algorithm\cite{dimakis} that is initially focused on in this paper. The reason for this being that the authors of\cite{dimakis} used the algorithm in a similar way to what is being considered here. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
@@ -1661,6 +1660,7 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 %TODO
 \begin{comment}
 - Put in Appendix a section on how SVM works.
+- Explain how tracking can be done by taking the inner product of the vectors and seeing how close to 1 they come. 
 \end{comment}
 As with most areas of research, there is room for improvement but given the time constraints and the lack of data some of these areas must be left for a later time. 
 
