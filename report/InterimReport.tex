@@ -1688,13 +1688,22 @@ where $\bm{\lambda}$ takes the form $\left(\begin{matrix}
 Alternatively, a more sophisticated method could be considered, for example, using a Support Vector Machine. For this to work many more labeled training examples would need to be considered. Here roughly 12 days of data has been used and has given rise to about 16 significant events. This means that only 16 data points can be used as positive targets to train the classifier. Given more time, much more data could be collected, for instance, over the period of possibly 2 months. This data could then actually be manually classified and then a Support Vector Machine could be trained using a proportion of this data. This could then be validated using the other portion, which is a commonly used method in Machine Learning to test whether a model has not been fit too well to the data such that it cannot generalise to new data points.
 
 \subsubsection{Using the Rate of Tweets}
-The rate of Tweets could also be considered, as in \cite{microblogs}. The basic principle behind this would be that, if there is a sudden increase in the rate of the Tweets, it is much more likely that an event has taken place. In this case, the window size could be determined by a time period rather than a number of Tweets and if the number of Tweets in the window were to increase, a linear combination could again be added to the \eqref{logit_general} equation as part of $\bm{\lambda}$.
+The rate of Tweets could also be considered, as in \cite{eventtwitter}. 
+For example, the same linear classifier could be used plus an additional term to give
+\begin{equation*}
+\mathbf{w}_t^T \mathbf{T} + \mathbf{w}_r^T \mathbf{R} + \mathbf{w}_\lambda^T \mathbf{\Lambda} \geq A,
+\end{equation*}
+where $\mathbf{T} \in \mathbb{R}^5$ is a vector of the Tweet rate for 5 consecutive time steps, with the middle one being the current, $\mathbf{R} \in \mathbb{R}^5$ is the same but for the Retweet rate and $\mathbf{\Lambda} \in \mathbb{R}^5$ is for the eigenvalues returned by the algorithm. $\mathbf{w}_i$ are the weights for each feature, trained for the classifier and $A$ is the threshold, also trained.
+In this case, the window size could be determined by a time period rather than a number of Tweets.
 
 \subsubsection{Using Other Parameters Provided by Twitter}
 Something else that could be used for classification purposes could be the geocode parameter which indicates where the Tweet has come from geographically. The reasoning behind this is simple. For instance, some events may be quite specific to some borough of London, e.g. a concert of some sort in the Royal Albert Hall, and therefore, there is a possibility that a lot of the Tweets will come from areas around the Royal Albert Hall and therefore, these would be a lot more probable to be associated with events. 
 
 Other parameters included in the JSON returned by the Streaming API of Twitter could also be used as features. 
 
+\subsubsection{Tracking Events}
+%TODO Check this
+Another useful feature for the application would be to be able to track whether a previous event is the same as a current event, if they are consecutive. For instance, it may be that two events are taking place, one after the other, and it just so happens that the algorithm returns very similar eigenvalues for both. Given the time series alone, one may infer that just one long event has taken place, however, looking at the words associated with the principal components, it would be evident that they would be very different. In this case, an automatic way of detecting this would be to take the dot product between the two principal components and check whether the result would be close to 1. If this were to be the case, the two events would be classified as equal, else they would be classified as different. 
 \clearpage
 
 \bibliography{bibliography}
