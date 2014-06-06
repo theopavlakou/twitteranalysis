@@ -1433,7 +1433,7 @@ Added to this, it is interesting to see that not only have all the principal com
 
 \subsection{Testing the Streaming Algorithm on Different Data}
 As previously mentioned, to measure the general effectiveness of the algorithm, it must at least be tested on other Twitter data also from a different geographical location. Therefore, using the Twitter API \footnote{https://dev.twitter.com/docs/api/streaming, Accessed: 28-05-2014}, more data has been collected from the United States of America, the coordinates, given as a bounding box of (latitude, longitude) coordinates with the SW corner given first and then the NE, are (-126.8,33.2),(-76.7,48.8).\footnote{Found using the online tool http://boundingbox.klokantech.com/.} A modest amount of data has been collected, namely from 7:21 a.m. on the 28th May 2014 to 10:49 a.m. on the 28th May 2014, which is roughly 3.5 hours of data, which amounts to about 76000 Tweets. Just as a measure of comparison, it can be seen that in just 3.5 hours in the U.S.A. there has been more Tweets that in a day in London, which is not surprising, but gives rise to interesting results. 
-
+\subsubsection{Results}
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Testing_Streaming_App_25000_2000_USA.png}
@@ -1466,7 +1466,10 @@ want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mo
 \end{table}
 
 %TODO Show that the parameters in this case are not optimal and show that there are differences in the scale of the data
+\subsection{Tracking Events}
+Another useful feature that has been added to the application is that it is able to track whether a previous event is the same as a current event, if they are consecutive. For instance, it may be that two events are taking place, one after the other, and it just so happens that the algorithm returns very similar eigenvalues for both. Given the time series alone, one may infer that just one long event has taken place, however, looking at the words associated with the principal components, it would be evident that they would be very different. In this case, an automatic way of detecting this with high probability, is to take the dot product between the two principal components and check whether the result is close to 1. If it is the case, the two events are classified as equal, otherwise they are classified as different. 
 
+A threshold is set for what the dot product between the two should be for them to be considered equal. Empirically, a rough estimate that works well is 0.85. Note that since the principal components have unit norm, the dot product between them should be between 0 and 1, with zero if none of the words are common and 1 if all the words are common and get the same loading in the principal component. 
 \subsection{Increasing the Performance of the Algorithm}
 %TODO Maybe do this also with the permutation matrix
 \subsubsection{Building the Co-occurrence Matrix $\covmat$}
@@ -1576,10 +1579,6 @@ In this case, the window size could be determined by a time period rather than a
 Something else that could be used for classification purposes could be the geocode parameter which indicates where the Tweet has come from geographically. The reasoning behind this is simple. For instance, some events may be quite specific to some borough of London, e.g. a concert of some sort in the Royal Albert Hall, and therefore, there is a possibility that a lot of the Tweets will come from areas around the Royal Albert Hall and therefore, these would be a lot more probable to be associated with events. 
 
 Other parameters included in the JSON returned by the Streaming API of Twitter could also be used as features. 
-
-\subsubsection{Tracking Events}
-%TODO Check this
-Another useful feature for the application would be to be able to track whether a previous event is the same as a current event, if they are consecutive. For instance, it may be that two events are taking place, one after the other, and it just so happens that the algorithm returns very similar eigenvalues for both. Given the time series alone, one may infer that just one long event has taken place, however, looking at the words associated with the principal components, it would be evident that they would be very different. In this case, an automatic way of detecting this would be to take the dot product between the two principal components and check whether the result would be close to 1. If this were to be the case, the two events would be classified as equal, else they would be classified as different. 
 
 \subsection{Calculating Multiple Principal Components Per Iteration}
 In this application only the first principal component is calculated, however, this could quite easily be extended to calculate more than one. This may find events that happen simultaneously, but in which one event overpowers the other. 
@@ -1735,6 +1734,7 @@ where \texttt{$\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$} is the 
 
 Once this is done, the code should be running and a pickle file will be created at the end (see \url{https://docs.python.org/2/library/pickle.html}) which can be used to see the results or use them in another program. The pickle file will have the name \texttt{pCPickle\_w\_i\_.pkl}, where \texttt{w} is the size of the window specified and \texttt{i} is the size of the increment. The array returned by deserialising the pickle file has tuples as elements, where each tuple is given as 
 \texttt{(pc\_words, eigenvalue, start\_date, end\_date)}, where \texttt{start\_date} and \texttt{end\_date} is the date of the first Tweet of the particular window and the date of the last Tweet in the particular window respectively.
+%TODO Maybe mention how to use pickleOpen.py
 \section{Resources}
 This project has been carried out on a 15-inch MacBook Pro of the late 2008 series with processor 2.53 GHz Intel Core 2 Duo, memory 4 GB 1067 MHz DDR3 and operating system OS X 10.9.2.
 
