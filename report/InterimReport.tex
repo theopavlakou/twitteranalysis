@@ -1639,7 +1639,7 @@ Which by setting the derivative with respect to $\mathbf{u}_1$ to zero, the foll
 
 Which means that $\mathbf{u}_1$ is maximised by finding the eigenvector with the largest eigenvalue $\lambda_1$. Similarly to find the $M$ principal components, the eigenvectors of the covariance matrix with the $M$ highest eigenvalues must be calculated.
 \clearpage
-\section*{B. Useful Intuition for the Co-occurrence Matrix $\mathbf{A}$}
+\section{The Co-occurrence Matrix $\mathbf{A}$ Explained}
 Consider a matrix, $S\in \mathbb{R}^{m\times n}$, where $m$ is the number of Tweets and $n$ is the number of features that the tweets are evaluated on, in this case the Bag-of-Words. Performing $S^TS = A$ where $A \in \mathbb{R}^{n\times n}$. 
 
 By example, imagine:
@@ -1736,5 +1736,6 @@ where \texttt{$\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$} is the 
 Once this is done, the code should be running and a pickle file will be created at the end (see \url{https://docs.python.org/2/library/pickle.html}) which can be used to see the results or use them in another program. The pickle file will have the name \texttt{pCPickle\_w\_i\_.pkl}, where \texttt{w} is the size of the window specified and \texttt{i} is the size of the increment. The array returned by deserialising the pickle file has tuples as elements, where each tuple is given as 
 \texttt{(pc\_words, eigenvalue, start\_date, end\_date)}, where \texttt{start\_date} and \texttt{end\_date} is the date of the first Tweet of the particular window and the date of the last Tweet in the particular window respectively.
 \section{Resources}
-%TODO Here mention the laptop used and the APIs
+This project has been carried out on a 15-inch MacBook Pro of the late 2008 series with processor 2.53 GHz Intel Core 2 Duo, memory 4 GB 1067 MHz DDR3 and operating system OS X 10.9.2.
+
 \end{document}
