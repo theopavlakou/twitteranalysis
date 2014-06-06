@@ -40,6 +40,7 @@
 \usepackage{algorithm2e}
 \usepackage{soul}
 \usepackage{hyperref}
+\usepackage{framed}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1522,10 +1523,7 @@ In this scenario the change in the Bag-of-Words is not considered for simplicity
 
 
 \subsection{Limitations}
-%TODO
-\begin{comment}
-- Explain how taking a different geographical location would require the whole procedure to be redone with the logistic function re-calibrated and the window size and increment also. 
-\end{comment}
+
 Something to note is that for $\lambda \in (70, 300) $ there is a lot of uncertainty about whether a principal component indicates an event. On the one hand words can be used quite often together and therefore can result in a principal component, if there are no popular events during the same period, for instance the fourth row of Table \ref{streaming_test}. On the other hand however, some principal components are clearly consistent with events, however, they may not be that popular. An example of this can be seen by looking at the 11th row of the table which is related to a game of football in which Tottenham beat Manchester United at the Old Trafford on that day. Not having taken place in London may have also contributed to the fact that it was not that popular, but it can be seen that, though the associated $\lambda$ is quite low, it definitely is related to a genuine event. 
 
 This uncertainty makes it difficult to assign hard classification thresholds and this is why a probabilistic approach is instead considered. What can be said though, is that if there is an event of significant popularity in the area considered, the algorithm will return words related to this.
@@ -1719,8 +1717,24 @@ All code written for this project can be found on Github and can be cloned by us
 
 
 \section{User Guide}
-%TODO is this necessary 
+First \texttt{Git} must be installed. If it is not installed on the system being used, a guideline of how this can be done can be found using the link \url{http://git-scm.com/book/en/Getting-Started-Installing-Git}.
 
+Once this is done, the code can then be retrieved by cloning the repository found on \url{https://github.com/theopavlakou/projectapplication.git}. Make sure that the repository is cloned in the desired workspace location.
+
+There are three folders in the parent directory: \texttt{mains, src, tst}. For user purposes only \texttt{src} is necessary. The main file in the \texttt{src} directory is \texttt{TwitterParserStreaming.py}.
+
+To run the code, it can either be opened in an IDE such as \texttt{LiClipse} or alternatively can be run from the command line. To do this \texttt{Python 2.6} at least must be installed. To find out more about how to do this go to \url{https://www.python.org/download/}. 
+
+In the command line, go to the directory where the repository has been cloned. Then the code can be run as such:
+
+\begin{framed}
+\texttt{\footnotesize python src/TwitterParserStreaming.py $\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$ \textbackslash \\ $\langle$number\_tweets\_per\_window$\rangle$ $\langle$number\_tweets\_per\_shift$\rangle$  $\langle$desired\_sparsity\_of\_pc$\rangle$}
+\end{framed}
+
+where \texttt{$\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$} is the name of the file that contains the Tweets represented by a \texttt{JSON} on each line and the rest are self explanatory.
+
+Once this is done, the code should be running and a pickle file will be created at the end (see \url{https://docs.python.org/2/library/pickle.html}) which can be used to see the results or use them in another program. The pickle file will have the name \texttt{pCPickle\_w\_i\_.pkl}, where \texttt{w} is the size of the window specified and \texttt{i} is the size of the increment. The array returned by deserialising the pickle file has tuples as elements, where each tuple is given as 
+\texttt{(pc\_words, eigenvalue, start\_date, end\_date)}, where \texttt{start\_date} and \texttt{end\_date} is the date of the first Tweet of the particular window and the date of the last Tweet in the particular window respectively.
 \section{Resources}
 %TODO Here mention the laptop used and the APIs
 \end{document}
