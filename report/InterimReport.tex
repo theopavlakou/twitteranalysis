@@ -195,7 +195,7 @@ My fiancee, my family, my friends and my community have also been understanding 
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average.\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013.} Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
 
 One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms is also considered by cleaning the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final application are explored. 
-%TODO possibly put organisation here. 
+%TODO possibly put organisation here. Do this last.
 
 %% Mention only if reference is found
 %Lots of money goes into this yearly, and companies such as Google and Facebook spend \textbf{(Find number and cite)} per year on such methods to maintain their competitive edge in industry. 
@@ -214,13 +214,7 @@ Throughout the remaining sections, the following mathematical notations will be 
 \section{Organisation}
 %TODO
 \section{Background}
-%TODO Add a section that explains microblogs and other event finding algorithms
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
-
-%\textbf{Not done:}
-%\begin{itemize}
-%\item Explain SVD in this scenario and how it relates (see http://people.cs.pitt.edu/~milos/courses/cs3750-Fall2007/lectures/PCA.pdf)?
-%\end{itemize}
 
 
 
@@ -1263,7 +1257,6 @@ This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ 
 It can be noted that, indeed, the time for construction of the matrix does vary approximately linearly with $m$, the number of Tweets. What this means is that by keeping the product of the number of Tweets per window and the number of windows per period of time constant, the time of calculation should not change by much. For example, one could calculate a data point every hour with a $2x$ number of Tweets or calculate a data point every half an hour with $x$ Tweets and the total time would be approximately the same.
 
 \subsection{Parameter Choices}
-%TODO
 \begin{comment}
 Mention the following:
 - How to choose the size, k, of the batches.
@@ -1501,7 +1494,7 @@ want, until, watch, days, flash, flood, issued, \st{college}, \st{state}, \st{mo
 \label{streaming_test_us}
 \end{table}
 
-%TODO Show that the parameters in this case are not optimal and show that there are differences in the scale of the data
+%TODO Show that the parameters in this case are not optimal and show that there are differences in the scales of the data
 \subsection{Tracking Events}
 Another useful feature that has been added to the application is that it is able to track whether a previous event is the same as a current event, if they are consecutive. For instance, it may be that two events are taking place, one after the other, and it just so happens that the algorithm returns very similar eigenvalues for both. Given the time series alone, one may infer that just one long event has taken place, however, looking at the words associated with the principal components, it would be evident that they would be very different. In this case, an automatic way of detecting this with high probability, is to take the dot product between the two principal components and check whether the result is close to 1. If it is the case, the two events are classified as equal, otherwise they are classified as different. 
 
@@ -1574,11 +1567,7 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 \section{Conclusion}
 %TODO MUST DO THE CONCLUSION
 \section{Further Work}
-%TODO
-\begin{comment}
-- Put in Appendix a section on how SVM works.
-- Explain how tracking can be done by taking the inner product of the vectors and seeing how close to 1 they come. 
-\end{comment}
+
 As with most areas of research, there is room for improvement but given the time constraints and the lack of data some of these areas must be left for a later time. 
 
 \subsection{Clustering of features in the Bag of Words}
