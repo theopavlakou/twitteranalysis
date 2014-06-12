@@ -96,7 +96,7 @@ Student: & \textbf{Theo Pavlakou} \\[12pt]
 CID: & \textbf{00651782} \\[12pt]
 Course: & \textbf{EEE4} \\[12pt]
 Project Supervisor: & \textbf{Dr. Moez Draief} \\[12pt]
-Second Marker: & \textbf{Dr Jeremy Pitt} \\
+Second Marker: & \textbf{Dr. Jeremy Pitt} \\
 \end{tabular}
 \end{titlepage}
 
@@ -194,7 +194,7 @@ My fiancee, my family, my friends and my community have also been understanding 
 \section{Introduction}
 Social media now shapes our lives in such a vast way. More than $98\%$ of 18-24 year olds use social media, such as Facebook, Twitter and Instagram, and most use them more than half an hour a day on average.\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013.} Recently there has been a lot of work that has gone into analysing this vast amount of data that is available freely on the internet to understand trends in populations and to be able to target particular groups for marketing purposes. The term ``Big Data'' has become very widely used and the data that we encounter in these social media fit straight into this category. Machine learning algorithms and mathematical techniques can be used on this noisy data to infer useful results that can further be used to predict future trends. 
 
-One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms is also considered by cleaning the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final application are explored. 
+One such technique is known as Principal Component Analysis (PCA) and is concerned with finding linear combinations of the variables in a set of features which lead to the highest variation in outcomes, which in turn means leading to the highest information gain. The problem with PCA is that it can be hard to interpret since the size of the vector that is returned could be immense in length, e.g. 3000 entries, with only a few entries being of significance. This has led to the creation of algorithms that return sparse representations approximating the principal components, but which lead to results that are much easier to interpret. In this project the algorithms currently present to perform sparse PCA are analysed and evaluated using primarily a batch of Twitter data gathered from London in 2012 \footnote{This data has been provided by the authors of \cite{microblogs}.}. Then methods of improvement to the algorithms are also considered by altering the data before using it as input to the algorithm. An application is then created which can be used to automatically detect events from a stream of Tweets, by using the Sparse PCA algorithm chosen, and methods to improve the final application are explored. 
 %TODO possibly put organisation here. Do this last.
 
 %% Mention only if reference is found
@@ -209,10 +209,11 @@ The purpose of this study is to examine how a certain implementations of Sparse 
 \end{comment}
 \section{Notation}
 
-Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and zero otherwise. Likewise, the variable $m$ is reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ or a variant of this and it corresponds to the co-occurrence matrix of $\mathbf{S}$. $\mathbf{v}_i$ is to be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. Both $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=0}^n{\mathbf{[A}]_{i, j}^2}}}$.
+Throughout the remaining sections, the following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^{m\times n}$ is the data matrix consisting of $m$ data points (in the specific case considered in depth in this paper, the Tweets) evaluated on $n$ features (words), with $[\mathbf{S}]_{i,j} = 1$ when Tweet $i$ contains word $j$ and 0 otherwise. Likewise, the variable $m$ is reserved for the number of Tweets and $n$ for the number of words. $\mathbf{A} \in \mathbb{Z^*}^{n \times n}$ is equal to $\mathbf{S}^T\mathbf{S}$ or a variant of this and it corresponds to the co-occurrence matrix of $\mathbf{S}$. $\mathbf{v}_i$ is to be used for the eigenvector with the $i$th largest eigenvalue, correspondingly denoted by $\lambda_i$. Both $\|\mathbf{x}\|$ and $\|\mathbf{x}\|_2$ denote the $l_2$ norm of a vector, defined as $\sqrt{\mathbf{x}^T\mathbf{x}}$ and $\|\mathbf{x}\|_0$ denotes the $l_0$ norm of a vector, defined as the number of non-zero elements in it. $[\mathbf{x} ]_i$ denotes the $i$th element in a vector and similarly $[\mathbf{A}]_{i, j}$ denotes the element specified by the $i$th row and the $j$th column. For a matrix, $\|\mathbf{A}\|_F$ defines the Frobenius norm, defined as $\sqrt{\sum^m_{i=1}{\sum_{j=1}^n{\mathbf{[A}]_{i, j}^2}}}$.
 
 \section{Organisation}
 %TODO
+The paper is organised as follows.
 \section{Background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
@@ -238,14 +239,14 @@ We can then project the data onto the new principal components, as such:
 \begin{equation*}
 \mathbf{S}_p = \mathbf{S}\mathbf{V},
 \end{equation*}
-where $\mathbf{S}_p \in \mathbb{R}^{m \times 2}$ is the data projected onto the new principal components, namely $\mathbf{v}_1$ and $\mathbf{u}_2$. The plot of this new data can be seen in the second graph. 
+where $\mathbf{S}_p \in \mathbb{R}^{m \times 2}$ is the data projected onto the new principal components, namely $\mathbf{v}_1$ and $\mathbf{u}_2$. The plot of this new data can be seen in the second graph. As it can be seen, this is just a rotation of the axes. What can be seen now however is that the data points no longer are correlated i.e. by knowing one of the coordinates of a data point no inference can be made as to what the other coordinate will be. This is very different to the first graph in which a clear positive correlation is evident.
 
 In the third graph we project the data only onto $\mathbf{v}_1$ i.e.
 \begin{equation*}
 \mathbf{S}_p = \mathbf{S}\mathbf{v}_1.
 \end{equation*}
 
-As it can be seen, this graph only differs by the second graph by a small amount but only half the features have been used. This is an example of dimensionality reduction (or compression). In this case, the number of features has been reduced to half the number before, but a lot more than half the variation has been maintained. In the application of PCA explored here, the second stage is more important, as the variation direction is what is considered most and not the compression, but this has been added for completeness.
+As it can be seen, this graph only differs compared with the second graph by a small amount but only half the features have been used. This is an example of dimensionality reduction (or compression). In this case, the number of features has been reduced to half the number before, but a lot more than half the variation has been maintained. In the application of PCA explored here, the second stage is more important, as the variation direction is what is considered most and not the compression, but this has been added for completeness.
 
 The first principal component (i.e. the first eigenvector of the $n\times n$ matrix, $\mathbf{A}$) is:
 \begin{equation}
@@ -314,7 +315,7 @@ Performing the SVD on the matrix, what is acquired is:
 
 These three matrices all have a very significant meaning. It has already been stated that due to the obvious form of $\mathbf{S}$ it can be seen that there are only 2 topics or concepts. The $\mathbf{U}$ matrix can be viewed as the Tweet to concept correlation matrix i.e. how correlated the Tweets are to the corresponding topics. Similarly, the $\mathbf{V}^T$ matrix can be viewed  the concept to word correlation matrix i.e. how related the concept is to the particular word. For example, $\mathbf{U}_{2,1}$ would be how related the second Tweet is to the first concept and $\mathbf{V}^T_{2,3}$ would be how related the second topic is related to the third word, which in this case is zero, i.e. there is no similarity, because the second concept is about Cyprus joining the EU and the third word is win, which does not appear in any Tweet regarding Cyprus and the EU. The $\mathbf{\Sigma}$ matrix is then just the concept strengths.
 
-It can then be shown that $\mathbf{S}^T\mathbf{S}$ represents the correlation of the words in the tweets to each other, i.e. a covariance matrix (see Appendix). But 
+It can then be shown that $\mathbf{S}^T\mathbf{S}$ represents the correlation of the words in the tweets to each other, i.e. a co-correlation matrix (see Appendix). But 
 \begin{align*}
 \mathbf{S}^T\mathbf{S} &= \mathbf{V}\mathbf{\Sigma}\mathbf{U}^T \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T,\\
 & = \mathbf{V}\mathbf{\Sigma}^2\mathbf{V}^T,\\
@@ -407,7 +408,7 @@ Some of the previous work in both the areas of Sparse PCA and finding events usi
 
 \subsubsection{Sparse PCA}
 
-Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the principal components is because sparse approximations of the principal components are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of words in the set of all the words in all the Tweets. The equation to be solved resolves to:
+Sparse PCA algorithms aim to deliver similar results to PCA, but with the difference that they give rise to principal components that only have few non-zero entries. The reason sparsity is desired in the principal components is because sparse approximations of the principal components are useful for interpreting data that have large dimensions. For example, in the specific application discussed in this paper, a set of words is considered and meaningful inferences are to be found from this data. It is clearly much simpler to analyse data given a small set of words that could approximate the variance in the given data set per principal component, than all the words in the data set which would contribute a small amount each, increasing the dimensionality of the principal component to the number of all the words in word set. The equation to be solved resolves to:
 \begin{equation}
 \mathbf{v}_1 = \underset{\|\mathbf{x}\|_2^2 = 1, \|\mathbf{x}\|_0 = k}{\operatorname{argmax}}\left( \mathbf{x}^T\mathbf{A}\mathbf{x}\right),
 \end{equation}
