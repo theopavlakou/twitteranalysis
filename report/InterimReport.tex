@@ -1750,17 +1750,40 @@ There are three folders in the parent directory: \texttt{mains, src, tst}. For u
 
 To run the code, it can either be opened in an IDE such as \texttt{LiClipse} or alternatively can be run from the command line. To do this \texttt{Python 2.6} at least must be installed. To find out more about how to do this go to \url{https://www.python.org/download/}. Other libraries that need to be installed are \texttt{Tkinter}, \texttt{NumPy}, \texttt{SciPy} and \texttt{Matplotlib} for the application to work.
 
+\begin{figure}[H]
+\centering
+
+\includegraphics[scale=0.25]{Application_File_Name}
+
+\caption{The application with the file name of the Tweets edited.}
+\label{application_start}
+\end{figure}
+
 %TODO Change this now
 In the command line, go to the directory where the repository has been cloned. Then the code can be run as such:
 
 \begin{framed}
-\texttt{\footnotesize python src/TwitterParserStreaming.py $\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$ \textbackslash \\ $\langle$number\_tweets\_per\_window$\rangle$ $\langle$number\_tweets\_per\_shift$\rangle$  $\langle$desired\_sparsity\_of\_pc$\rangle$}
+\texttt{\footnotesize python src/TwitterParserStreaming.py }
 \end{framed}
 
-where \texttt{$\langle$name\_of\_file\_with\_tweets\_as\_jsons$\rangle$} is the name of the file that contains the Tweets represented by a \texttt{JSON} on each line and the rest are self explanatory.
+Once the code is run, a GUI application will open, as in Figure \ref{application_start}. There are four text inputs to the application. The first is for the directory which the file of Tweets can be found. This file must have a \texttt{JSON} on each line each representing a Tweet. 
+The second input is the number of Tweets per window, the third is the number of Tweets per shift and the fourth is the sparsity of the vector returned. Once this is done the button with the text ``Load Files'' must be pressed. If the directory is valid then text will appear on the blue text box saying so, else a valid directory must be typed. If the directory is valid, the button ``Start Streaming!'' should be pressed. This starts the process of streaming and performing the algorithm on the windows. 
 
-Once this is done, the code should be running and a pickle file will be created at the end (see \url{https://docs.python.org/2/library/pickle.html}) which can be used to see the results or use them in another program. The pickle file will have the name \texttt{pCPickle\_w\_i\_.pkl}, where \texttt{w} is the size of the window specified and \texttt{i} is the size of the increment. The array returned by deserialising the pickle file has tuples as elements, where each tuple is given as 
-\texttt{(pc\_words, eigenvalue, start\_date, end\_date)}, where \texttt{start\_date} and \texttt{end\_date} is the date of the first Tweet of the particular window and the date of the last Tweet in the particular window respectively.
+Figure \ref{application_working} shows the application running on the London Twitter data for a window size of 4000 and a shift size of 400 with 10 being the desired sparsity. The way the application works is it draws points to the graph of eigenvalues vs window number (as seen previously). If a point does not represent an event, it is drawn in blue. If a window represents an event and it is the first point representing the event, a red point is drawn to the graph. Alongside this, in the blue text box the words associated with the principal component are written and the start and end dates of the window in which the event have been detected for are printed as well. If a window represent the previous event, it is drawn in yellow as seen again on the graph. In this case the thresholds for the detection variables (eigenvalue and dot product) have been hard coded but these can easily be changed in the code. 
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[scale=0.25]{Application_working}
+
+\caption{The application with the file name of the Tweets edited.}
+\label{application_working}
+\end{figure}
+
+Once this is done, a pickle file will be created at the end (see \url{https://docs.python.org/2/library/pickle.html}) which can be used to see the results or use them in another program. The array returned by deserialising the pickle file has tuples as elements, where each tuple is given as 
+\texttt{(pc\_words, eigenvalue, dot\_product, start\_date, end\_date)}, where \texttt{start\_date} and \texttt{end\_date} is the date of the first Tweet of the particular window and the date of the last Tweet in the particular window respectively. This can be used to further analyse the data.
+
+
 %TODO Maybe mention how to use pickleOpen.py
 \section{Resources}
 This project has been carried out on a 15-inch MacBook Pro of the late 2008 series with processor 2.53 GHz Intel Core 2 Duo, memory 4 GB 1067 MHz DDR3 and operating system OS X 10.9.2.
