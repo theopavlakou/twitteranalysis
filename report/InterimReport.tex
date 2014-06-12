@@ -627,10 +627,10 @@ In this case the algorithm did not even terminate for this data, but for other d
 
 \subsubsection{The Weighted Laplacian Matrix: $\mathbf{A}_{l}$}
 
-The Laplacian of a graph is a very useful representation of it and is very useful in applications involving Spectral Graph Theory and Partial Differential Equations. $\mathbf{A}_{l}$, of a graph is given by the following equation:
+The Laplacian Matrix of a graph is a very useful representation of it and is very useful in applications involving Spectral Graph Theory and Partial Differential Equations. $\mathbf{A}_{l}$, of a graph is given by the following equation:
 
 \begin{equation}
-\mathbf{A}_{l} = \mathbf{D} - \mathbf{B}
+\mathbf{A}_{l} = \mathbf{D} - \mathbf{B},
 \end{equation}
 
 where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element $j$ on the diagonal is the sum of the weights of the edges that are connected to the vertex representing word $j$. $\mathbf{B}$ is the weighted adjacency matrix and is equal to $\smat\tp\smat$. More about the Laplacian is explained in \cite{laplacian} and \cite{laplacian_spielman}. 
@@ -695,7 +695,7 @@ The results however seem to indicate that this scenario also does not give anyth
 
 \subsubsection*{Further Testing and Aggregation of Results}
 \label{first_three_pcs}
-The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012 and during the time period 30th September 2012 to the 1st October 2012, this time only taking the first principal component and the results can be seen in Tables \ref{pcs_jterry} and \ref{pcs_ryder}. Once again only the hollow matrix gives PCs which corresponds to an actual single distinct event that took place at the times considered. The one in Table \ref{pcs_jterry} refers the retirement of England's former captain, John Terry, from international football.\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football} and the one in Table \ref{pcs_ryder} emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. \footnote{Can be confirmed by the BBC: http://www.bbc.co.uk/sport/0/golf/19780678}
+The process is repeated for the Twitter data during the time period 23rd September 2012 to the 24th September 2012 and during the time period 30th September 2012 to the 1st October 2012, this time only taking the first principal component and the results can be seen in Tables \ref{pcs_jterry} and \ref{pcs_ryder}. Once again only the hollow matrix gives PCs which corresponds to an actual single distinct event that took place at the times considered. The one in Table \ref{pcs_jterry} refers the retirement of England's former captain, John Terry, from international football\footnote{Can be confirmed by the Guardian: http://www.theguardian.com/football/2012/sep/23/john-terry-retires-international-football} and the one in Table \ref{pcs_ryder} emerges as a result of Europe's victory over the US in the Ryder Cup golf competition in 2012. \footnote{Can be confirmed by the BBC: http://www.bbc.co.uk/sport/0/golf/19780678}
 
 \begin{comment}
 The final principal component, visible in Table \ref{ryder_cup}, 
@@ -796,18 +796,23 @@ As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder
 Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources. 
 
 \subsection{The Data Matrix: $\smat$}
-Until this point, the matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale this algorithm and give approximate values for $\mathbf{S}$ such that the processing will be feasible with some arbitrary error. 
+Until this point, the matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale the algorithm to larger $\smat$ matrices.
 
 \subsubsection{Taking Advantage of the Sparsity of $\mathbf{S}$}
 \label{sparsity_matrix}
 
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
-The maximum number of elements that could possibly be non-zero in each row is 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
+The maximum number of elements that could possibly be non-zero in each row is around 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
 
-This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, both Matlab and Python have an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before, for a matrix $\mathbf{S} \in \mathbb{Z}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{Z}^{50k\times3k}$.
+This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, both Matlab and Python have an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before for much larger matrices.
 
+\begin{comment}
+, for a matrix $\mathbf{S} \in \mathbb{Z}^{286k\times5k}$, which is much larger than the previous limit of about $\mathbf{S} \in \mathbb{Z}^{50k\times3k}$.
+\end{comment}
+
+\begin{comment}
 \subsubsection{Reducing the Dimensionality of $\mathbf{S}$}
-The data matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, could be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{Z}^{k \times n}$ as the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
+The data matrix could also be transformed to a lower dimensional space to give $\mathbf{S}_{new} \in \mathbb{Z}^{k \times n}$ as the new data matrix where $k << m$. $\mathbf{S}_{new}$ should be a reduced dimension approximation of  $\mathbf{S}$, such that:
 
 
 \begin{equation*}
@@ -817,6 +822,9 @@ The data matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the numbe
 for some arbitrary $\epsilon$. Note that a variant of $\mathbf{A} = \mathbf{S}_{new}^T\mathbf{S}_{new}$ is what will be passed into the Sparse PCA algorithm. 
 
 Methods of this form could be considered for further work but will not be considered in this paper as the dimensionality of the problem is not overly large.
+
+\end{comment}
+
 
 \subsubsection{On the Dimensionality of the Problem}
 The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of research in bioinformatics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper are primarily valid for these types of matrices. 
