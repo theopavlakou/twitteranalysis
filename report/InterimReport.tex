@@ -213,8 +213,9 @@ Throughout the remaining sections, the following mathematical notations will be 
 
 \section{Organisation}
 %TODO
-The paper is organised as follows.
+The paper is organised as follows. In section \ref{background} the necessary mathematical background required to understand the paper is explained and related work to the study is presented. In \ref{params} various parameters used by the required algorithms are explored and choices are made as to what values or methods will be used. The evaluation of existing Sparse PCA algorithms for the problem at hand is done in section \ref{eval} and in section \ref{application} considerations for building a streaming application are examined and testing is done on the final prototype. A conclusion is then given in section \ref{conclusion} and in \ref{further} suggestions for further work are given. 
 \section{Background}
+\label{background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
 
 
@@ -497,6 +498,7 @@ Therefore, when $\mathbf{c}$ is fixed there is a simple trivial solution to  equ
 \clearpage
 
 \section{Parameters to the Algorithms}
+\label{params}
 
 In this section, various parameters which are inputted to the Sparse PCA algorithms are examined, since the application being considered is quite specific. That being said, the results found are highly applicable to many different areas of big data analysis. Therefore, finding the optimal conditions for these algorithms to find sparse PCs is very beneficial. 
 \subsection{The Bag-of-Words: The Features of the Data}
@@ -833,6 +835,7 @@ The scenario which is being considered mostly in this paper deals with the case 
 \clearpage
 
 \section{Evaluation of the Algorithms}
+\label{eval}
 \subsection{Measuring Performance of the Sparse PCA Algorithms}
 
 \subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}
@@ -1176,6 +1179,7 @@ It can be concluded that the Spannogram PCA algorithm performs best when the mat
 
 
 \section{Application Implementation}
+\label{application}
 \begin{comment}
 From the results found so far, it can be seen that different algorithms may prove to be more effective than the Spannogram PCA algorithm. This means that further work has to be done evaluating other algorithms, as those found in \cite{shen}, \cite{zou}, \cite{daspremont}, \cite{asteris} 
 and any others, and finding which ones would be best to use for the specific scenario. It may be the case that the Spannogram PCA algorithm performs worse with a conventional covariance matrix, but performs much better on the matrix $\mathbf{S}^T\mathbf{S}$ which is used on the Twitter data, so this also must be researched further. 
@@ -1575,8 +1579,11 @@ Moreover, given a larger geographical area, the whole procedure i.e. training of
 
 \clearpage
 \section{Conclusion}
+\label{conclusion}
 %TODO MUST DO THE CONCLUSION
+The purpose of this study has been to create the framework for an application that can be used to find events using Twitter data in a streaming manner using Sparse PCA. Many considerations have been made to ensure the final application is optimal with respect to various defined criteria. Choices for the building the Bag-Of-Words effectively and creating the input data matrix to the algorithm are made and justified mathematically and by running the initial SPCA algorithm on real Twitter data and observing the results. Various algorithms are then evaluated against one another, taking into consideration the final needs of the streaming application, and a choice is made as to which will be used. The possibility of creating the application using this Sparse PCA algorithm is then explored and the parameters needed for such an application are discussed and it is found that, indeed, creating such an application is possible. A prototype is then developed in \texttt{Python} which can be used to find events by feeding in a stream of Tweets and using a sliding window upon which the Sparse PCA algorithm is to be run on each time. The eigenvalue and various other metrics are used to classify whether a result is indicative of an event in the associated window. 
 \section{Further Work}
+\label{further}
 
 As with most areas of research, there is room for improvement but given the time constraints and the lack of data some of these areas must be left for a later time. 
 
