@@ -962,14 +962,14 @@ The 3 eigenvectors alongside their eigenvalues, are chosen to be:
 these are then put into columns along with two other eigenvectors orthogonal to each other and in the null space of $[\mathbf{v}_1 \mathbf{v}_2 \mathbf{v}_3]$ with random entries, which have associated eigenvalues of smaller magnitude than these three, to create an orthonormal set. This gives $\mathbf{V}$ and the eigenvalues are stacked into a diagonal matrix to give $\mathbf{\Lambda}$. The covariance matrix, is then created, as such:
 
 \begin{equation*}
-\mathbf{A} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T.
+\mathbf{C} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T.
 \end{equation*}
 
 
 Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{Z^*}^{m \times n}$. The sample covariance matrix is then calculated by:
 
 \begin{equation*}
-\mathbf{\hat{A}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T\left(\mathbf{S} - \bar{\mathbf{S}}\right),
+\mathbf{\hat{C}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T\left(\mathbf{S} - \bar{\mathbf{S}}\right),
 \end{equation*}
 where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
 
@@ -996,7 +996,7 @@ TPower &    0.9992 &   0.6460&    0.0187 \\
 \hline
 
 \end{tabular}
-\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=5000$.}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{C}$ with $m=5000$.}
 \label{performance_5000}
 \end{table}
 
@@ -1013,7 +1013,7 @@ Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
 \hline
 
 \end{tabular}
-\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{A}$ with $m=10$.}
+\caption{Table showing the performance of different algorithms for computing sparse principal components of the covariance matrix $\mathbf{C}$ with $m=10$.}
 \label{performance_10}
 \end{table}
 
@@ -1031,7 +1031,7 @@ Spannogram-R3&       0.9279 &   0.3504 &   9.8954\\
 \label{cpev_10}
 \end{figure}
 
-It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in,\cite{dimakis} and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident, in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap, this time of roughly $10$\% between the two, TPower being the best. When the GPower methods do work, however, they basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
+It can be seen here that the TPower seems to always outperform the Spannogram PCA algorithm considered in\cite{dimakis}, and by a very significant amount for both cases. The GPower methods sometimes do also, but the problem is that $\rho$ has to be tweaked and tuned for different levels of the SNR (see \cite{GPower}). As is evident, in Table \ref{performance_5000}, the TPower algorithm consistently maintains over $64$\% of the variance whereas the Spannogram PCA algorithm has a minimum of $17$\%. This is further shown in Table \ref{performance_10}, where the number of data points is even lower and again there is a gap, this time of roughly $10$\% between the two, TPower being the best. When the GPower methods do work, however, they basically match the TPower algorithm. Added to this, the Spannogram algorithm has a computation time of over 300 times any of the other three algorithms, the other three being of comparable magnitude.
 
 \subsubsection{Testing with Binary Data Matrix $\smat$}
 \begin{comment}
@@ -1063,7 +1063,7 @@ As a further test, the data matrix is created slightly differently. Instead of h
 
 Then different sparsity levels are created by increasing the value of the  $p_\text{1}$, whilst keeping $p_\text{dep}$ constant. The sparsity levels (given as a percentage of how many non-zero elements $\smat$ has) are expected to be slightly higher than $p_\text{1}$ due to the fact that $p_\text{dep}$ will be used occasionally also. 
 
-The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have almost identical results under these circumstances, with the Spannogram algorithm performing slightly better. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower$_{l1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
+The features to be correlated are arbitrarily chosen to be feature numbers $1, 2, 31, 39, 40$. 5 have been chosen and the algorithms should all aim to return 5-sparse vectors (for the GPower algorithm this is heuristically set by $\rho$, see \cite{GPower}, and a setting of between 0.3 and 0.5 is used here) corresponding to these. The algorithm is run with $m = 5000$ data points and the $m = 10$ data points is neglected as the relative performance does not seem to change. What can be seen from these results is that both the Spannogram and the TPower algorithm have almost identical results under these circumstances, with the Spannogram algorithm performing slightly better. As the sparsity ranges from roughly $0.05\%$ to $75\%$ both get the exact same score and identical sparse PCs. On the contrary, both GPower algorithms do significantly worse, and this is largely due to the fact that the tuning parameter $\rho$ must be chosen very carefully for a desired sparsity and this makes it very sensitive to changes in the sparsity of $\smat$. When GPower-$l_{1}$ does match the other two, however, it has almost the exact same PCs also, with the same sparsity level. The setting that is being considered in this report is with $\smat$ of $1.5\%$ sparsity or less, as detailed in section \ref{sparsity_matrix}. Due to the fact that the Spannogram Algorithm and the TPower algorithm perform best in this range, according to these results, and the fact that a binary matrix is what is actually considered, as is the case in this section, the GPower algorithms will no longer be used and instead the Spannogram and TPower algorithm will be evaluated against one another. 
 
 
 
