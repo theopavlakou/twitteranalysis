@@ -848,7 +848,7 @@ v = \frac{\sum_{i=1}^{k}\lambda^{(c)}_i}{\sum_{i=1}^n\lambda^{(a)}_i},
 \end{equation*}
 where the superscript $c$ denotes the calculated value, using one of the sparse PCA algorithms, and $a$ is for the actual value.
 
-The measure used in this paper is the same as in \cite{shen}. The centred data matrix is first projected onto the subspace spanned by the $k$ principal components, using the following formula:
+The measure used in this paper for continuous data is the same as in \cite{shen}. The centred data matrix is first projected onto the subspace spanned by the $k$ principal components, using the following formula:
 
 \begin{equation}
 \mathbf{S}_k = \mathbf{S}\mathbf{\hat{V}}\left(\mathbf{\hat{V}}^T\mathbf{\hat{V}}\right)^{-1} \mathbf{\hat{V}}^T,
@@ -900,7 +900,7 @@ Then to get the total variance captured, $v_c$ is divided by the total variance,
 The following formula
 
 \begin{equation*}
-v_\text{cpev} = \frac{v_c}{\sum_{i=1}^3\lambda^{(a)}_i},
+v_\text{cpev} = \frac{v_c}{\sum_{i=1}^n\lambda^{(a)}_i},
 \end{equation*}
 
 gives a variance measure that can also be used for the binary matrix case. Upon each iteration the variance for the current eigenvector is calculated and $\covmat$ is then deflated, using the Projection Deflation method once again found in \cite{Mackey_deflationmethods}. The variance is then accumulated to give the total variance captured. The $\covmat$ in the algorithm is that which is equal to $\smat\tp\smat$ not the one which is used to get the eigenvectors (discussed in section \ref{covmat}).
@@ -966,10 +966,10 @@ these are then put into columns along with two other eigenvectors orthogonal to 
 \end{equation*}
 
 
-Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{R}^{m \times n}$. The sample covariance matrix is then calculated by:
+Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{Z^*}^{m \times n}$. The sample covariance matrix is then calculated by:
 
 \begin{equation*}
-\mathbf{\hat{A}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T,
+\mathbf{\hat{A}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T\left(\mathbf{S} - \bar{\mathbf{S}}\right),
 \end{equation*}
 where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
 
