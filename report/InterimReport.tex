@@ -798,7 +798,7 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 \subsubsection*{Conclusion}
 As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder}, the hollow matrix, $\covmat_h$, gives the best results by far when comparing the the resulting principal components of each of the matrices. The choice of this matrix, as opposed to the one used in \cite{dimakis} can be applied to any sparse principal component analysis application when using binary data, such as in document analysis, to discover relationships in features that may otherwise be overpowered by components that do not necessarily give relevant results. Another thing to note is that, once again, it can be seen that in all cases the supports of the principal components are well within the 3000 word limit assigned to the Bag-Of-Words, with ``retirement'' being the one with the lowest rank of 1558 and the rest all being within the top 1000 words. This further justifies the Bag-Of-Words limit. 
 
-Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources. 
+Something else of interest is that, though the Twitter Data is the same as that used in\cite{microblogs}, the events that are discovered are different but still completely valid as can be confirmed by other sources. 
 
 \subsection{The Data Matrix: $\smat$}
 Until this point, the matrix $\mathbf{S} \in \mathbb{Z^*}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale the algorithm to larger $\smat$ matrices.
@@ -832,7 +832,7 @@ Methods of this form could be considered for further work but will not be consid
 
 
 \subsubsection{On the Dimensionality of the Problem}
-The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of research in bioinformatics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \inreal^{m\times n}$ where $m >> n$ and so the results found in this paper are primarily valid for these types of matrices. 
+The scenario which is being considered mostly in this paper deals with the case in which there are more observations than there are variables generally. This is the opposite of the so-called High Dimensional, Low Sample Size (HDLSS) problem, which has become very popular also with the increase of research in bioinformatics. This has various implications since different algorithms work better with different shapes of $\smat$. In this case, $\smat \in \mathbb{Z^*}^{m\times n}$ where $m >> n$ and so the results found in this paper are primarily valid for these types of matrices. 
 
 \clearpage
 
@@ -844,7 +844,7 @@ The scenario which is being considered mostly in this paper deals with the case 
 Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal components, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the formula which follows, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section
 
 \begin{equation*}
-v = \frac{\sum_{i}\lambda^{(c)}_i}{\sum_{i}\lambda^{(a)}_i},
+v = \frac{\sum_{i=1}^{k}\lambda^{(c)}_i}{\sum_{i=1}^n\lambda^{(a)}_i},
 \end{equation*}
 where the superscript $c$ denotes the calculated value, using one of the sparse PCA algorithms, and $a$ is for the actual value.
 
