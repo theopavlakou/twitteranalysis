@@ -1120,9 +1120,7 @@ The features to be correlated are arbitrarily chosen to be feature numbers $1, 2
 0.1698\\
 \end{pmatrix}
 \end{equation*}
-Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is not sparse at all, which is the difference with the previous case in which the algorithms were trying to retrieve the actual sparse eigenvectors. This is probably why the Spannogram algorithm performed much better in this case, in comparison to the others.
-
-%TODO  Explain further
+Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is not sparse at all, which is the difference with the previous case in which the algorithms were trying to retrieve the actual sparse eigenvectors. This is probably why the Spannogram algorithm performs much better in this case and possibly why the GPower algorithms do not.
 
 \subsection{Comparing TPower and Spannogram PCA}
 \label{comparison}
@@ -1196,7 +1194,7 @@ If along the way any other difficulties arise, due to scalability issues or the 
 \subsection{Big Data Streaming Application}
 In this section, methods to ensure computational feasibility are considered, and an algorithm is created to make this possible under high volume data applications in which the rate of data is very large while the number of variables considered is comparatively low i.e. $m >> n$. As already mentioned previously, there are roughly 40k Tweets on average per day in London, which corresponds to quite a small volume which can be processed all in one go, but suppose that the world were to instead be considered, which would give a rate of about 58 million Tweets per day, then clearly a method would need to be considered to be able to process all that data in a streaming fashion. 
 
-Needless to say, this would only work if there were an actual trending topic in the whole of the population. 
+Needless to say, this would only work if there were an actual common topic in the whole of the population. 
 \subsubsection{Concerns}
 The idea is to stream Twitter data and to be able to automatically detect whether an event is taking place online. This could be used, for instance, as a web application to find events in certain areas or for marketing purposes. 
 
@@ -1235,10 +1233,10 @@ $\smat = \text{getMatrixFromDataAndBagOfWords}(D, B)$\\
 // (d) Calculate the new co-occurrence matrix\\
 $\covmat = \smat\tp \smat - \text{diag}(\smat\tp \smat) $\\
 // (e) Compute new Sparse PCs \\
-$[\mathbf{V}_\text{new}, \mathbf{\Lambda}_\text{new}]$ = ComputeSparsePCA($\covmat_\text{new}$);\\
+$[\mathbf{V}, \mathbf{\Lambda}]$ = ComputeSparsePCA($\covmat$);\\
 // Save new data\\
-ListOfSparsePCs.Append($\mathbf{V}_\text{new}$)\\
-ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
+ListOfSparsePCs.Append($\mathbf{V}$)\\
+ListOfEigenvalues.Append($\mathbf{\Lambda}$)\\
 
 }
 \end{algorithm}
@@ -1246,7 +1244,7 @@ ListOfEigenvalues.Append($\mathbf{\Lambda}_\text{new}$)\\
 \subsection{Time Per Calculation}
 As streaming is being considered, which is an online process, it is very useful to see how long each calculation of a sparse principal component takes. It is also useful to know how this time varies, on average, with the size of the window being considered.
 \subsubsection{Complexity}
-The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data (a) is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the Bag-Of-Words (b) has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix (c) has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix (d) is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
+The complexity of the final algorithm can be split into various parts and can be calculated as the complexity given as a number of operations per section. The sections are labeled in the comments of the algorithm above as (a)-(e). The loading of the new Twitter data, (a), is merely linear $O(m)$, where $m$ is the number of Tweets per window. Loading the Bag-Of-Words, (b), has a time complexity of $O(N\log(N))$, where $N$ is the total number of words from the Tweets. This is simply because the algorithm first builds a dictionary of all the words and then sorts them to get the top $n$. Populating the matrix, (c), has a time complexity of $O(mp)$, where $p$ is the average number of words in a single Tweet. Building the co-occurrence matrix, (d), is of the order $O(mn^2)$ and the final Sparse PCA algorithm depends on which algorithm is used, but in this case is an iterative algorithm. 
 
 It should be noted that these complexities represent different types of operations and therefore a combined complexity has not been given.
  
@@ -1262,7 +1260,7 @@ As it can be seen in Figure \ref{proportion_time}, for a Bag-Of-Words with 3000 
 
 \subsubsection{The Bottle Neck: Time to Construct $\smat$}
 
-This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. The co-occurrence matrix is then calculated and a sparse principal component is calculated using the algorithm. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change on average, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
+This is investigated by creating the data matrix $\smat \inintmxn$, keeping $n$ constant but varying the number of Tweets, $m$. Since the co-occurrence matrix being considered is actually the same size in all cases ($n \times n$), the time to execute the Sparse PCA algorithm should not change on average, however, the time to build the data matrix does change, and should vary linearly with $m$. The results can be seen in Figure \ref{time_matrix_construction}.
 
 \begin{figure}[H]
 \centering
@@ -1289,7 +1287,7 @@ As aforementioned there are many parameters that must be chosen, each needing to
  
 What is first considered is how the window size (the number of tweets considered upon each iteration) and the shift size (by how many Tweets the window advances upon completion of each iteration) affect the results of the streaming application. Five different cases are considered for the window size and shift size and the results can be seen in Figures \ref{testing_app_20000}, \ref{testing_app_15000} and \ref{testing_app_10000}, \ref{testing_app_4000}, \ref{testing_app_80}. 
 
-As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. To illustrate this, consider the toy example of there being 10000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components for the appropriate window, however, if all 10000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually and that the time resolution of the events is finer meaning that events can be pinpointed in time much more precisely. Furthermore, the higher the resolution, the more the events that can be found (up to a reasonable extent i.e. having a window size of one Tweet would not return anything useful apart from some words from that one Tweet). The problem with having a window size that is too small however, is that small insignificant events also appear. For instance, in Figure \ref{testing_app_80} it can be seen that close to the end another event is detected. However, this ``event'' is based purely on the fact that many people retweeted a Tweet that someone wrote regarding a celebrity Ariana Grande which was not actually an event but which for a very small period of time was quite prevalent in the Twitter feed. Therefore, by decreasing the window size too much, these micro-events can also creep in and distort results. 
+As it can be seen, varying the window size has a very significant effect on the detection of events. Having too large a window means that the matrix considered is large and therefore principal components associated with certain events may be hidden by the noise, since the noise factor increases with the number of Tweets being considered. This can be seen in Table \ref{testing_app_20000}. To illustrate this further, consider the toy example of there being 10000 Tweets over the span of 1 day, where 5 of these contain exactly the same words and the rest are randomly generated. If the window size is exactly 5, these words should come out as the supports of the principal components for the appropriate window, however, if all 10000 are considered, these would be unlikely to be detected as principal components at all as they only count for a small proportion of the data matrix. On the other hand, decreasing  the window size means that the eigenvalue changes can be seen more gradually and that the time resolution of the events is finer meaning that events can be pinpointed in time much more precisely. Furthermore, the higher the resolution, the more the events that can be found (up to a reasonable extent i.e. having a window size of one Tweet would not return anything useful apart from some words from that one Tweet). The problem with having a window size that is too small however, is that small insignificant events also appear. For instance, in Figure \ref{testing_app_80} it can be seen that close to the end another event is detected. However, this ``event'' is based purely on the fact that many people retweeted a Tweet that someone wrote regarding a celebrity Ariana Grande which was not actually an event but which for a very small period of time was quite prevalent in the Twitter feed. Therefore, by decreasing the window size too much, these micro-events can also creep in and distort results. 
 
 In all scenarios, the algorithm is more than fast enough to carry out the necessary calculations, since in even in the fastest rate scenario considered, a calculation is needed about once every 15 seconds, which for the matrix size, is within the bounds to be able to keep up with real time calculations.
 
@@ -1332,7 +1330,7 @@ In all scenarios, the algorithm is more than fast enough to carry out the necess
 \subsubsection{Event Detection Variable}
 \label{event_detection}
 
-The method used to detect events is quite simple and intuitive, yet quite effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
+The method used to detect events is quite simple and intuitive, yet quite effective. The basic principle is that given that there is not an event, the eigenvalue associated with the first principal component should be relatively low, but when an event takes place, this should increase, as the principal component should be able to explain a lot of the variance in the data. The parameter choices in this case are quite ad hoc and depend on quite a few factors, including the size of the matrix and the number of Tweets considered. Therefore, for each different streaming rate and geographical location, a different model must be trained. 
 
 One way of mapping a scalar to a probability is to use the logistic function,\cite{bishop} given as
 
