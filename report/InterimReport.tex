@@ -619,7 +619,7 @@ Index & Word & Index & Word\\
 
 In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together but not due to any particular event. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 18th September 2012\footnote{As confirmed by BBC News: http://www.bbc.co.uk/news/uk-england-19635239}, where 2 police officers were killed which resulted in a trending topic on Twitter. 
 
-What is useful to note is that in the case of the first PC 7 or the 8 words a rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
+What is useful to note is that in the case of the first PC, 7 or the 8 words rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
 \subsubsection{The Normalised Matrix: $\mathbf{A}_{n}$}
 Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic intuition behind this is to make it such that all the rows/columns sum to 1 so that it does not matter which pairs of words actually appear the most, but how often they appear with other words relative to their weighting.
@@ -635,7 +635,7 @@ The Laplacian Matrix of a graph is a very useful representation of it and is ver
 \mathbf{A}_{l} = \mathbf{D} - \mathbf{B},
 \end{equation}
 
-where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element $j$ on the diagonal is the sum of the weights of the edges that are connected to the vertex representing word $j$. $\mathbf{B}$ is the weighted adjacency matrix and is equal to $\smat\tp\smat$. More about the Laplacian is explained in \cite{laplacian} and \cite{laplacian_spielman}. 
+where $\mathbf{D}$ is the degree matrix of the graph, which is a diagonal matrix and each element $j$ on the diagonal is the sum of the weights of the edges that are connected to the vertex representing the word $j$. $\mathbf{B}$ is the weighted adjacency matrix and is equal to $\smat\tp\smat$. More about the Laplacian is explained in \cite{laplacian} and \cite{laplacian_spielman}. 
 
 \subsubsection*{Results}
 \begin{table}[H]
@@ -798,13 +798,13 @@ As can be seen from Tables \ref{pcs_police}, \ref{pcs_jterry} and \ref{pcs_ryder
 Something else of interest is that, though the Twitter Data is the same as that used in,\cite{microblogs} the events that are discovered are different but still completely valid as can be confirmed by other sources. 
 
 \subsection{The Data Matrix: $\smat$}
-Until this point, the matrix $\mathbf{S} \in \mathbb{Z}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale the algorithm to larger $\smat$ matrices.
+Until this point, the matrix $\mathbf{S} \in \mathbb{Z^*}^{m \times n}$, where $m$ is the number of tweets and $n$ is the number of words in the bag of words, has had to be very limited in size. This may work for the area of London as 40k-120k Tweets corresponds to roughly a whole day, but if a larger area is considered, this may not correspond to enough time to give any meaningful results. For instance,  there are on average 58 million tweets per day worldwide,\footnote{http://www.statisticbrain.com/social-networking-statistics, Accessed: 21-12-2013. } 40k of this corresponds to only $0.069\%$ of all the Tweets, which in turn corresponds to about 1 minute of Tweets. It is obvious that this will not give relevant results and so a solution must be found to scale the algorithm to larger $\smat$ matrices.
 
 \subsubsection{Taking Advantage of the Sparsity of $\mathbf{S}$}
 \label{sparsity_matrix}
 
 Taking the current dataset as an example, there are over 40k data points (the Tweets) and, in the best case scenario, roughly 2000 features (the set of words to be evaluated against). This gives a matrix $\mathbf{S}$ of dimension $40k\times 2000$. 
-The maximum number of elements that could possibly be non-zero in each row is around 28 (since there is a 140 character limit per Tweet and if a average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen bag of words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
+The maximum number of elements that could possibly be non-zero in each row is around 28 (since there is a 140 character limit per Tweet and if an average word length of 5 is used, this gives roughly 28 words per Tweet) giving a total of 28 non-zero elements of 2000 per each row, a mere $1.4\%$ of the total entries and this is wildly overestimated since it is probable that most of the Tweets will not reach the 140 character limit and for those that do, only some of their words will be in the chosen Bag-Of-Words. It can therefore be seen that the matrix will be very sparse, consisting of less than $1.4\%$ non-zero entries.
 
 This is very useful to know beforehand, as one of the limiting factors in this whole method is the memory requirement, but taking advantage of the sparsity of the matrix, we know that at least $98.6\%$ of the matrix will not need to be stored as it will be all zeros. Fortunately, both Matlab and Python have an implementation of sparse matrices, which can be used to save a vast amount of space and all the operators that work on regular matrices also apply to sparse matrices as well. Using these, it has been possible to realise the method, with the same results as before for much larger matrices.
 
@@ -838,37 +838,37 @@ The scenario which is being considered mostly in this paper deals with the case 
 \subsection{Measuring Performance of the Sparse PCA Algorithms}
 
 \subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}
-Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal component, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the following formula, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section:
+Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal components, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the formula which follows, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section i.e.
 
 \begin{equation*}
-v = \frac{\sum_{i}\lambda^{(c)}_i}{\sum_{i}\lambda^{(a)}_i}
+v = \frac{\sum_{i}\lambda^{(c)}_i}{\sum_{i}\lambda^{(a)}_i},
 \end{equation*}
 where the superscript $c$ denotes the calculated value, using one of the sparse PCA algorithms, and $a$ is for the actual value.
 
 The measure used in this paper is the same as in \cite{shen}. The centred data matrix is first projected onto the subspace spanned by the $k$ principal components, using the following formula:
 
 \begin{equation}
-\mathbf{S}_k = \mathbf{S}\mathbf{\hat{V}}\left(\mathbf{\hat{V}}^T\mathbf{\hat{V}}\right)^{-1} \mathbf{\hat{V}}^T
+\mathbf{S}_k = \mathbf{S}\mathbf{\hat{V}}\left(\mathbf{\hat{V}}^T\mathbf{\hat{V}}\right)^{-1} \mathbf{\hat{V}}^T,
 \label{captured_var}
 \end{equation}
 
 where $\mathbf{\hat{V}}$ represents the matrix whose columns are the principal components calculated using any given algorithm. The variance captures is then given by $\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)$. It can be seen that when the principal components calculated are orthogonal then $\mathbf{\hat{V}}$ is also orthogonal and therefore $\mathbf{\hat{V}}^T\mathbf{\hat{V}} = \mathbf{I}$ and what is attained is:
 
 \begin{equation}
-\mathbf{S}_k =\mathbf{\hat{U}} \mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^T
+\mathbf{S}_k =\mathbf{\hat{U}} \mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^T,
 \label{captured_var}
 \end{equation}
  
 which is the calculated singular value decomposition of the projected data matrix and the cumulative explained variance can be given by:
 
 \begin{equation*}
-\sum_{i=1}^k [\mathbf{\Sigma}]_{i,i}^2 
+\sum_{i=1}^k [\mathbf{\Sigma}]_{i,i}^2.
 \end{equation*}
 
 In general, to find the proportion of variance captured by the $k$ principal component, the equation used is:
 
 \begin{equation}
-v_\text{cpev} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)}
+v_\text{cpev} = \frac{\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)}{\Tr\left( \mathbf{S}^T\mathbf{S}\right)},
 \label{cpev_eq}
 \end{equation}
 
@@ -894,12 +894,13 @@ $\covmat \leftarrow \left(\mathbf{I}-\vvec_i\vvec_i\tp\right)\covmat\left(\mathb
 \end{algorithm}
 
 Then to get the total variance captured, $v_c$ is divided by the total variance, given by the sum of the actual eigenvectors of $\covmat$.
+The following formula
 
 \begin{equation*}
-v_\text{cpev} = \frac{v_c}{\sum_{i=1}^3\lambda^{(a)}_i}
+v_\text{cpev} = \frac{v_c}{\sum_{i=1}^3\lambda^{(a)}_i},
 \end{equation*}
 
-This gives a variance measure that can also be used for the binary matrix case. Upon each iteration the variance for the current eigenvector is calculated and $\covmat$ is then deflated, using the Projection Deflation method once again found in \cite{Mackey_deflationmethods}. The variance is then accumulated to give the total variance captured. The $\covmat$ in the algorithm is that which is equal to $\smat\tp\smat$ not the one which is used to get the eigenvectors (discussed in section \ref{covmat}).
+gives a variance measure that can also be used for the binary matrix case. Upon each iteration the variance for the current eigenvector is calculated and $\covmat$ is then deflated, using the Projection Deflation method once again found in \cite{Mackey_deflationmethods}. The variance is then accumulated to give the total variance captured. The $\covmat$ in the algorithm is that which is equal to $\smat\tp\smat$ not the one which is used to get the eigenvectors (discussed in section \ref{covmat}).
 
 Note that this gives the same result as the previous method for continuous data. 
 \subsubsection{Sparsity}
@@ -909,7 +910,7 @@ Another obvious measure of performance, is the sparsity level which is attained 
 The objective function for the performance for each algorithm is therefore given as a result of these measurements. The formula is given by:
 
 \begin{equation}
-P = v_\text{cpev} - \gamma \left(k - \hat{k}\right)^2
+P = v_\text{cpev} - \gamma \left(k - \hat{k}\right)^2,
 \label{obj_function}
 \end{equation}
 where, $P$ is the performance score, $k$ is the desired sparsity and $\hat{k}$ is the actual sparsity returned. $\gamma$ is the penalty multiplier for the difference in the desired sparsity versus the actual sparsity.
@@ -938,41 +939,41 @@ The 3 eigenvectors alongside their eigenvalues, are chosen to be:
        \frac{1}{\sqrt{5}} & \text{, for } 1<i\le 5 \\
        0 & \text{, else }
         \end{cases}
-        \text{              , } \lambda_1 = 5
+        \text{              , } \lambda_1 = 5,
 \end{equation*}
 \begin{equation*}
 [\mathbf{v}_2]_i = \begin{cases}
        \frac{1}{\sqrt{5}} & \text{, for } 5<i\le 10  \\
        0 & \text{, else }
         \end{cases}
-        \text{              , } \lambda_2 = 3
+        \text{              , } \lambda_2 = 3,
 \end{equation*}
 \begin{equation*}
 [\mathbf{v}_3]_i = \begin{cases}
        \frac{1}{\sqrt{5}} & \text{, for } 10<i\le 15  \\
        0 & \text{, else }
 	  \end{cases}  
-	  \text{              , } \lambda_3 = 2  
+	  \text{              , } \lambda_3 = 2,
 \end{equation*}
        
 these are then put into columns along with two other eigenvectors orthogonal to each other and in the null space of $[\mathbf{v}_1 \mathbf{v}_2 \mathbf{v}_3]$ with random entries, which have associated eigenvalues of smaller magnitude than these three, to create an orthonormal set. This gives $\mathbf{V}$ and the eigenvalues are stacked into a diagonal matrix to give $\mathbf{\Lambda}$. The covariance matrix, is then created, as such:
 
 \begin{equation*}
-\mathbf{A} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T
+\mathbf{A} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T.
 \end{equation*}
 
 
 Then $m$ data points are drawn from a  zero mean multivariate Gaussian distribution  with this covariance matrix as a parameter to give $\mathbf{S} \in \mathbb{R}^{m \times n}$. The sample covariance matrix is then calculated by:
 
 \begin{equation*}
-\mathbf{\hat{A}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T
+\mathbf{\hat{A}} = \frac{1}{m}\left(\mathbf{S} - \bar{\mathbf{S}}\right)\left(\mathbf{S} - \bar{\mathbf{S}}\right)^T,
 \end{equation*}
 where $\bar{\mathbf{S}}$ is a vector of the sample means of every feature.
 
 Then the Sparse PCA algorithms are used on this covariance matrix to find the approximated principal components. This is repeated 15 times varying the signal to noise ratio (SNR), which is calculated as:
 
 \begin{equation*}
-\text{SNR} = \frac{\sum_{i = 1}^3\lambda_i^{(a)}}{\sum_{i = 4}^5\lambda_i^{(a)}2^{(j-1)}}
+\text{SNR} = \frac{\sum_{i = 1}^3\lambda_i^{(a)}}{\sum_{i = 4}^5\lambda_i^{(a)}2^{(j-1)}},
 \end{equation*}
 
 where $\lambda_i^{(a)}$ denotes the actual eigenvalue of the $i$th eigenvector, the first three being the sparse ones and the last two being the noise components, and $j$ denotes the iteration number (starting from 1). Note that this can be calculated in this way because the principal components are orthogonal. As it can be seen the SNR will decrease with each iteration number, as the eigenvalues of the noise eigenvectors increase by a factor of two upon each iteration. This is done for $m=5000$ data points and then for $m=10$ data points and is iterated 5 times for each, averaging the outcome. 
