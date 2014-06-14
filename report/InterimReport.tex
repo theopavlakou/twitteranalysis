@@ -617,7 +617,7 @@ Index & Word & Index & Word\\
 \caption{The first 2 principal components using the algorithm on the Hollow matrix, $ \mathbf{A}_h$. The index represents the rank of the word according to how frequent the word is found in the set of all the Tweets. The associated eigenvalue is also shown for each of the principal components.}
 \end{table}
 
-In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together but not due to any particular event. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 18th September 2012\footnote{As confirmed by BBC News: http://www.bbc.co.uk/news/uk-england-19635239}, where 2 police officers were killed which resulted in a trending topic on Twitter. 
+In this case, the second sparse PC once again does not represent any significant occasion and seems to just be a few words that may occur frequently together but not due to any particular event. Contrary to the previous case though, the first sparse PC refers to a very specific event regarding a murder that took place on the 18th September 2012,\footnote{As confirmed by BBC News: http://www.bbc.co.uk/news/uk-england-19635239} where 2 police officers were killed which resulted in a trending topic on Twitter. 
 
 What is useful to note is that in the case of the first PC, 7 or the 8 words rank much lower than the top 20 words, the lowest one occurring merely 34 times and the highest appearing 485 times, which is comparable to the lowest in the previous case. This clearly highlights the positive effect of removing the link of the each vertex to itself, which allows the algorithm to discover relationships which would otherwise be completely overpowered. 
 
@@ -625,7 +625,7 @@ What is useful to note is that in the case of the first PC, 7 or the 8 words ran
 Here, making the matrix have normalised rows is considered and the resulting matrix is $\mathbf{A}_n$. The basic intuition behind this is to make it such that all the rows/columns sum to 1 so that it does not matter which pairs of words actually appear the most, but how often they appear with other words relative to their weighting.
 
 \subsubsection*{Results}
-In this case the algorithm did not even terminate for this data, but for other data it has given irrelevant results. The reason for this is because, in this case the words that appear only a few times together with other words will get a higher weighting. For instance, if a word $a$ only appears once with another word $b$ and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
+In this case the algorithm did not even terminate for this data, but for other data it has given irrelevant results. The reason for this is because, in this case the words that appear only a few times together with other words will get a higher weighting. For instance, if a word, $a$, only appears once with another word, $b$, and never with any other word in the bag of words, then it will get a value of 1 and, therefore will appear to give a higher variance than it does in actual fact. This method will not be considered from here on.
 
 \subsubsection{The Weighted Laplacian Matrix: $\mathbf{A}_{l}$}
 
@@ -666,7 +666,7 @@ In this case, once again, both principal components do not seem to convey any us
 
 \subsubsection{The Weighted Laplacian of the Hollow Matrix: $\mathbf{A}_{lh}$}
 
-To try to improve the results of the Laplacian, this time the matrix is created using the graph represented by the hollow matrix, $\covmat_h$ described above.
+To try to improve the results of the Laplacian, this time the matrix is created using the graph represented by the hollow matrix, $\covmat_h$, described above.
 
 \subsubsection*{Results}
 \begin{table}[H]
@@ -730,8 +730,9 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 
 \hline
 \end{tabular}
-\label{pcs_police}
 \caption{The first principal component of Twitter data during the period 25th September 2012 to the 26th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
+\label{pcs_police}
+
 \end{table}
 
 \begin{table}[H]
@@ -759,8 +760,9 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 
 \hline
 \end{tabular}
-\label{pcs_jterry}
 \caption{The first principal component of Twitter data during the period 23rd September 2012 to the 24th September 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
+\label{pcs_jterry}
+
 \end{table}
 
 \begin{table}[H]
@@ -788,8 +790,9 @@ Index & Word &Index & Word & Index & Word & Index & Word\\
 
 \hline
 \end{tabular}
-\label{pcs_ryder}
 \caption{The first principal component of Twitter data during the period 30th September 2012 to the 1st October 2012 using the Spannogram Algorithm on the variants of the co-occurrence matrix. The index represents the rank of the word according to how frequent the word is found in the set of these Tweets. The bold words show words that do seem to be related according to events that have been confirmed.}
+\label{pcs_ryder}
+
 \end{table}
 
 \subsubsection*{Conclusion}
@@ -838,7 +841,7 @@ The scenario which is being considered mostly in this paper deals with the case 
 \subsection{Measuring Performance of the Sparse PCA Algorithms}
 
 \subsubsection{Cumulative Percentage of Explained Variance (CPEV) for Continuous Data}
-Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal components, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the formula which follows, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section i.e.
+Various metrics could be defined as to what good approximations to the principal components using sparse PCA would need to fulfill, but what is generally agreed upon is that the variance captured by each sparse principal component should be maximised and this can be measured by the absolute value of the eigenvalue associated with that eigenvector. When calculating the cumulative variance captured by multiple sparse principal components, however, the difficulty arises that many sparse PCA algorithms do not generally return orthogonal principal components. This in turn means that just by summing the eigenvalues associated with them to get the integrated variance captured by the $k$ principal components does not generally give the right result, as many of the principal components share information leading to an overestimate of the cumulative variance captured. Namely, the formula which follows, found in \cite{dimakis}, to find the proportion of variance captured by the $k$ principal components will not work for most of the algorithms tested in this section
 
 \begin{equation*}
 v = \frac{\sum_{i}\lambda^{(c)}_i}{\sum_{i}\lambda^{(a)}_i},
@@ -852,7 +855,7 @@ The measure used in this paper is the same as in \cite{shen}. The centred data m
 \label{captured_var}
 \end{equation}
 
-where $\mathbf{\hat{V}}$ represents the matrix whose columns are the principal components calculated using any given algorithm. The variance captures is then given by $\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)$. It can be seen that when the principal components calculated are orthogonal then $\mathbf{\hat{V}}$ is also orthogonal and therefore $\mathbf{\hat{V}}^T\mathbf{\hat{V}} = \mathbf{I}$ and what is attained is:
+where $\mathbf{\hat{V}}$ represents the matrix whose columns are the principal components calculated using any given algorithm. The variance captured is then given by $\Tr\left( \mathbf{S}_k^T\mathbf{S}_k\right)$. It can be seen that when the principal components calculated are orthogonal then $\mathbf{\hat{V}}$ is also orthogonal and therefore $\mathbf{\hat{V}}^T\mathbf{\hat{V}} = \mathbf{I}$ and what is attained is:
 
 \begin{equation}
 \mathbf{S}_k =\mathbf{\hat{U}} \mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^T,
