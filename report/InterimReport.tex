@@ -431,7 +431,7 @@ Finding events in Twitter data can be defined as a particular example of Topic D
 The authors of \cite{petrovic} aim to find events in an unsupervised learning mechanism based on clustering. The basic principle is to represent Tweets as a vector (using the Bag-Of-Words model, described later) and new Tweets are compared to the stored ones using a distance measure. If the distance to all is quite large, it is declared as a new story. Various mechanisms are employed to keep the complexity low also. In \cite{earthquake} a system is created which can detect earthquakes with a high probability based on Tweets and the Twitter users' locations also. Furthermore, an attempt to find events in an online manner using online clustering is done in \cite{Becker_beyondtrending}. Clusters are created adaptively, without any prior knowledge of how many clusters there are, using a threshold, and then a classifier is trained to be able to distinguish between clusters that are based around events and non-event clusters. Also, as aforementioned, in \cite{microblogs} a query based event detection application is developed. In \cite{eventtwitter} the authors attempt to detect events by creating a linear classifier with 10 features, 5 being the past, current, and future Tweet rates and the other 5 being the Retweet rates for the same time periods. They find that events tend to cause a rush of Tweets and Retweets beforehand and right after the events an even larger burst. They do not use any textual features, however. 
 Additionally, authors of \cite{resourceadaptive} and \cite{datastreaming}  focus a lot on the practical aspects and resources available in a streaming model. 
 
-Though much work has been done here, the methods are either too specific\cite{earthquake}, are based on a user making a query for a type of event\cite{microblogs}, do not take advantage of the textual features.\cite{eventtwitter}, or are done using completely different methods to the those that will be presented in this paper. This study focuses on developing an application to find events in a stream of Tweets without prior knowledge of any such event and by using the Tweet content primarily.
+Though much work has been done here, the methods are either too specific\cite{earthquake}, are based on a user making a query for a type of event\cite{microblogs}, do not take advantage of the textual features,\cite{eventtwitter} or are done using completely different methods to the those that will be presented in this paper. This study focuses on developing an application to find events in a stream of Tweets without prior knowledge of any such event and by using the Tweet content primarily.
 
 \subsection{Sparse PCA through Low-Rank Approximation Algorithm}
 This is the algorithm\cite{dimakis} that is initially focused on in this paper. The reason for this being that the creators use the algorithm in a similar way to what is being considered here and therefore it has been used as a benchmark. It will be referred to from now on as the Spannogram (Sparse) PCA  algorithm.
@@ -1202,8 +1202,8 @@ There are various methods of doing this in an online fashion and it opens many d
 \begin{itemize}
 \item How large should the window size be?
 \item By how many Tweets should the sliding window increment by?
-
-\item How can an event be detected based on the change in the principal components. 
+\item How can an event be detected?
+\item How can an event be tracked?
 \item How could this scale?
 \end{itemize}
 
