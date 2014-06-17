@@ -1127,7 +1127,7 @@ Something to note is how the actual eigenvector, $\mathbf{v}$, of $\covmat$ is n
 % Results can be found in spannogram_vs_tpower.mat and then looking at the metrics matrix.
 To test the performance of the TPower algorithm and the Spannogram algorithm for the Twitter data gathered for the period 25/09/2012 - 26/09/2012 different sparseness are considered for the principal components and the first two principal components are evaluated by the algorithms. 
 
-The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix describe in section \ref{covmat}). Let this set be referred to as $\mathbb{S}$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not necessarily represent a single distinct event in history. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
+The set of words that is desired can be seen in Table \ref{murder_8} as these are the words that represent the most significant event that happened in the period of time considered (as calculated using the hollow matrix described in section \ref{covmat}). Let this set be referred to as $\mathbb{S}$. Other sparse principal components do emerge, however, they mostly arise as words that may occur quite frequently together but do not actually represent a specific event, for instance ``happy'' and ``birthday'' appear quite  a lot, but do not necessarily represent a single distinct event in history. Furthermore, when $k$ increases the new words included do not actually give any more information and so have not been included in the table, but for the analysis $k$ will increase to 12 for completeness.
 
 \begin{table}[H]
 \center
@@ -1208,7 +1208,7 @@ There are various methods of doing this in an online fashion and it opens many d
 \end{itemize}
 
 \subsection{Streaming Procedure}
-The algorithm to be used in this scenario is the TPower algorithm. This is because, though it sometimes is less accurate, it is typically a factor of $10^3$ faster than the Spannogram PCA algorithm and so for a large data streaming application, the trade-off of accuracy for speed is worth the slight offset in accuracy.
+The algorithm to be used in this scenario is the TPower algorithm. This is because, though it sometimes is less accurate, it is typically a factor of $10^3$ faster than the Spannogram PCA algorithm and so for a large data streaming application, the trade-off of accuracy for speed is beneficial.
 
 \subsubsection{Algorithm}
 The algorithm can be described as follows:
