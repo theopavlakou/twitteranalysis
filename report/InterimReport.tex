@@ -213,7 +213,7 @@ The following mathematical notations will be used. $\mathbf{S} \in \mathbb{Z^*}^
 
 \section{Organisation}
 %TODO
-The rest of this paper is organised as follows. In section \ref{background} the necessary mathematical background required is explained and related work to the study is presented. In section \ref{params} various parameters used by the required algorithms are explored and choices are made as to what values or methods will be used. The evaluation of existing Sparse PCA algorithms for the problem at hand is done in section \ref{eval} and in section \ref{application} considerations for building a streaming application are examined and testing is done on the final prototype. A a discussion and various conclusions are then given in section \ref{conclusion} and in section \ref{further} suggestions for further work are made. 
+The rest of this paper is organised as follows. In section \ref{background} the necessary mathematical background required is explained and related work to the study is presented. In section \ref{params} various parameters used by the required algorithms are explored and choices are made as to what values or methods will be used. The evaluation of existing Sparse PCA algorithms for the problem at hand is done in section \ref{eval} and in section \ref{application} considerations for building a streaming application are examined and testing is done on the final prototype. A discussion and various conclusions are then given in section \ref{conclusion} and in section \ref{further} suggestions for further work are made. 
 \section{Background}
 \label{background}
 To understand the project in detail, it is necessary to first understand some of the underlying methods that are used and the theory supporting them. In this section, an attempt is made to give a thorough enough explanation whilst not going too in depth to diverge from the main topic of discussion. It also gives reasons as to why this project is important, what work has already been done in this field and why the particular direction has been chosen. 
@@ -241,7 +241,6 @@ We can then project the data onto the new principal components, as such:
 \mathbf{S}_p = \mathbf{S}\mathbf{V},
 \end{equation*}
 where $\mathbf{S}_p \in \mathbb{R}^{m \times 2}$ is the data projected onto the new principal components, namely $\mathbf{v}_1$ and $\mathbf{v}_2$. The plot of this new data can be seen in the second graph. As it can be seen, this is just a rotation of the axes. What can be seen now however is that the data points no longer are correlated i.e. by knowing one of the coordinates of a data point no inference can be made as to what the other coordinate will be. This is very different to the first graph in which a clear positive correlation is evident.
-
 In the third graph we project the data only onto $\mathbf{v}_1$ i.e.
 \begin{equation*}
 \mathbf{S}_p = \mathbf{S}\mathbf{v}_1.
